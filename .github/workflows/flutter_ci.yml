@@ -25,58 +25,58 @@ jobs:
         run: flutter test
 
   build_apk:
-  name: Build Release APK
-  needs: unit_test
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v4
-    
-    - uses: subosito/flutter-action@v2
-      with:
-        flutter-version: 3.38.9
+    name: Build Release APK
+    needs: unit_test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.38.9
 
-    - name: Cache dependencies
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.pub-cache
-          ~/.gradle/caches
-        key: ${{ runner.os }}-build-${{ hashFiles('**/pubspec.lock') }}
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            ~/.gradle/caches
+          key: ${{ runner.os }}-build-${{ hashFiles('**/pubspec.lock') }}
 
-    - name: Decode and Setup Keystore
-      run: |
-        echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 --decode > android/app/release.keystore
-        {
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}"
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}"
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}"
-          echo "storeFile=release.keystore"
-        } > android/key.properties
+      - name: Decode and Setup Keystore
+        run: |
+          echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 --decode > android/app/release.keystore
+          {
+            echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}"
+            echo "keyPassword=${{ secrets.KEY_PASSWORD }}"
+            echo "keyAlias=${{ secrets.KEY_ALIAS }}"
+            echo "storeFile=release.keystore"
+          } > android/key.properties
 
-    - name: Setup Environment Variables
-      run: |
-        
-        echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
-        echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
+      - name: Setup Environment Variables
+        run: |
+          
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
+          echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
 
-        if [ ! -f .env ]; then
-          echo "Failed to create .env file"
-          exit 1
-        fi
-        echo "✓ .env file created successfully"
-        
-        echo "FACEBOOK_APP_ID=${{ secrets.FACEBOOK_APP_ID }}" >> android/gradle.properties
-        echo "FACEBOOK_CLIENT_TOKEN=${{ secrets.FACEBOOK_CLIENT_TOKEN }}" >> android/gradle.properties
+          if [ ! -f .env ]; then
+            echo "Failed to create .env file"
+            exit 1
+          fi
+          echo "✓ .env file created successfully"
+          
+          echo "FACEBOOK_APP_ID=${{ secrets.FACEBOOK_APP_ID }}" >> android/gradle.properties
+          echo "FACEBOOK_CLIENT_TOKEN=${{ secrets.FACEBOOK_CLIENT_TOKEN }}" >> android/gradle.properties
 
-    - name: Install Dependencies
-      run: flutter pub get
+      - name: Install Dependencies
+        run: flutter pub get
 
-    - name: Build Release APK
-      run: flutter build apk --release
+      - name: Build Release APK
+        run: flutter build apk --release
 
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: flutter-release-app
-        path: build/app/outputs/flutter-apk/*.apk
-        retention-days: 7
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-release-app
+          path: build/app/outputs/flutter-apk/*.apk
+          retention-days: 7
