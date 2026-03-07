@@ -1,20 +1,22 @@
 import 'package:equatable/equatable.dart';
 
-class ProductEntity extends Equatable {
+class ProductSummaryEntity extends Equatable {
   final String id;
   final String name;
-  final String description;
   final double initialPrice;
   final double finalPrice;
   final String imageUrl;
+  final int reviewCount;
+  final double rating;
 
-  const ProductEntity({
+  const ProductSummaryEntity({
     required this.id,
     required this.name,
-    required this.description,
     required this.initialPrice,
     required this.finalPrice,
     required this.imageUrl,
+    required this.reviewCount,
+    required this.rating,
   });
 
   bool get hasDiscount => finalPrice < initialPrice;
@@ -23,9 +25,10 @@ class ProductEntity extends Equatable {
   List<Object?> get props => [
     id,
     name,
-    description,
     initialPrice,
     finalPrice,
     imageUrl,
+    reviewCount,
+    rating,
   ];
 }

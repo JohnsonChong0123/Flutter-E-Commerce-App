@@ -1,32 +1,29 @@
 [
     {
-        "asin": "1",
-        "title": "test",
-        "description": "description",
-        "initial_prices": 20.0,
-        "final_prices": 15.0,
-        "image_url": "imageUrl",
-        "rating": 4.5,
-        "reviews_count": 100
-    },
-    {
-        "asin": "2",
-        "title": "test2",
-        "description": "description2",
-        "initial_prices": 10.0,
-        "final_prices": 8.0,
-        "image_url": "imageUrl2",
-        "rating": 4.0,
-        "reviews_count": 50
-    },
-    {
-        "asin": "3",
-        "title": "test3",
-        "description": "description3",
-        "initial_prices": 15.0,
-        "final_prices": 12.0,
-        "image_url": "imageUrl3",
+        "id": "B07V5LK5J3",
+        "title": "TWINSLUXES Solar Post Cap Lights Outdoor - Waterproof LED Fence Post Solar Lights for 3.5x3.5/4x4/5x5 Wood Posts in Patio, Deck or Garden Decoration 4 Pack",
+        "initial_prices": 49.99,
+        "final_prices": 33.99,
+        "reviews_count": 3178,
         "rating": 4.2,
-        "reviews_count": 75
+        "image_url": "https://m.media-amazon.com/images/I/71kCgl9yzzL.__AC_SY445_SX342_QL70_FMwebp_.jpg"
+    },
+    {
+        "id": "B00080QHMM",
+        "title": "Accutire MS-4021B Digital Tire Pressure Gauge with 4 Valve Caps, 5-150psi (psi, bar, kPa, kg/cm2)",
+        "initial_prices": 1.79,
+        "final_prices": 1.79,
+        "reviews_count": 8034,
+        "rating": 4.4,
+        "image_url": "https://m.media-amazon.com/images/I/41UbPFLOVkL._SY445_SX342_QL70_FMwebp_.jpg"
+    },
+    {
+        "id": "B0CNZ6ZV14",
+        "title": "SAURA LIFE SCIENCE Adivasi Ayurvedic Neelgiri Hair growth Hair Oil-250ML (2)",
+        "initial_prices": 15.59,
+        "final_prices": 9.59,
+        "reviews_count": 5,
+        "rating": 5.0,
+        "image_url": "https://m.media-amazon.com/images/I/31hYnlXSpeL._SX300_SY300_QL70_FMwebp_.jpg"
     }
 ]
