@@ -2,7 +2,7 @@ import 'package:e_commerce_client/presentation/blocs/auth/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/common/widgets/loader.dart';
-import '../../domain/entity/product_view_entity.dart';
+import '../../domain/entity/product/product_summary_entity.dart';
 import '../cubits/product/product_cubit.dart';
 import '../widgets/product_card.dart';
 
@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class ProductGrid extends StatefulWidget {
-  final List<ProductViewEntity> filteredProducts;
+  final List<ProductSummaryEntity> filteredProducts;
 
   const ProductGrid({required this.filteredProducts, super.key});
 

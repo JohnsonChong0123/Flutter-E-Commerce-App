@@ -14,12 +14,21 @@ final class ProductLoading extends ProductState {
 }
 
 final class ProductLoaded extends ProductState {
-  final List<ProductViewEntity> products;
+  final List<ProductSummaryEntity> products;
 
   const ProductLoaded({required this.products});
 
   @override
   List<Object> get props => [products];
+}
+
+final class ProductDetailsLoaded extends ProductState {
+  final ProductDetailsEntity product;
+
+  const ProductDetailsLoaded({required this.product});
+
+  @override
+  List<Object> get props => [product];
 }
 
 final class ProductFailure extends ProductState {

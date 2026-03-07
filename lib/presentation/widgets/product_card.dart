@@ -2,17 +2,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/themes/app_colors.dart';
-import '../../domain/entity/product_view_entity.dart';
+import '../../domain/entity/product/product_summary_entity.dart';
 
 class ProductCard extends StatelessWidget {
-  final ProductViewEntity product;
+  final ProductSummaryEntity product;
   const ProductCard({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.push('/productDetails', extra: product);
+        context.push('/productDetails/${product.id}');
       },
       child: Card(
         elevation: 2,

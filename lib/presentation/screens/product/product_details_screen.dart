@@ -5,13 +5,15 @@ import 'package:provider/provider.dart';
 import '../../../core/common/utils/show_snackbar.dart';
 import '../../../core/common/widgets/app_button.dart';
 import '../../../core/themes/app_colors.dart';
-import '../../../domain/entity/product_entity.dart';
+import '../../../domain/entity/product/product_details_entity.dart';
 import '../../cubits/cart/cart_cubit.dart';
+import '../../cubits/product/product_cubit.dart';
 import '../../notifiers/product_details_notifier.dart';
 
 class ProductDetailScreen extends StatelessWidget {
-  final ProductEntity product;
-  const ProductDetailScreen({super.key, required this.product});
+  final String productId;
+
+  const ProductDetailScreen({super.key, required this.productId});
 
   @override
   Widget build(BuildContext context) {
@@ -30,127 +32,41 @@ class ProductDetailScreen extends StatelessWidget {
           actions: [
             IconButton(
               onPressed: () {
-                print("Go to cart");
                 context.go('/cart');
               },
               icon: const Icon(Icons.shopping_cart, color: AppColor.primary),
             ),
           ],
         ),
-        body: SingleChildScrollView(
-          child: IntrinsicHeight(
-            child: Column(
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  width: MediaQuery.of(context).size.width,
-                  child: product.imageUrl.isNotEmpty
-                      ? Image.network(
-                          product.imageUrl,
-                          fit: BoxFit.fill,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Colors.grey[300],
-                              child: const Icon(
-                                Icons.image_not_supported,
-                                size: 100,
-                                color: Colors.grey,
-                              ),
-                            );
-                          },
-                        )
-                      : Container(
-                          color: Colors.grey[300],
-                          child: const Icon(
-                            Icons.image_not_supported,
-                            size: 100,
-                            color: Colors.grey,
-                          ),
-                        ),
-                ),
-                const SizedBox(height: 15),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              product.name,
-                              style: Theme.of(context).textTheme.titleMedium,
-                              overflow: TextOverflow.visible,
-                              softWrap: true,
-                            ),
-                          ),
-                          WishlistButton(),
-                        ],
-                      ),
-                      const SizedBox(height: 15),
-                      Row(
-                        children: [
-                          if (product.hasDiscount) ...[
-                            Text(
-                              "\$${product.initialPrice.toStringAsFixed(2)}",
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(
-                                    color: AppColor.green,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    decoration: TextDecoration.lineThrough,
-                                  ),
-                            ),
-                            const SizedBox(width: 10),
-                          ],
-                          Text(
-                            "\$${product.finalPrice.toStringAsFixed(2)}",
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  color: AppColor.green,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 15),
-                      Text(
-                        'DESCRIPTION',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        product.description,
-                        style: const TextStyle(fontSize: 15),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            child: const Text(
-                              "View Review >>>",
-                              style: TextStyle(color: AppColor.green),
-                            ),
-                            onPressed: () {
-                              // TODO: Navigate to review screen
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+        body: BlocBuilder<ProductCubit, ProductState>(
+          builder: (context, state) {
+            if (state is ProductLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state is ProductDetailsLoaded) {
+              final product = state.product;
+
+              return _buildContent(context, product);
+            }
+
+            if (state is ProductFailure) {
+              return Center(child: Text(state.message));
+            }
+
+            return const SizedBox();
+          },
         ),
         bottomNavigationBar: ElevatedButton(
           style: ElevatedButton.styleFrom(
             shape: const RoundedRectangleBorder(),
           ),
           onPressed: () {
-            _showCartDialog(context);
+            final state = context.read<ProductCubit>().state;
+
+            if (state is ProductDetailsLoaded) {
+              _showCartDialog(context, state.product);
+            }
           },
           child: const Text(
             'Add to cart',
@@ -161,7 +77,118 @@ class ProductDetailScreen extends StatelessWidget {
     );
   }
 
-  void _showCartDialog(BuildContext context) {
+  Widget _buildContent(BuildContext context, ProductDetailsEntity product) {
+    return SingleChildScrollView(
+      child: IntrinsicHeight(
+        child: Column(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.5,
+              width: MediaQuery.of(context).size.width,
+              child: product.imageUrl.isNotEmpty
+                  ? Image.network(
+                      product.imageUrl,
+                      fit: BoxFit.fill,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[300],
+                          child: const Icon(
+                            Icons.image_not_supported,
+                            size: 100,
+                            color: Colors.grey,
+                          ),
+                        );
+                      },
+                    )
+                  : Container(
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.image_not_supported,
+                        size: 100,
+                        color: Colors.grey,
+                      ),
+                    ),
+            ),
+            const SizedBox(height: 15),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          product.name,
+                          style: Theme.of(context).textTheme.titleMedium,
+                          overflow: TextOverflow.visible,
+                          softWrap: true,
+                        ),
+                      ),
+                      WishlistButton(),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  Row(
+                    children: [
+                      if (product.hasDiscount) ...[
+                        Text(
+                          "\$${product.initialPrice.toStringAsFixed(2)}",
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                color: AppColor.green,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                        ),
+                        const SizedBox(width: 10),
+                      ],
+                      Text(
+                        "\$${product.finalPrice.toStringAsFixed(2)}",
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              color: AppColor.green,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  Text(
+                    'DESCRIPTION',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    product.description,
+                    style: const TextStyle(fontSize: 15),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        child: const Text(
+                          "View Review >>>",
+                          style: TextStyle(color: AppColor.green),
+                        ),
+                        onPressed: () {
+                          // TODO: Navigate to review screen
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showCartDialog(BuildContext context, ProductDetailsEntity product) {
     final cartCubit = context.read<CartCubit>();
     showModalBottomSheet(
       context: context,
@@ -182,7 +209,7 @@ class ProductDetailScreen extends StatelessWidget {
 }
 
 class CartDialog extends StatelessWidget {
-  final ProductEntity product;
+  final ProductDetailsEntity product;
 
   const CartDialog({super.key, required this.product});
 

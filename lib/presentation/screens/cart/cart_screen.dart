@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/common/utils/show_snackbar.dart';
 import '../../../core/common/widgets/app_alert_dialog.dart';
@@ -104,7 +105,7 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                           child: GestureDetector(
                             onTap: () {
-                              // TODO: Navigate to Product Details Screen
+                              context.push('/productDetails/${item.productId}');
                             },
                             child: ListTile(
                               leading: ClipRRect(
