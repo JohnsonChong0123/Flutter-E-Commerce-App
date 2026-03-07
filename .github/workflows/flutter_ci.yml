@@ -1,66 +1,70 @@
-name: Flutter CI
+name: Flutter CI/CD
 
 on:
   push:
     branches: [ main ]
-    paths-ignore:
-      - '**.md'
+    paths-ignore: [ '**.md' ]
   pull_request:
-    paths-ignore:
-      - '**.md'
-      
+    paths-ignore: [ '**.md' ]
+
 jobs:
-  release_build:
-    name: Release Build
+  unit_test:
+    name: Unit Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@v2
         with:
           flutter-version: 3.38.9
-      
-      - name: Cache Flutter dependencies
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Run Tests
+        run: flutter test
+
+  build_apk:
+    name: Build Release APK
+    needs: unit_test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.38.9
+
+      - name: Cache dependencies
         uses: actions/cache@v4
         with:
           path: |
             ~/.pub-cache
             ~/.gradle/caches
-          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
-      
+          key: ${{ runner.os }}-build-${{ hashFiles('**/pubspec.lock') }}
+
       - name: Decode and Setup Keystore
         run: |
           echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 --decode > android/app/release.keystore
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-          echo "storeFile=release.keystore" >> android/key.properties
-      
-      - name: Inject Facebook Secrets
+          {
+            echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}"
+            echo "keyPassword=${{ secrets.KEY_PASSWORD }}"
+            echo "keyAlias=${{ secrets.KEY_ALIAS }}"
+            echo "storeFile=release.keystore"
+          } > android/key.properties
+
+      - name: Inject Facebook & Env Secrets
         run: |
-          sed -i '/FACEBOOK_APP_ID/d' android/gradle.properties
-          sed -i '/FACEBOOK_CLIENT_TOKEN/d' android/gradle.properties
           echo "FACEBOOK_APP_ID=${{ secrets.FACEBOOK_APP_ID }}" >> android/gradle.properties
           echo "FACEBOOK_CLIENT_TOKEN=${{ secrets.FACEBOOK_CLIENT_TOKEN }}" >> android/gradle.properties
-      
-      - name: Create .env file
-        run: |
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
           echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
-      
-      - name: Install Dependencies
-        run: flutter pub get
-      
-      - name: Run Tests
-        run: flutter test
-      
+
       - name: Build Release APK
-        run: flutter build apk --release -v
-        
+        run: flutter build apk --release --no-pub
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: flutter-release-app
           path: build/app/outputs/flutter-apk/*.apk
-          if-no-files-found: error
+          retention-days: 7
