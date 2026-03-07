@@ -65,14 +65,14 @@ class _AppViewState extends State<AppView> {
             _router.routerDelegate.currentConfiguration.uri.path;
 
         if (state is AuthUnauthenticated) {
-          if (currentLocation != '/login' && currentLocation != '/signUp') {
-            _router.go('/login');
+          if (currentLocation != AppRouter.login && currentLocation != AppRouter.signUp) {
+            _router.goNamed(AppRouter.loginName);
           }
         } else if (state is AuthAuthenticated) {
-          if (currentLocation == '/' ||
-              currentLocation == '/login' ||
-              currentLocation == '/signUp') {
-            _router.go('/home');
+          if (currentLocation == AppRouter.splash ||
+              currentLocation == AppRouter.login ||
+              currentLocation == AppRouter.signUp) {
+            _router.goNamed(AppRouter.homeName);
           }
         }
       },

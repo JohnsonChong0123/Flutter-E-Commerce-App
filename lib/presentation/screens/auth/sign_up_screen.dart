@@ -44,7 +44,7 @@ class SignUpScreen extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
-                context.go(AppRouter.login);
+                context.goNamed(AppRouter.loginName);
               },
               child: RichText(
                 text: TextSpan(
@@ -185,7 +185,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   context,
                   "Successfully signed up! Please enter your email and password to login.",
                 );
-                context.go(AppRouter.login);
+                context.goNamed(AppRouter.loginName);
               }
             },
             builder: (context, state) {

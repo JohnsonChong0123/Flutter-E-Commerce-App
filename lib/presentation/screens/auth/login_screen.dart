@@ -44,7 +44,7 @@ class LoginScreen extends StatelessWidget {
                     showSnackBar(context, state.message);
                   } else if (state is AuthAuthenticated) {
                     showSnackBar(context, "Login Successful");
-                    // context.go(AppRouter.home);
+                    context.goNamed(AppRouter.homeName);
                   }
                 },
                 builder: (context, state) {
@@ -78,7 +78,7 @@ class LoginScreen extends StatelessWidget {
                     showSnackBar(context, state.message);
                   } else if (state is AuthAuthenticated) {
                     showSnackBar(context, "Login Successful");
-                    // context.go(AppRouter.home);
+                    context.goNamed(AppRouter.homeName);
                   }
                 },
                 builder: (context, state) {
@@ -116,7 +116,7 @@ class LoginScreen extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
-                context.go(AppRouter.signUp);
+                context.goNamed(AppRouter.signUpName);
               },
               child: RichText(
                 text: TextSpan(
@@ -192,7 +192,7 @@ class _LoginFormState extends State<LoginForm> {
                 showSnackBar(context, state.message);
               } else if (state is AuthAuthenticated) {
                 showSnackBar(context, "Login Successful");
-                //   context.go(AppRouter.home);
+                context.goNamed(AppRouter.homeName);
               }
             },
             builder: (context, state) {

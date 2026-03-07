@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/routes/app_router.dart';
 import '../../core/themes/app_colors.dart';
 import '../../domain/entity/product/product_summary_entity.dart';
 
@@ -12,7 +13,9 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.push('/productDetails/${product.id}');
+        context.pushNamed(AppRouter.productDetailsName, pathParameters: {
+          'id': product.id,
+        });
       },
       child: Card(
         elevation: 2,

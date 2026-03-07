@@ -12,12 +12,21 @@ import '../../presentation/screens/product/product_details_screen.dart';
 import '../../service_locator.dart';
 
 class AppRouter {
-  static const String splash = '/';
-  static const String login = '/login';
-  static const String signUp = '/signUp';
-  static const String home = '/home';
-  static const String productDetails = '/productDetails';
-  static const String cart = '/cart';
+  // ---------------- Paths ----------------
+  static const splash = '/';
+  static const login = '/login';
+  static const signUp = '/signUp';
+  static const home = '/home';
+  static const productDetails = '/productDetails/:id';
+  static const cart = '/cart';
+
+  // ---------------- Names ----------------
+  static const splashName = 'splash';
+  static const loginName = 'login';
+  static const signUpName = 'signUp';
+  static const homeName = 'home';
+  static const productDetailsName = 'productDetails';
+  static const cartName = 'cart';
 
   static GoRouter router(AuthBloc authBloc) {
     return GoRouter(
@@ -25,22 +34,22 @@ class AppRouter {
       routes: [
         GoRoute(
           path: splash,
-          name: 'splash',
+          name: splashName,
           builder: (context, state) => const SplashScreen(),
         ),
         GoRoute(
           path: login,
-          name: 'login',
+          name: loginName,
           builder: (context, state) => const LoginScreen(),
         ),
         GoRoute(
           path: signUp,
-          name: 'signUp',
+          name: signUpName,
           builder: (context, state) => const SignUpScreen(),
         ),
         GoRoute(
           path: home,
-          name: 'home',
+          name: homeName,
           builder: (context, state) => BlocProvider(
             create: (context) =>
                 ProductCubit(getProducts: sl(), getProductById: sl()),
@@ -48,15 +57,12 @@ class AppRouter {
           ),
         ),
         GoRoute(
-          path: '/productDetails/:id',
-          name: 'productDetails',
+          path: productDetails,
+          name: productDetailsName,
           builder: (context, state) {
             final id = state.pathParameters['id'];
+            if (id == null) return const InvalidRouteScreen();
 
-            if (id == null) {
-              return const InvalidRouteScreen();
-            }
-            
             return BlocProvider(
               create: (context) =>
                   ProductCubit(getProducts: sl(), getProductById: sl())
@@ -67,7 +73,7 @@ class AppRouter {
         ),
         GoRoute(
           path: cart,
-          name: 'cart',
+          name: cartName,
           builder: (context, state) => const CartScreen(),
         ),
       ],

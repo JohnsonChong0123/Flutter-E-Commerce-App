@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:e_commerce_client/core/routes/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -105,7 +106,9 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                           child: GestureDetector(
                             onTap: () {
-                              context.push('/productDetails/${item.productId}');
+                              context.pushNamed(AppRouter.productDetailsName, pathParameters: {
+                                'id': item.productId,
+                              });
                             },
                             child: ListTile(
                               leading: ClipRRect(

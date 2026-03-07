@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/common/utils/show_snackbar.dart';
 import '../../../core/common/widgets/app_button.dart';
+import '../../../core/routes/app_router.dart';
 import '../../../core/themes/app_colors.dart';
 import '../../../domain/entity/product/product_details_entity.dart';
 import '../../cubits/cart/cart_cubit.dart';
@@ -32,7 +33,7 @@ class ProductDetailScreen extends StatelessWidget {
           actions: [
             IconButton(
               onPressed: () {
-                context.go('/cart');
+                context.goNamed(AppRouter.cartName);
               },
               icon: const Icon(Icons.shopping_cart, color: AppColor.primary),
             ),
