@@ -30,6 +30,7 @@ import 'presentation/blocs/auth/auth_bloc.dart';
 import 'data/sources/remote/product_remote_data.dart';
 import 'presentation/cubits/cart/cart_cubit.dart';
 import 'presentation/cubits/product/product_cubit.dart';
+import 'domain/usecases/product/get_product_by_id.dart';
 
 final sl = GetIt.instance;
 
@@ -116,15 +117,6 @@ void _initAuth() {
         checkAuthStatus: sl(),
       ),
     );
-  // ..registerLazySingleton<AuthBloc>(
-  //   () => AuthBloc(
-  //     signUp: sl(),
-  //     login: sl(),
-  //     googleLogin: sl(),
-  //     facebookLogin: sl(),
-  //     checkAuthStatus: sl(),
-  //   ),
-  // );
 }
 
 void _initUser() {
@@ -149,8 +141,9 @@ void _initProduct() {
     )
     // Domain layer: Use case
     ..registerLazySingleton(() => GetProducts(sl()))
+    ..registerLazySingleton(() => GetProductById(sl()))
     // Presentation layer: Cubit
-    ..registerFactory(() => ProductCubit(getProducts: sl()));
+    ..registerFactory(() => ProductCubit(getProducts: sl(), getProductById: sl()));
 }
 
 void _initCart() {
