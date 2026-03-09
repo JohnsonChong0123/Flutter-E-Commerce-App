@@ -56,6 +56,7 @@ class LoginScreen extends StatelessWidget {
                     return const Loader();
                   } else {
                     return SizedBox(
+                      key: const Key('googleLoginButton'),
                       width: double.infinity,
                       height: 50,
                       child: SignInButton(
@@ -90,6 +91,7 @@ class LoginScreen extends StatelessWidget {
                     return const Loader();
                   } else {
                     return SizedBox(
+                      key: const Key('facebookLoginButton'),
                       width: double.infinity,
                       height: 50,
                       child: SignInButton(
@@ -119,6 +121,7 @@ class LoginScreen extends StatelessWidget {
                 context.goNamed(AppRouter.signUpName);
               },
               child: RichText(
+                key: const Key('signupText'),
                 text: TextSpan(
                   text: 'Don\'t have account? ',
                   style: Theme.of(context).textTheme.titleSmall,

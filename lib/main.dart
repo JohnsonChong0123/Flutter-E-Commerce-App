@@ -9,10 +9,14 @@ import 'presentation/blocs/auth/auth_bloc.dart';
 import 'presentation/cubits/cart/cart_cubit.dart';
 import 'service_locator.dart';
 
+bool isTestMode = false;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load();
-  await initServiceLocator();
+  if (!isTestMode) {
+    await dotenv.load();
+    await initServiceLocator();
+  }
   runApp(const MyApp());
 }
 
