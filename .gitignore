@@ -53,3 +53,20 @@ app.*.map.json
 key.properties
 android/key.properties
 android/app/debug.keystore
+
+# CocoaPods
+ios/Pods/
+ios/Podfile.lock
+macos/Pods/
+macos/Podfile.lock
+
+# Flutter iOS build
+ios/Flutter/ephemeral/
+ios/Flutter/Flutter.framework
+ios/Flutter/engine/
+
+# Flutter macOS build
+macos/Flutter/ephemeral/
+
+# Xcode
+DerivedData/

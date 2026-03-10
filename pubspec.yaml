@@ -114,3 +114,5 @@ patrol:
   app_name: e_commerce_client
   android:
     package_name: com.example.e_commerce_client
+  ios:
+    bundle_id: com.example.eCommerceClient
