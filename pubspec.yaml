@@ -50,6 +50,8 @@ dependencies:
   cached_network_image: ^3.4.1
   provider: ^6.1.5+1
   flutter_slidable: ^4.0.3
+  sqflite: ^2.4.2
+  path: ^1.9.1
 
 dev_dependencies:
   flutter_test:
@@ -66,6 +68,7 @@ dev_dependencies:
   patrol: ^4.3.0
   integration_test:
     sdk: flutter
+  sqflite_common_ffi: ^2.4.0+2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
