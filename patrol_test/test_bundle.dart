@@ -9,11 +9,7 @@ import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
 // START: GENERATED TEST IMPORTS
-import 'features/auth/cold_test.dart' as features__auth__cold_test;
-import 'features/auth/login_test.dart' as features__auth__login_test;
 import 'features/auth/signup_test.dart' as features__auth__signup_test;
-import 'features/product/product_details_test.dart' as features__product__product_details_test;
-import 'features/product/product_list_test.dart' as features__product__product_list_test;
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
@@ -76,11 +72,7 @@ Future<void> main() async {
   });
 
 // START: GENERATED TEST GROUPS
-  group('features.auth.cold_test', features__auth__cold_test.main);
-  group('features.auth.login_test', features__auth__login_test.main);
   group('features.auth.signup_test', features__auth__signup_test.main);
-  group('features.product.product_details_test', features__product__product_details_test.main);
-  group('features.product.product_list_test', features__product__product_list_test.main);
 // END: GENERATED TEST GROUPS
 
   final dartTestGroup = await testExplorationCompleter.future;

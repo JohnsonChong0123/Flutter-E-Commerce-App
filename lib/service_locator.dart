@@ -1,4 +1,6 @@
 import 'package:e_commerce_client/domain/usecases/cart/remove_cart_item.dart';
+import 'package:e_commerce_client/domain/usecases/wishlist/add_wishlist.dart';
+import 'package:e_commerce_client/presentation/cubits/wishlist/wishlist_cubit.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -11,12 +13,15 @@ import 'core/network/dio_client.dart';
 import 'data/repositories/auth_repository_impl.dart';
 import 'data/repositories/cart_repository_impl.dart';
 import 'data/repositories/product_repository_impl.dart';
+import 'data/repositories/wishlist_repository_impl.dart';
 import 'data/sources/local/user_local_data.dart';
 import 'data/sources/remote/auth_remote_data.dart';
 import 'data/sources/remote/cart_remote_data.dart';
+import 'data/sources/remote/wishlist_remote_data.dart';
 import 'domain/repositories/auth_repository.dart';
 import 'domain/repositories/cart_repository.dart';
 import 'domain/repositories/product_repository.dart';
+import 'domain/repositories/wishlist_repository.dart';
 import 'domain/usecases/auth/check_auth_status.dart';
 import 'domain/usecases/auth/facebook_login.dart';
 import 'domain/usecases/auth/google_login.dart';
@@ -26,6 +31,7 @@ import 'domain/usecases/cart/add_to_cart.dart';
 import 'domain/usecases/cart/clear_cart.dart';
 import 'domain/usecases/cart/get_cart.dart';
 import 'domain/usecases/product/get_products.dart';
+import 'domain/usecases/wishlist/get_wishlist.dart';
 import 'presentation/blocs/auth/auth_bloc.dart';
 import 'data/sources/remote/product_remote_data.dart';
 import 'presentation/cubits/cart/cart_cubit.dart';
@@ -77,6 +83,9 @@ Future<void> initServiceLocator() async {
 
   // Registers all dependencies related to the cart feature.
   _initCart();
+
+  // Registers all dependencies related to the wishlist feature.
+  _initWishlist();
 
   sl.registerLazySingleton(
     () => DioClient(
@@ -143,7 +152,9 @@ void _initProduct() {
     ..registerLazySingleton(() => GetProducts(sl()))
     ..registerLazySingleton(() => GetProductById(sl()))
     // Presentation layer: Cubit
-    ..registerFactory(() => ProductCubit(getProducts: sl(), getProductById: sl()));
+    ..registerFactory(
+      () => ProductCubit(getProducts: sl(), getProductById: sl()),
+    );
 }
 
 void _initCart() {
@@ -160,5 +171,36 @@ void _initCart() {
     ..registerLazySingleton(() => RemoveCartItem(sl()))
     ..registerLazySingleton(() => ClearCart(sl()))
     // Presentation layer: Cubit
-    ..registerFactory(() => CartCubit(addToCart: sl(), getCart: sl(), removeCartItem: sl(), clearCart: sl()));
+    ..registerFactory(
+      () => CartCubit(
+        addToCart: sl(),
+        getCart: sl(),
+        removeCartItem: sl(),
+        clearCart: sl(),
+      ),
+    );
+}
+
+void _initWishlist() {
+  sl
+    // Data layer: Remote data source
+    ..registerLazySingleton<WishlistRemoteData>(
+      () => WishlistRemoteDataImpl(dio: sl()),
+    )
+    // Data layer: Repository implementation
+    ..registerLazySingleton<WishlistRepository>(
+      () => WishlistRepositoryImpl(wishlistRemoteData: sl()),
+    )
+    // Domain layer: Use case
+    ..registerLazySingleton(() => AddWishlist(sl()))
+    ..registerLazySingleton(() => GetWishlist(sl()))
+    // Presentation layer: Cubit
+    ..registerFactory(
+      () => WishlistCubit(
+        addWishlist: sl(),
+        getWishlist: sl(),
+        removeWishlist: sl(),
+        clearWishlist: sl(),
+      ),
+    );
 }

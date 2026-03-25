@@ -9,6 +9,7 @@ import '../../../core/themes/app_colors.dart';
 import '../../../domain/entity/product/product_details_entity.dart';
 import '../../cubits/cart/cart_cubit.dart';
 import '../../cubits/product/product_cubit.dart';
+import '../../cubits/wishlist/wishlist_cubit.dart';
 import '../../notifiers/product_details_notifier.dart';
 
 class ProductDetailScreen extends StatelessWidget {
@@ -126,7 +127,7 @@ class ProductDetailScreen extends StatelessWidget {
                           softWrap: true,
                         ),
                       ),
-                      WishlistButton(),
+                      WishlistButton(product.id),
                     ],
                   ),
                   const SizedBox(height: 15),
@@ -301,14 +302,30 @@ class CartDialog extends StatelessWidget {
 }
 
 class WishlistButton extends StatelessWidget {
-  const WishlistButton({super.key});
+  final String productId;
+  const WishlistButton(this.productId, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.favorite, color: Colors.red),
-      onPressed: () {
-        // TODO: Implement add to wishlist functionality
+    return BlocBuilder<WishlistCubit, WishlistState>(
+      builder: (context, state) {
+        final isFavorite =
+            state is WishlistLoaded && state.favoriteIds.contains(productId);
+        return IconButton(
+          icon: Icon(
+            isFavorite ? Icons.favorite : Icons.favorite_border,
+            color: isFavorite ? Colors.red : null,
+          ),
+          onPressed: () {
+            if (isFavorite) {
+              context.read<WishlistCubit>().removeWishlist(productId);
+              showSnackBar(context, "Removed from wishlist");
+            } else {
+              context.read<WishlistCubit>().addWishlist(productId);
+              showSnackBar(context, "Added to wishlist");
+            }
+          },
+        );
       },
     );
   }

@@ -1,3 +1,4 @@
+import 'package:e_commerce_client/presentation/cubits/wishlist/wishlist_cubit.dart';
 import 'package:e_commerce_client/presentation/screens/splash_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +10,7 @@ import '../../presentation/screens/cart/cart_screen.dart';
 import '../../presentation/screens/home_screen.dart';
 import '../../presentation/screens/product/invalid_route_screen.dart';
 import '../../presentation/screens/product/product_details_screen.dart';
+import '../../presentation/screens/wishlist/wishlist_screen.dart';
 import '../../service_locator.dart';
 
 class AppRouter {
@@ -19,6 +21,7 @@ class AppRouter {
   static const home = '/home';
   static const productDetails = '/productDetails/:id';
   static const cart = '/cart';
+  static const wishlist = '/wishlist';
 
   // ---------------- Names ----------------
   static const splashName = 'splash';
@@ -27,6 +30,7 @@ class AppRouter {
   static const homeName = 'home';
   static const productDetailsName = 'productDetails';
   static const cartName = 'cart';
+  static const wishlistName = 'wishlist';
 
   static GoRouter router(AuthBloc authBloc) {
     return GoRouter(
@@ -63,10 +67,22 @@ class AppRouter {
             final id = state.pathParameters['id'];
             if (id == null) return const InvalidRouteScreen();
 
-            return BlocProvider(
-              create: (context) =>
-                  ProductCubit(getProducts: sl(), getProductById: sl())
-                    ..loadProductById(id),
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (context) =>
+                      ProductCubit(getProducts: sl(), getProductById: sl())
+                        ..loadProductById(id),
+                ),
+                BlocProvider(
+                  create: (context) => WishlistCubit(
+                    addWishlist: sl(),
+                    getWishlist: sl(),
+                    removeWishlist: sl(),
+                    clearWishlist: sl(),
+                  ),
+                ),
+              ],
               child: ProductDetailScreen(productId: id),
             );
           },
@@ -75,6 +91,19 @@ class AppRouter {
           path: cart,
           name: cartName,
           builder: (context, state) => const CartScreen(),
+        ),
+        GoRoute(
+          path: wishlist,
+          name: wishlistName,
+          builder: (context, state) => BlocProvider(
+            create: (context) => WishlistCubit(
+              addWishlist: sl(),
+              getWishlist: sl(),
+              removeWishlist: sl(),
+              clearWishlist: sl(),
+            ),
+            child: const WishlistScreen(),
+          ),
         ),
       ],
     );
