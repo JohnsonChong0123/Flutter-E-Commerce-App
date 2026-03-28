@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../fixtures/fixture_reader.dart';
+import '../../../fixtures/product/product_fixtures.dart';
 
 class MockDio extends Mock implements Dio {}
 
@@ -15,8 +16,7 @@ void main() {
   late CartRemoteDataImpl cartRemoteData;
   late Map<String, dynamic> tJsonMap;
   late CartModel tCartModel;
-
-  const tProductId = '1';
+  
   const tQuantity = 2;
 
   setUp(() {
@@ -38,7 +38,7 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => Response(
-          requestOptions: RequestOptions(path: '/carts/add'),
+          requestOptions: RequestOptions(path: '/cart/add'),
           statusCode: 200,
           data: {},
         ),
@@ -55,7 +55,7 @@ void main() {
 
       verify(
         () => mockDio.post(
-          '/carts/add',
+          '/cart/add',
           data: {'product_id': tProductId, 'quantity': tQuantity},
           options: any(named: 'options'),
         ),
@@ -113,7 +113,7 @@ void main() {
       // arrange
       when(
         () => mockDio.get(
-          '/carts',
+          '/cart',
           data: any(named: 'data'),
           options: any(named: 'options'),
         ),
@@ -121,7 +121,7 @@ void main() {
         (_) async => Response(
           data: tJsonMap,
           statusCode: 200,
-          requestOptions: RequestOptions(path: '/carts'),
+          requestOptions: RequestOptions(path: '/cart'),
         ),
       );
 
@@ -131,7 +131,7 @@ void main() {
       // assert
       expect(result, equals(tCartModel));
       verify(
-        () => mockDio.get('/carts', options: any(named: 'options')),
+        () => mockDio.get('/cart', options: any(named: 'options')),
       ).called(1);
     });
 
@@ -180,12 +180,12 @@ void main() {
       // arrange
       when(
         () => mockDio.delete(
-          '/carts/remove/$tProductId',
+          '/cart/remove/$tProductId',
           options: any(named: 'options'),
         ),
       ).thenAnswer(
         (_) async => Response(
-          requestOptions: RequestOptions(path: '/carts/remove/$tProductId'),
+          requestOptions: RequestOptions(path: '/cart/remove/$tProductId'),
           statusCode: 200,
           data: {},
         ),
@@ -199,7 +199,7 @@ void main() {
 
       verify(
         () => mockDio.delete(
-          '/carts/remove/$tProductId',
+          '/cart/remove/$tProductId',
           options: any(named: 'options'),
         ),
       ).called(1);
@@ -248,12 +248,12 @@ void main() {
       // arrange
       when(
         () => mockDio.delete(
-          '/carts/clear',
+          '/cart/clear',
           options: any(named: 'options'),
         ),
       ).thenAnswer(
         (_) async => Response(
-          requestOptions: RequestOptions(path: '/carts/clear'),
+          requestOptions: RequestOptions(path: '/cart/clear'),
           statusCode: 200,
           data: {},
         ),
@@ -267,7 +267,7 @@ void main() {
 
       verify(
         () => mockDio.delete(
-          '/carts/clear',
+          '/cart/clear',
           options: any(named: 'options'),
         ),
       ).called(1);

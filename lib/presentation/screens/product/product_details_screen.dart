@@ -131,31 +131,13 @@ class ProductDetailScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 15),
-                  // Row(
-                  //   children: [
-                  //     if (product.hasDiscount) ...[
-                  //       Text(
-                  //         "\$${product.initialPrice.toStringAsFixed(2)}",
-                  //         style: Theme.of(context).textTheme.titleMedium
-                  //             ?.copyWith(
-                  //               color: AppColor.green,
-                  //               fontWeight: FontWeight.bold,
-                  //               fontSize: 14,
-                  //               decoration: TextDecoration.lineThrough,
-                  //             ),
-                  //       ),
-                  //       const SizedBox(width: 10),
-                  //     ],
-                      Text(
-                        "\$${product.finalPrice.toStringAsFixed(2)}",
-                        style: Theme.of(context).textTheme.titleMedium
-                            ?.copyWith(
-                              color: AppColor.green,
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                  //   ],
-                  // ),
+                  Text(
+                    "\$${product.finalPrice.toStringAsFixed(2)}",
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppColor.green,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 15),
                   Text(
                     'DESCRIPTION',
@@ -217,85 +199,94 @@ class CartDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 5,
-              decoration: BoxDecoration(
-                color: AppColor.placeholder,
-                borderRadius: BorderRadius.circular(10),
+    return BlocListener<CartCubit, CartState>(
+      listener: (context, state) {
+        if (state is CartSuccess) {
+          Navigator.of(context).pop();
+          showSnackBar(context, "Added to cart");
+        } else if (state is CartFailure) {
+          Navigator.of(context).pop();
+          showSnackBar(context, "Failed to add: ${state.message}");
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: AppColor.placeholder,
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Text(product.name, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 10),
-          Consumer<ProductDetailsNotifier>(
-            builder: (context, notifier, _) {
-              return Text(
-                "\$${notifier.price.toStringAsFixed(2)}",
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppColor.green,
-                  fontWeight: FontWeight.bold,
+            const SizedBox(height: 10),
+            Text(product.name, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 10),
+            Consumer<ProductDetailsNotifier>(
+              builder: (context, notifier, _) {
+                return Text(
+                  "\$${notifier.price.toStringAsFixed(2)}",
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppColor.green,
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              },
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Quantity',
+                  style: TextStyle(color: AppColor.primary, fontSize: 15),
                 ),
-              );
-            },
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Quantity',
-                style: TextStyle(color: AppColor.primary, fontSize: 15),
-              ),
-              Consumer<ProductDetailsNotifier>(
-                builder: (context, notifier, _) {
-                  return Row(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          notifier.minusQuantity();
-                        },
-                        icon: const Icon(Icons.remove, color: Colors.green),
-                      ),
-                      const SizedBox(width: 5),
-                      Text(
-                        '${notifier.quantity}',
-                        style: const TextStyle(fontSize: 15),
-                      ),
-                      const SizedBox(width: 5),
-                      IconButton(
-                        onPressed: () {
-                          notifier.addQuantity();
-                        },
-                        icon: const Icon(Icons.add, color: Colors.green),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          AppButton(
-            onPressed: () {
-              final notifier = context.read<ProductDetailsNotifier>();
-              context.read<CartCubit>().addToCart(
-                productId: product.id,
-                quantity: notifier.quantity,
-              );
-              Navigator.of(context).pop();
-              showSnackBar(context, "Added to cart");
-            },
-            title: 'Add to cart',
-          ),
-        ],
+                Consumer<ProductDetailsNotifier>(
+                  builder: (context, notifier, _) {
+                    return Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            notifier.minusQuantity();
+                          },
+                          icon: const Icon(Icons.remove, color: Colors.green),
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          '${notifier.quantity}',
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                        const SizedBox(width: 5),
+                        IconButton(
+                          onPressed: () {
+                            notifier.addQuantity();
+                          },
+                          icon: const Icon(Icons.add, color: Colors.green),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            AppButton(
+              onPressed: () {
+                final notifier = context.read<ProductDetailsNotifier>();
+                context.read<CartCubit>().addToCart(
+                  productId: product.id,
+                  quantity: notifier.quantity,
+                );
+              },
+              title: 'Add to cart',
+            ),
+          ],
+        ),
       ),
     );
   }

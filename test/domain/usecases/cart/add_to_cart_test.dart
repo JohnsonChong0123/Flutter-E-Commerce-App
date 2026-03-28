@@ -5,6 +5,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:fpdart/fpdart.dart';
 
+import '../../../fixtures/product/product_fixtures.dart';
+
 class MockCartRepository extends Mock implements CartRepository {}
 
 void main() {
@@ -12,7 +14,7 @@ void main() {
   late AddToCart usecase;
 
   const tQuantity = 1;
-  const tParams = AddToCartParams(productId: '1', quantity: tQuantity);
+  const tParams = AddToCartParams(productId: tProductId, quantity: tQuantity);
 
   setUp(() {
     mockRepository = MockCartRepository();

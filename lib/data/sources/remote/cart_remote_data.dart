@@ -22,7 +22,7 @@ class CartRemoteDataImpl implements CartRemoteData {
   }) async {
     try {
       await dio.post(
-        '/carts/add',
+        '/cart/add',
         options: Options(
           headers: {'Content-Type': 'application/json'},
           extra: {'requiredAuth': true},
@@ -44,7 +44,7 @@ class CartRemoteDataImpl implements CartRemoteData {
   Future<CartModel> getCart() async {
     try {
       final response = await dio.get(
-        '/carts',
+        '/cart',
         options: Options(
           headers: {'Content-Type': 'application/json'},
           extra: {'requiredAuth': true},
@@ -66,7 +66,7 @@ class CartRemoteDataImpl implements CartRemoteData {
   Future<void> removeCartItem(String productId) async {
     try {
       await dio.delete(
-        '/carts/remove/$productId',
+        '/cart/remove/$productId',
         options: Options(
           headers: {'Content-Type': 'application/json'},
           extra: {'requiredAuth': true},
@@ -82,12 +82,12 @@ class CartRemoteDataImpl implements CartRemoteData {
       throw ServerException(e.toString());
     }
   }
-  
+
   @override
   Future<void> clearCart() async {
     try {
       await dio.delete(
-        '/carts/clear',
+        '/cart/clear',
         options: Options(
           headers: {'Content-Type': 'application/json'},
           extra: {'requiredAuth': true},

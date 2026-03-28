@@ -4,6 +4,7 @@ import 'package:e_commerce_client/domain/usecases/cart/remove_cart_item.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:fpdart/fpdart.dart';
+import '../../../fixtures/product/product_fixtures.dart';
 
 class MockCartRepository extends Mock implements CartRepository {}
 
@@ -11,7 +12,7 @@ void main() {
   late CartRepository mockRepository;
   late RemoveCartItem usecase;
 
-  const tParams = RemoveCartItemParams(productId: 'B09NQJFRW6');
+  const tParams = RemoveCartItemParams(productId: tProductId);
 
   setUp(() {
     mockRepository = MockCartRepository();

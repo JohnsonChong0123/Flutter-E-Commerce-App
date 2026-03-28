@@ -1,14 +1,12 @@
 import 'package:e_commerce_client/core/errors/exception.dart';
 import 'package:e_commerce_client/core/errors/failure.dart';
-import 'package:e_commerce_client/data/models/cart/cart_item_model.dart';
-import 'package:e_commerce_client/data/models/cart/cart_model.dart';
 import 'package:e_commerce_client/data/repositories/cart_repository_impl.dart';
 import 'package:e_commerce_client/data/sources/remote/cart_remote_data.dart';
-import 'package:e_commerce_client/domain/entity/cart_entity.dart';
-import 'package:e_commerce_client/domain/entity/cart_item_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
+import '../../fixtures/cart/cart_fixtures.dart';
+import '../../fixtures/product/product_fixtures.dart';
 
 class MockCartRemoteData extends Mock implements CartRemoteData {}
 
@@ -16,57 +14,8 @@ void main() {
   late MockCartRemoteData mockCartRemoteData;
   late CartRepositoryImpl cartRepository;
 
-  const tProductId = 'B09NQJFRW6';
   const tQuantity = 2;
-
-  const tCartModel = CartModel(
-    id: '1d3ed0a0-b460-4137-81b6-7e4befc3b63b',
-    items: [
-      CartItemModel(
-        productId: 'B09NQJFRW6',
-        name: 'Saucony Men\'s Kinvara 13 Running Shoe',
-        price: 57.79,
-        quantity: 3,
-        imageUrl:
-            'https://m.media-amazon.com/images/I/71QeGmahUnL._AC_UX500_.jpg',
-      ),
-      CartItemModel(
-        productId: 'B0CY242B8P',
-        name:
-            '4th of July Door Sign Independence Day Wreath Patriotic Door Decoration Flower US Wooden Sign for Memorial Day Front for Door Decor 12 Inch Outdoor',
-        price: 7.99,
-        quantity: 3,
-        imageUrl:
-            'https://m.media-amazon.com/images/I/81BvLYGKcuL._AC_SL1500_.jpg',
-      ),
-    ],
-    cartTotal: 197.34,
-  );
-
-  const tCartEntity = CartEntity(
-    id: '1d3ed0a0-b460-4137-81b6-7e4befc3b63b',
-    items: [
-      CartItemEntity(
-        productId: 'B09NQJFRW6',
-        name: 'Saucony Men\'s Kinvara 13 Running Shoe',
-        price: 57.79,
-        quantity: 3,
-        imageUrl:
-            'https://m.media-amazon.com/images/I/71QeGmahUnL._AC_UX500_.jpg',
-      ),
-      CartItemEntity(
-        productId: 'B0CY242B8P',
-        name:
-            '4th of July Door Sign Independence Day Wreath Patriotic Door Decoration Flower US Wooden Sign for Memorial Day Front for Door Decor 12 Inch Outdoor',
-        price: 7.99,
-        quantity: 3,
-        imageUrl:
-            'https://m.media-amazon.com/images/I/81BvLYGKcuL._AC_SL1500_.jpg',
-      ),
-    ],
-    cartTotal: 197.34,
-  );
-
+  
   setUp(() {
     mockCartRemoteData = MockCartRemoteData();
     cartRepository = CartRepositoryImpl(cartRemoteData: mockCartRemoteData);
