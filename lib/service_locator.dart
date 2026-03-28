@@ -31,7 +31,9 @@ import 'domain/usecases/cart/add_to_cart.dart';
 import 'domain/usecases/cart/clear_cart.dart';
 import 'domain/usecases/cart/get_cart.dart';
 import 'domain/usecases/product/get_products.dart';
+import 'domain/usecases/wishlist/clear_wishlist.dart';
 import 'domain/usecases/wishlist/get_wishlist.dart';
+import 'domain/usecases/wishlist/remove_wishlist.dart';
 import 'presentation/blocs/auth/auth_bloc.dart';
 import 'data/sources/remote/product_remote_data.dart';
 import 'presentation/cubits/cart/cart_cubit.dart';
@@ -194,6 +196,8 @@ void _initWishlist() {
     // Domain layer: Use case
     ..registerLazySingleton(() => AddWishlist(sl()))
     ..registerLazySingleton(() => GetWishlist(sl()))
+    ..registerLazySingleton(() => RemoveWishlist(sl()))
+    ..registerLazySingleton(() => ClearWishlist(sl()))
     // Presentation layer: Cubit
     ..registerFactory(
       () => WishlistCubit(
