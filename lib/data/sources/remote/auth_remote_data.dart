@@ -129,7 +129,7 @@ class AuthRemoteDataImpl implements AuthRemoteData {
   @override
   Future<UserModel> getCurrentUser() async {
     try {
-      final response = await dio.get('/users/me');
+      final response = await dio.get('/user/me');
       return UserModel.fromJson(response.data);
     } catch (e) {
       _handleError(e);

@@ -399,7 +399,7 @@ void main() {
 
       // assert
       expect(result, equals(tUserModel));
-      verify(() => mockDio.get('/users/me')).called(1);
+      verify(() => mockDio.get('/user/me')).called(1);
     });
 
     test('should throw ServerException on DioException', () async {
