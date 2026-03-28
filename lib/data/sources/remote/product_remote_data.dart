@@ -18,7 +18,7 @@ class ProductRemoteDataImpl implements ProductRemoteData {
   @override
   Future<List<ProductSummaryModel>> getProducts() async {
     try {
-      final response = await dio.get('/products');
+      final response = await dio.get('/product/list-products');
       return (response.data as List)
           .map((json) => ProductSummaryModel.fromJson(json))
           .toList();
@@ -36,7 +36,7 @@ class ProductRemoteDataImpl implements ProductRemoteData {
   @override
   Future<ProductDetailsModel> getProductById(String productId) async {
     try {
-      final response = await dio.get('/products/$productId');
+      final response = await dio.get('/product/$productId');
       return ProductDetailsModel.fromJson(response.data);
     } on DioException catch (e) {
       final error = e.error;

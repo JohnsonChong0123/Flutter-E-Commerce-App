@@ -101,19 +101,6 @@ class ProductCard extends StatelessWidget {
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  Icon(Icons.star, size: 13, color: Colors.amber),
-                  Text(
-                    '${product.rating} (${product.reviewCount})',
-                    style: const TextStyle(
-                      color: Colors.amber,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ),

@@ -37,13 +37,13 @@ void main() {
         // arrange
         when(
           () => mockDio.get(
-            '/products',
+            '/product/list-products',
             data: any(named: 'data'),
             options: any(named: 'options'),
           ),
         ).thenAnswer(
           (_) async => Response(
-            requestOptions: RequestOptions(path: '/products'),
+            requestOptions: RequestOptions(path: '/product/list-products'),
             statusCode: 200,
             data: tProductSummaryJsonMap,
           ),
@@ -56,7 +56,7 @@ void main() {
         expect(result, equals(tProductSummaryModelList));
         verify(
           () => mockDio.get(
-            '/products',
+            '/product/list-products',
             data: any(named: 'data'),
             options: any(named: 'options'),
           ),
@@ -111,13 +111,13 @@ void main() {
         // arrange
         when(
           () => mockDio.get(
-            '/products/$tProductId',
+            '/product/$tProductId',
             data: any(named: 'data'),
             options: any(named: 'options'),
           ),
         ).thenAnswer(
           (_) async => Response(
-            requestOptions: RequestOptions(path: '/products/$tProductId'),
+            requestOptions: RequestOptions(path: '/product/$tProductId'),
             statusCode: 200,
             data: tProductDetailsJsonMap,
           ),
@@ -130,7 +130,7 @@ void main() {
         expect(result, equals(tProductDetailsModel));
         verify(
           () => mockDio.get(
-            '/products/$tProductId',
+            '/product/$tProductId',
             data: any(named: 'data'),
             options: any(named: 'options'),
           ),

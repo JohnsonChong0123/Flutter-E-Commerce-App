@@ -6,8 +6,6 @@ class ProductSummaryEntity extends Equatable {
   final double initialPrice;
   final double finalPrice;
   final String imageUrl;
-  final int reviewCount;
-  final double rating;
 
   const ProductSummaryEntity({
     required this.id,
@@ -15,8 +13,6 @@ class ProductSummaryEntity extends Equatable {
     required this.initialPrice,
     required this.finalPrice,
     required this.imageUrl,
-    required this.reviewCount,
-    required this.rating,
   });
 
   bool get hasDiscount => finalPrice < initialPrice;
@@ -28,7 +24,5 @@ class ProductSummaryEntity extends Equatable {
     initialPrice,
     finalPrice,
     imageUrl,
-    reviewCount,
-    rating,
   ];
 }

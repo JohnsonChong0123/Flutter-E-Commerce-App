@@ -131,21 +131,21 @@ class ProductDetailScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 15),
-                  Row(
-                    children: [
-                      if (product.hasDiscount) ...[
-                        Text(
-                          "\$${product.initialPrice.toStringAsFixed(2)}",
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(
-                                color: AppColor.green,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                decoration: TextDecoration.lineThrough,
-                              ),
-                        ),
-                        const SizedBox(width: 10),
-                      ],
+                  // Row(
+                  //   children: [
+                  //     if (product.hasDiscount) ...[
+                  //       Text(
+                  //         "\$${product.initialPrice.toStringAsFixed(2)}",
+                  //         style: Theme.of(context).textTheme.titleMedium
+                  //             ?.copyWith(
+                  //               color: AppColor.green,
+                  //               fontWeight: FontWeight.bold,
+                  //               fontSize: 14,
+                  //               decoration: TextDecoration.lineThrough,
+                  //             ),
+                  //       ),
+                  //       const SizedBox(width: 10),
+                  //     ],
                       Text(
                         "\$${product.finalPrice.toStringAsFixed(2)}",
                         style: Theme.of(context).textTheme.titleMedium
@@ -154,8 +154,8 @@ class ProductDetailScreen extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                       ),
-                    ],
-                  ),
+                  //   ],
+                  // ),
                   const SizedBox(height: 15),
                   Text(
                     'DESCRIPTION',

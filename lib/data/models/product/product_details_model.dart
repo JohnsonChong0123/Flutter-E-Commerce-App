@@ -1,12 +1,10 @@
 import 'package:equatable/equatable.dart';
-
 import '../../../domain/entity/product/product_details_entity.dart';
 
 class ProductDetailsModel extends Equatable {
   final String id;
   final String name;
   final String description;
-  final double initialPrice;
   final double finalPrice;
   final String imageUrl;
 
@@ -14,7 +12,6 @@ class ProductDetailsModel extends Equatable {
     required this.id,
     required this.name,
     required this.description,
-    required this.initialPrice,
     required this.finalPrice,
     required this.imageUrl,
   });
@@ -24,8 +21,7 @@ class ProductDetailsModel extends Equatable {
       id: json['id'] ?? '',
       name: json['title'] ?? '',
       description: json['description'] ?? '',
-      initialPrice: json['initial_prices'] ?? 0.0,
-      finalPrice: json['final_prices'] ?? 0.0,
+      finalPrice: json['price'] ?? 0.0,
       imageUrl: json['image_url'] ?? '',
     );
   }
@@ -35,7 +31,6 @@ class ProductDetailsModel extends Equatable {
       id: id,
       name: name,
       description: description,
-      initialPrice: initialPrice,
       finalPrice: finalPrice,
       imageUrl: imageUrl,
     );
@@ -46,7 +41,6 @@ class ProductDetailsModel extends Equatable {
     id,
     name,
     description,
-    initialPrice,
     finalPrice,
     imageUrl,
   ];

@@ -50,11 +50,11 @@ void main() {
             tProductSummaryEntityList[i].finalPrice,
           );
           expect(products[i].imageUrl, tProductSummaryEntityList[i].imageUrl);
-          expect(products[i].rating, tProductSummaryEntityList[i].rating);
-          expect(
-            products[i].reviewCount,
-            tProductSummaryEntityList[i].reviewCount,
-          );
+          // expect(products[i].rating, tProductSummaryEntityList[i].rating);
+          // expect(
+          //   products[i].reviewCount,
+          //   tProductSummaryEntityList[i].reviewCount,
+          // );
         }
         verify(() => mockProductRemoteData.getProducts()).called(1);
         verifyNoMoreInteractions(mockProductRemoteData);
