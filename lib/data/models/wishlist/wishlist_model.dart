@@ -2,40 +2,36 @@ import 'package:e_commerce_client/domain/entity/wishlist/wishlist_entity.dart';
 import 'package:equatable/equatable.dart';
 
 class WishlistModel extends Equatable {
-  final String id;
+  final String productId;
   final String name;
   final double finalPrice;
-  final double initialPrice;
   final String imageUrl;
 
   const WishlistModel({
-    required this.id,
+    required this.productId,
     required this.name,
     required this.finalPrice,
-    required this.initialPrice,
     required this.imageUrl,
   });
 
   factory WishlistModel.fromJson(Map<String, dynamic> json) {
     return WishlistModel(
-      id: json['product_id'] ?? '',
-      name: json['title'] ?? '',
-      finalPrice: json['final_prices'] ?? 0.0,
-      initialPrice: json['initial_prices'] ?? 0.0,
+      productId: json['product_id'] ?? '',
+      name: json['name'] ?? '',
+      finalPrice: json['price'] ?? 0.0,
       imageUrl: json['image_url'] ?? '',
     );
   }
 
   WishlistEntity toEntity() {
     return WishlistEntity(
-      productId: id,
+      productId: productId,
       name: name,
-      initialPrice: initialPrice,
       finalPrice: finalPrice,
       imageUrl: imageUrl,
     );
   }
 
   @override
-  List<Object?> get props => [id, name, initialPrice, finalPrice, imageUrl];
+  List<Object?> get props => [productId, name, finalPrice, imageUrl];
 }

@@ -78,14 +78,8 @@ void main() {
         for (var i = 0; i < wishlist.length; i++) {
           expect(wishlist[i].productId, tWishlistEntityList[i].productId);
           expect(wishlist[i].name, tWishlistEntityList[i].name);
-          expect(
-            wishlist[i].initialPrice,
-            tWishlistEntityList[i].initialPrice,
-          );
-          expect(
-            wishlist[i].finalPrice,
-            tWishlistEntityList[i].finalPrice,
-          );
+
+          expect(wishlist[i].finalPrice, tWishlistEntityList[i].finalPrice);
           expect(wishlist[i].imageUrl, tWishlistEntityList[i].imageUrl);
         }
         verify(() => mockWishlistRemoteData.getWishlist()).called(1);
@@ -109,7 +103,7 @@ void main() {
         verify(() => mockWishlistRemoteData.getWishlist()).called(1);
       },
     );
-  }); 
+  });
 
   group('removeWishlist', () {
     test(
@@ -125,7 +119,9 @@ void main() {
 
         // assert
         expect(result, equals(right(unit)));
-        verify(() => mockWishlistRemoteData.removeWishlist(tProductId)).called(1);
+        verify(
+          () => mockWishlistRemoteData.removeWishlist(tProductId),
+        ).called(1);
         verifyNoMoreInteractions(mockWishlistRemoteData);
       },
     );

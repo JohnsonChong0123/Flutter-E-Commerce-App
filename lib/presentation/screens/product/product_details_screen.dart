@@ -1,3 +1,4 @@
+import '/core/common/widgets/loader.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -43,7 +44,7 @@ class ProductDetailScreen extends StatelessWidget {
         body: BlocBuilder<ProductCubit, ProductState>(
           builder: (context, state) {
             if (state is ProductLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return Loader();
             }
 
             if (state is ProductDetailsLoaded) {
@@ -298,10 +299,22 @@ class WishlistButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<WishlistCubit, WishlistState>(
+    return BlocConsumer<WishlistCubit, WishlistState>(
+      listener: (context, state) {
+        if (state is WishlistLoaded && state.message != null) {
+          showSnackBar(context, state.message!);
+        } else if (state is WishlistFailure) {
+          showSnackBar(context, state.message);
+        }
+      },
       builder: (context, state) {
-        final isFavorite =
-            state is WishlistLoaded && state.favoriteIds.contains(productId);
+        if (state is WishlistLoading) {
+          return Loader();
+        }
+        bool isFavorite = false;
+        if (state is WishlistLoaded) {
+          isFavorite = state.favoriteIds.contains(productId);
+        }
         return IconButton(
           icon: Icon(
             isFavorite ? Icons.favorite : Icons.favorite_border,
@@ -310,10 +323,8 @@ class WishlistButton extends StatelessWidget {
           onPressed: () {
             if (isFavorite) {
               context.read<WishlistCubit>().removeWishlist(productId);
-              showSnackBar(context, "Removed from wishlist");
             } else {
               context.read<WishlistCubit>().addWishlist(productId);
-              showSnackBar(context, "Added to wishlist");
             }
           },
         );

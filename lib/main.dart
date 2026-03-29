@@ -7,6 +7,7 @@ import 'core/routes/app_router.dart';
 import 'core/themes/app.theme.dart';
 import 'presentation/blocs/auth/auth_bloc.dart';
 import 'presentation/cubits/cart/cart_cubit.dart';
+import 'presentation/cubits/wishlist/wishlist_cubit.dart';
 import 'service_locator.dart';
 
 bool isTestMode = false;
@@ -31,12 +32,10 @@ class MyApp extends StatelessWidget {
           create: (_) => sl<AuthBloc>()..add(const AuthCheckStatus()),
         ),
         BlocProvider(
-          create: (_) => CartCubit(
-            addToCart: sl(),
-            getCart: sl(),
-            removeCartItem: sl(),
-            clearCart: sl(),
-          ),
+          create: (_) => sl<CartCubit>()..getCart(),
+        ),
+        BlocProvider(
+          create: (_) => sl<WishlistCubit>()..getWishlist(),
         ),
       ],
       child: const AppView(),

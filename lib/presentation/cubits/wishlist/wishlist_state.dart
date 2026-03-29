@@ -4,7 +4,7 @@ sealed class WishlistState extends Equatable {
   const WishlistState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 final class WishlistInitial extends WishlistState {
@@ -28,14 +28,16 @@ final class WishlistFailure extends WishlistState {
   List<Object> get props => [message];
 }
 
-final class WishlistLoaded extends WishlistState {
+class WishlistLoaded extends WishlistState {
   final List<WishlistEntity> wishlist;
-
   final Set<String> favoriteIds;
+  final String? message;
 
-  WishlistLoaded({required this.wishlist})
-    : favoriteIds = wishlist.map((e) => e.productId).toSet();
+  WishlistLoaded({
+    required this.wishlist,
+    this.message,
+  }) : favoriteIds = wishlist.map((e) => e.productId).toSet();
 
   @override
-  List<Object> get props => [wishlist, favoriteIds];
+  List<Object?> get props => [wishlist, favoriteIds, message];
 }

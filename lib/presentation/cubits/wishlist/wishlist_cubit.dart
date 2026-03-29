@@ -35,7 +35,9 @@ class WishlistCubit extends Cubit<WishlistState> {
       final wishlistResult = await _getWishlist(NoParams());
       wishlistResult.fold(
         (failure) => emit(WishlistFailure(message: failure.message)),
-        (wishlist) => emit(WishlistLoaded(wishlist: wishlist)),
+        (wishlist) => emit(
+          WishlistLoaded(wishlist: wishlist, message: "Added to wishlist"),
+        ),
       );
     });
   }
@@ -58,7 +60,9 @@ class WishlistCubit extends Cubit<WishlistState> {
       final wishlistResult = await _getWishlist(NoParams());
       wishlistResult.fold(
         (failure) => emit(WishlistFailure(message: failure.message)),
-        (wishlist) => emit(WishlistLoaded(wishlist: wishlist)),
+        (wishlist) => emit(
+          WishlistLoaded(wishlist: wishlist, message: "Removed from wishlist"),
+        ),
       );
     });
   }

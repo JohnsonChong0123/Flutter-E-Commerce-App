@@ -59,7 +59,7 @@ void main() {
       act: (cubit) => cubit.addWishlist(tProductId),
       expect: () => [
         WishlistLoading(),
-        WishlistLoaded(wishlist: tWishlistEntityList),
+        WishlistLoaded(wishlist: tWishlistEntityList, message: 'Added to wishlist'),
       ],
       verify: (_) {
         verify(() => mockAddWishlist(AddWishlistParam(tProductId))).called(1);
@@ -143,7 +143,7 @@ void main() {
       act: (cubit) => cubit.removeWishlist(tProductId),
       expect: () => [
         WishlistLoading(),
-        WishlistLoaded(wishlist: tWishlistEntityList),
+        WishlistLoaded(wishlist: tWishlistEntityList, message: 'Removed from wishlist'),
       ],
       verify: (_) {
         verify(

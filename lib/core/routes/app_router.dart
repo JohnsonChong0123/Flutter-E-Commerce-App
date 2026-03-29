@@ -1,4 +1,3 @@
-import 'package:e_commerce_client/presentation/cubits/wishlist/wishlist_cubit.dart';
 import 'package:e_commerce_client/presentation/screens/splash_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -118,15 +117,7 @@ class AppRouter {
                 GoRoute(
                   path: wishlist,
                   name: wishlistName,
-                  builder: (context, state) => BlocProvider(
-                    create: (context) => WishlistCubit(
-                      addWishlist: sl(),
-                      getWishlist: sl(),
-                      removeWishlist: sl(),
-                      clearWishlist: sl(),
-                    ),
-                    child: const WishlistScreen(),
-                  ),
+                  builder: (context, state) => const WishlistScreen(),
                 ),
               ],
             ),
