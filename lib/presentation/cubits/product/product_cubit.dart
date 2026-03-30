@@ -30,6 +30,7 @@ class ProductCubit extends Cubit<ProductState> {
   Future<void> loadProductById(String productId) async {
     emit(const ProductLoading());
     final result = await _getProductById(GetProductByIdParams(productId: productId));
+    if (isClosed) return;
     result.fold(
       (failure) => emit(ProductFailure(message: failure.message)),
       (product) => emit(ProductDetailsLoaded(product: product)),
