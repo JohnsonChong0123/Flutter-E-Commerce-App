@@ -29,7 +29,8 @@ This project is a hands-on practice of production-level Flutter engineering:
 | Facebook Sign-In | ✅ Done |
 | CI/CD Pipeline | ✅ Done |
 | Product Listing | ✅ Done |
-| Shopping Cart | ⏳ In Progress |
+| Shopping Cart | ✅ Done |
+| Wishlist | ✅ Done |
 | Order Management | 📋 Planned |
 
 ---
@@ -98,8 +99,8 @@ Secrets managed in GitHub Actions:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/JohnsonChong0123/e_commerce_client.git
-cd e_commerce_client
+git clone https://github.com/JohnsonChong0123/Flutter-E-Commerce-App.git
+cd Flutter-E-Commerce-App
 
 # 2. Set up environment variables
 cp .env.example .env
@@ -118,6 +119,7 @@ flutter run
 GOOGLE_CLIENT_ID=your_google_client_id
 SERVER_URL=your_backend_api_url
 ```
+> **Note**: If the backend service is not deployed online, please follow the instructions in the [Backend Repository](https://github.com/JohnsonChong0123/FastAPI-E-Commerce-Backend) to start the API service locally, and set `SERVER_URL` to your local address.
 
 ---
 
