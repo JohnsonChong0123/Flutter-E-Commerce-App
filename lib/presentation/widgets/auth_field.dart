@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/common/utils/validation_utils.dart';
-import '../../core/themes/app_colors.dart';
+import '../../core/extensions/theme_extensions.dart';
 
 class AuthField extends StatelessWidget {
   final String hintText;
@@ -55,7 +55,7 @@ class AuthField extends StatelessWidget {
             ? IconButton(
                 icon: Icon(
                   isObscure ? Icons.visibility : Icons.visibility_off,
-                  color: AppColor.primary,
+                  color: context.colorScheme.outline,
                 ),
                 onPressed: toggleVisibility,
               )

@@ -5,8 +5,8 @@ import 'package:sign_button/sign_button.dart';
 import '../../../core/common/widgets/app_button.dart';
 import '../../../core/common/widgets/loader.dart';
 import '../../../core/common/utils/show_snackbar.dart';
+import '../../../core/extensions/theme_extensions.dart';
 import '../../../core/routes/app_router.dart';
-import '../../../core/themes/app_colors.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../widgets/auth_field.dart';
 import '../../widgets/password_field.dart';
@@ -17,97 +17,111 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        title: Text("Login", style: Theme.of(context).textTheme.headlineLarge),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(30),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const Text("Add your details to login"),
-              const SizedBox(height: 50),
-              const LoginForm(),
-              const SizedBox(height: 10),
-              GestureDetector(
-                child: const Text('Forget your password?'),
-                onTap: () {
-                  // TODO: Forget Password Screen
-                },
-              ),
-              const SizedBox(height: 50),
-              BlocConsumer<AuthBloc, AuthState>(
-                listener: (context, state) {
-                  if (state is AuthFailure) {
-                    showSnackBar(context, state.message);
-                  } else if (state is AuthAuthenticated) {
-                    showSnackBar(context, "Login Successful");
-                    context.goNamed(AppRouter.homeName);
-                  }
-                },
-                builder: (context, state) {
-                  final isGoogleLoading =
-                      state is AuthLoading &&
-                      state.type == AuthLoadingType.google;
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(30),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "ATELIER",
+                  style: context.textTheme.titleLarge?.copyWith(
+                    letterSpacing: 4.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 30),
+                Text("Welcome Back", style: context.textTheme.displaySmall),
+                const SizedBox(height: 10),
+                Text(
+                  "Please enter your details to access your curated collection.",
+                  style: context.textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 30),
+                const LoginForm(),
+                const SizedBox(height: 10),
+                Center(
+                  child: GestureDetector(
+                    child: Text('Forget your password?'),
+                    onTap: () {
+                      // TODO: Forget Password Screen
+                    },
+                  ),
+                ),
+                const SizedBox(height: 50),
+                BlocConsumer<AuthBloc, AuthState>(
+                  listener: (context, state) {
+                    if (state is AuthFailure) {
+                      showSnackBar(context, state.message);
+                    } else if (state is AuthAuthenticated) {
+                      showSnackBar(context, "Login Successful");
+                      context.goNamed(AppRouter.homeName);
+                    }
+                  },
+                  builder: (context, state) {
+                    final isGoogleLoading =
+                        state is AuthLoading &&
+                        state.type == AuthLoadingType.google;
 
-                  if (isGoogleLoading) {
-                    return const Loader();
-                  } else {
-                    return SizedBox(
-                      key: const Key('googleLoginButton'),
-                      width: double.infinity,
-                      height: 50,
-                      child: SignInButton(
-                        elevation: 2,
-                        buttonType: ButtonType.google,
+                    if (isGoogleLoading) {
+                      return const Loader();
+                    } else {
+                      return SizedBox(
+                        key: const Key('googleLoginButton'),
                         width: double.infinity,
-                        padding: 10,
-                        onPressed: () async {
-                          context.read<AuthBloc>().add(AuthGoogleLogin());
-                        },
-                      ),
-                    );
-                  }
-                },
-              ),
-              const SizedBox(height: 20),
-              BlocConsumer<AuthBloc, AuthState>(
-                listener: (context, state) {
-                  if (state is AuthFailure) {
-                    showSnackBar(context, state.message);
-                  } else if (state is AuthAuthenticated) {
-                    showSnackBar(context, "Login Successful");
-                    context.goNamed(AppRouter.homeName);
-                  }
-                },
-                builder: (context, state) {
-                  final isFacebookLoading =
-                      state is AuthLoading &&
-                      state.type == AuthLoadingType.facebook;
+                        height: 50,
+                        child: SignInButton(
+                          elevation: 2,
+                          buttonType: ButtonType.google,
+                          width: double.infinity,
+                          padding: 10,
+                          onPressed: () async {
+                            context.read<AuthBloc>().add(AuthGoogleLogin());
+                          },
+                        ),
+                      );
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                BlocConsumer<AuthBloc, AuthState>(
+                  listener: (context, state) {
+                    if (state is AuthFailure) {
+                      showSnackBar(context, state.message);
+                    } else if (state is AuthAuthenticated) {
+                      showSnackBar(context, "Login Successful");
+                      context.goNamed(AppRouter.homeName);
+                    }
+                  },
+                  builder: (context, state) {
+                    final isFacebookLoading =
+                        state is AuthLoading &&
+                        state.type == AuthLoadingType.facebook;
 
-                  if (isFacebookLoading) {
-                    return const Loader();
-                  } else {
-                    return SizedBox(
-                      key: const Key('facebookLoginButton'),
-                      width: double.infinity,
-                      height: 50,
-                      child: SignInButton(
-                        elevation: 2,
-                        buttonType: ButtonType.facebook,
+                    if (isFacebookLoading) {
+                      return const Loader();
+                    } else {
+                      return SizedBox(
+                        key: const Key('facebookLoginButton'),
                         width: double.infinity,
-                        padding: 10,
-                        onPressed: () async {
-                          context.read<AuthBloc>().add(AuthFacebookLogin());
-                        },
-                      ),
-                    );
-                  }
-                },
-              ),
-            ],
+                        height: 50,
+                        child: SignInButton(
+                          elevation: 2,
+                          buttonType: ButtonType.facebook,
+                          width: double.infinity,
+                          padding: 10,
+                          onPressed: () async {
+                            context.read<AuthBloc>().add(AuthFacebookLogin());
+                          },
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -124,12 +138,12 @@ class LoginScreen extends StatelessWidget {
                 key: const Key('signupText'),
                 text: TextSpan(
                   text: 'Don\'t have account? ',
-                  style: Theme.of(context).textTheme.titleSmall,
+                  style: context.textTheme.bodyLarge,
                   children: [
                     TextSpan(
                       text: 'Sign Up',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: AppColor.green,
+                      style: context.textTheme.bodyLarge?.copyWith(
+                        color: context.colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

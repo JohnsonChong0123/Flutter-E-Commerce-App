@@ -5,8 +5,8 @@ import 'package:password_strength_checker/password_strength_checker.dart';
 import '../../../core/common/utils/show_snackbar.dart';
 import '../../../core/common/widgets/app_button.dart';
 import '../../../core/common/widgets/loader.dart';
+import '../../../core/extensions/theme_extensions.dart';
 import '../../../core/routes/app_router.dart';
-import '../../../core/themes/app_colors.dart';
 import '../../blocs/auth/auth_bloc.dart';
 import '../../widgets/auth_field.dart';
 import '../../widgets/password_field.dart';
@@ -20,17 +20,17 @@ class SignUpScreen extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: Text(
-          "Sign Up",
-          style: Theme.of(context).textTheme.headlineLarge,
-        ),
+        title: Text("Join the Atelier", style: context.textTheme.displaySmall),
       ),
       body: Padding(
         padding: EdgeInsets.all(30),
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Text("Add your details to sign up"),
+              Text(
+                "Experience curated luxury, tailored for you.",
+                style: context.textTheme.bodyLarge,
+              ),
               SizedBox(height: 50),
               SignUpForm(),
             ],
@@ -49,12 +49,12 @@ class SignUpScreen extends StatelessWidget {
               child: RichText(
                 text: TextSpan(
                   text: 'Already have an account? ',
-                  style: Theme.of(context).textTheme.titleSmall,
+                  style: context.textTheme.bodyLarge,
                   children: [
-                    TextSpan(
+                    TextSpan(    
                       text: 'Login',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: AppColor.green,
+                      style: context.textTheme.bodyLarge?.copyWith(
+                        color: context.colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -174,7 +174,10 @@ class _SignUpFormState extends State<SignUpForm> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-            child: Text(PasswordStrength.instructions),
+            child: Text(
+              PasswordStrength.instructions,
+              style: context.textTheme.bodyLarge,
+            ),
           ),
           BlocConsumer<AuthBloc, AuthState>(
             listener: (context, state) {
