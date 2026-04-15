@@ -4,7 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 
 import 'core/routes/app_router.dart';
-import 'core/themes/app.theme.dart';
+import 'core/themes/app_theme.dart';
 import 'presentation/blocs/auth/auth_bloc.dart';
 import 'presentation/cubits/cart/cart_cubit.dart';
 import 'presentation/cubits/wishlist/wishlist_cubit.dart';
@@ -32,10 +32,10 @@ class MyApp extends StatelessWidget {
           create: (_) => sl<AuthBloc>()..add(const AuthCheckStatus()),
         ),
         BlocProvider(
-          create: (_) => sl<CartCubit>()..getCart(),
+          create: (_) => sl<CartCubit>(),
         ),
         BlocProvider(
-          create: (_) => sl<WishlistCubit>()..getWishlist(),
+          create: (_) => sl<WishlistCubit>(),
         ),
       ],
       child: const AppView(),
@@ -81,7 +81,7 @@ class _AppViewState extends State<AppView> {
       },
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.theme,
+        theme: AppTheme.lightTheme,
         routerConfig: _router,
       ),
     );
