@@ -3,11 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/blocs/auth/auth_bloc.dart';
 import '../../presentation/cubits/product/product_cubit.dart';
+import '../../presentation/cubits/search/search_cubit.dart';
 import '../../presentation/screens/account_screen.dart';
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/sign_up_screen.dart';
 import '../../presentation/screens/cart/cart_screen.dart';
 import '../../presentation/screens/home_screen.dart';
+import '../../presentation/screens/product_search_screen.dart';
 import '../../presentation/screens/navbar_screen.dart';
 import '../../presentation/screens/product/invalid_route_screen.dart';
 import '../../presentation/screens/product/product_details_screen.dart';
@@ -25,6 +27,7 @@ class AppRouter {
   static const cart = '/cart';
   static const wishlist = '/wishlist';
   static const account = '/account';
+  static const productSearch = '/productSearch';
 
   // ---------------- Names ----------------
   static const splashName = 'splash';
@@ -35,6 +38,7 @@ class AppRouter {
   static const cartName = 'cart';
   static const wishlistName = 'wishlist';
   static const accountName = 'account';
+  static const productSearchName = 'productSearch';
 
   static final GlobalKey<NavigatorState> _rootNavigatorKey =
       GlobalKey<NavigatorState>();
@@ -106,18 +110,33 @@ class AppRouter {
             StatefulShellBranch(
               routes: [
                 GoRoute(
-                  path: cart,
-                  name: cartName,
-                  builder: (context, state) => const CartScreen(),
+                  path: productSearch,
+                  name: productSearchName,
+                  builder: (context, state) {
+                    return MultiBlocProvider(
+                      providers: [
+                        BlocProvider(
+                          create: (context) => ProductCubit(
+                            getProducts: sl(),
+                            getProductById: sl(),
+                          ),
+                        ),
+                        BlocProvider(
+                          create: (context) => SearchCubit(),
+                        ),
+                      ],
+                      child: const ProductSearchScreen(),
+                    );
+                  },
                 ),
               ],
             ),
             StatefulShellBranch(
               routes: [
                 GoRoute(
-                  path: wishlist,
-                  name: wishlistName,
-                  builder: (context, state) => const WishlistScreen(),
+                  path: cart,
+                  name: cartName,
+                  builder: (context, state) => const CartScreen(),
                 ),
               ],
             ),

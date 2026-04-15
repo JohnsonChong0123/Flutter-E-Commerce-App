@@ -1,3 +1,4 @@
+import '/core/extensions/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -22,10 +23,18 @@ class NavBarScreen extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
-        selectedItemColor: navigationShell.currentIndex == 2 ? Colors.red : AppColor.green,
+        selectedItemColor: 
+        // navigationShell.currentIndex == 2
+        //     ? Colors.red
+        //     : 
+            context.colorScheme.primary,
         unselectedItemColor: AppColor.placeholder,
         selectedLabelStyle: TextStyle(
-          color: navigationShell.currentIndex == 2 ? Colors.red : AppColor.green,
+          color: 
+          // navigationShell.currentIndex == 2
+          //     ? Colors.red
+          //     : 
+              context.colorScheme.primary,
           fontWeight: FontWeight.w500,
           fontSize: 12,
         ),
@@ -35,55 +44,58 @@ class NavBarScreen extends StatelessWidget {
         onTap: (index) {
           _onTap(index);
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: AppColor.placeholder, size: 25),
-            activeIcon: Icon(Icons.home, color: AppColor.green, size: 25),
+            icon: const Icon(Icons.home, color: AppColor.placeholder, size: 25),
+            activeIcon: Icon(Icons.home, color: context.colorScheme.primary, size: 25),
             label: 'Home',
           ),
+
           BottomNavigationBarItem(
-            icon: Icon(
+            icon: const Icon(
+              Icons.search,
+              color: AppColor.placeholder,
+              size: 25,
+            ),
+            activeIcon: Icon(Icons.search, color: context.colorScheme.primary, size: 25),
+            label: 'Search',
+          ),
+
+          BottomNavigationBarItem(
+            icon: const Icon(
               Icons.shopping_cart,
               color: AppColor.placeholder,
               size: 25,
             ),
-            activeIcon: Icon(
-              Icons.shopping_cart,
-              color: AppColor.green,
-              size: 25,
-            ),
+            activeIcon: Icon(Icons.shopping_cart, color: context.colorScheme.primary, size: 25),
             label: 'Cart',
           ),
+
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite, color: AppColor.placeholder, size: 25),
-            activeIcon: Icon(Icons.favorite, color: Colors.red, size: 25),
-            label: 'Wishlist',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.account_box,
+            icon: const Icon(
+              Icons.person,
               color: AppColor.placeholder,
               size: 25,
             ),
             activeIcon: Icon(
-              Icons.account_box,
-              color: AppColor.green,
+              Icons.person,
+              color: context.colorScheme.primary,
               size: 25,
             ),
-            label: 'Account',
+            label: 'Profile',
           ),
         ],
       ),
-      floatingActionButton: navigationShell.currentIndex == 1
-          ? null
-          : FloatingActionButton(
-              mini: true,
-              backgroundColor: AppColor.green,
-              onPressed: () {
-                // TODO: Navigate to the chatbot screen
-              },
-              child: const Icon(Icons.smart_toy_outlined, color: Colors.white),
-            ),
+      // floatingActionButton: navigationShell.currentIndex == 1
+      //     ? null
+      //     : FloatingActionButton(
+      //         mini: true,
+      //         backgroundColor: AppColor.green,
+      //         onPressed: () {
+      //           // TODO: Navigate to the chatbot screen
+      //         },
+      //         child: const Icon(Icons.smart_toy_outlined, color: Colors.white),
+      //       ),
     );
   }
 }
