@@ -2,6 +2,7 @@ import 'package:e_commerce_client/presentation/screens/splash_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/blocs/auth/auth_bloc.dart';
+import '../../presentation/cubits/category/category_cubit.dart';
 import '../../presentation/cubits/product/product_cubit.dart';
 import '../../presentation/cubits/search/search_cubit.dart';
 import '../../presentation/screens/account_screen.dart';
@@ -123,6 +124,9 @@ class AppRouter {
                         ),
                         BlocProvider(
                           create: (context) => SearchCubit(),
+                        ),
+                        BlocProvider(
+                          create: (context) => CategoryCubit(),
                         ),
                       ],
                       child: const ProductSearchScreen(),

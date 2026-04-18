@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:e_commerce_client/core/extensions/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/routes/app_router.dart';
@@ -13,9 +14,10 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.pushNamed(AppRouter.productDetailsName, pathParameters: {
-          'id': product.id,
-        });
+        context.pushNamed(
+          AppRouter.productDetailsName,
+          pathParameters: {'id': product.id},
+        );
       },
       child: Card(
         elevation: 2,
@@ -66,6 +68,19 @@ class ProductCard extends StatelessWidget {
                               ),
                             ),
                     ),
+                    Positioned(
+                      top: 12,
+                      right: 12,
+                      child: CircleAvatar(
+                        backgroundColor: Colors.white.withOpacity(0.8),
+                        radius: 18,
+                        child: const Icon(
+                          Icons.favorite_border,
+                          size: 18,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -83,7 +98,7 @@ class ProductCard extends StatelessWidget {
                     Text(
                       "\$${product.initialPrice.toStringAsFixed(2)}",
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppColor.green,
+                        color: context.colorScheme.primary,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                         decoration: TextDecoration.lineThrough,
@@ -94,7 +109,7 @@ class ProductCard extends StatelessWidget {
                   Text(
                     "\$${product.finalPrice.toStringAsFixed(2)}",
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: AppColor.green,
+                      color: context.colorScheme.primary,
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
