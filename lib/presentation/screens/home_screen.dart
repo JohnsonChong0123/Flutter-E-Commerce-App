@@ -1,10 +1,25 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/common/widgets/loader.dart';
 import '../../core/extensions/theme_extensions.dart';
 import '../../core/routes/app_router.dart';
+import '../cubits/product/product_cubit.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ProductCubit>().loadProducts();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,12 +104,13 @@ class HomeScreen extends StatelessWidget {
                               const SizedBox(height: 16),
                               Text(
                                 'The Modern \nMinimalist',
-                                style: context.textTheme.headlineLarge?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 40,
-                                  height: 1.1,
-                                ),
+                                style: context.textTheme.headlineLarge
+                                    ?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 40,
+                                      height: 1.1,
+                                    ),
                               ),
                             ],
                           ),
@@ -226,74 +242,124 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  SizedBox(
-                    height: 380,
-                    child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _newArrivals.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(width: 16),
-                      itemBuilder: (context, index) {
-                        final item = _newArrivals[index];
-                        return GestureDetector(
-                          onTap: () {
-                            // Navigator.push(context, MaterialPageRoute(builder: (context) => const ProductDetailsScreen()));
-                          },
-                          child: SizedBox(
-                            width: 220,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: Stack(
-                                      children: [
-                                        Image.network(
-                                          item['image']!,
-                                          fit: BoxFit.cover,
-                                          width: double.infinity,
-                                          height: double.infinity,
-                                        ),
-                                        Positioned(
-                                          top: 12,
-                                          right: 12,
-                                          child: CircleAvatar(
-                                            backgroundColor: Colors.white
-                                                .withOpacity(0.8),
-                                            radius: 18,
-                                            child: const Icon(
-                                              Icons.favorite_border,
-                                              size: 18,
-                                              color: Colors.black,
-                                            ),
+                  BlocBuilder<ProductCubit, ProductState>(
+                    builder: (context, state) {
+                      if (state is ProductLoading) {
+                        return const Loader();
+                      } else if (state is ProductLoaded) {
+                        return SizedBox(
+                          height: 380,
+                          child: ListView.separated(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24.0,
+                            ),
+                            scrollDirection: Axis.horizontal,
+                            itemCount: 10,
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(width: 16),
+                            itemBuilder: (context, index) {
+                              final item = state.products[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  context.pushNamed(
+                                    AppRouter.productDetailsName,
+                                    pathParameters: {'id': item.id},
+                                  );
+                                },
+                                child: SizedBox(
+                                  width: 220,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                          child: Stack(
+                                            children: [
+                                              CachedNetworkImage(
+                                                imageUrl: item.imageUrl,
+                                                fit: BoxFit.fill,
+                                                width: double.infinity,
+                                                placeholder: (context, url) =>
+                                                    Container(
+                                                      width: double.infinity,
+                                                      color: Colors.grey[200],
+                                                      child: const Center(
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                              strokeWidth: 2,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                errorWidget:
+                                                    (
+                                                      context,
+                                                      error,
+                                                      stackTrace,
+                                                    ) {
+                                                      return Container(
+                                                        width: double.infinity,
+                                                        color: Colors.grey[300],
+                                                        child: const Icon(
+                                                          Icons
+                                                              .image_not_supported,
+                                                          size: 100,
+                                                          color: Colors.grey,
+                                                        ),
+                                                      );
+                                                    },
+                                              ),
+                                              Positioned(
+                                                top: 12,
+                                                right: 12,
+                                                child: CircleAvatar(
+                                                  backgroundColor: Colors.white
+                                                      .withOpacity(0.8),
+                                                  radius: 18,
+                                                  child: const Icon(
+                                                    Icons.favorite_border,
+                                                    size: 18,
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        item.name,
+                                        style: context.textTheme.titleMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        "\$${item.finalPrice.toStringAsFixed(2)}",
+                                        style: context.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              color:
+                                                  context.colorScheme.secondary,
+                                            ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  item['title']!,
-                                  style: context.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  item['price']!,
-                                  style: context.textTheme.bodyMedium?.copyWith(
-                                    color: context.colorScheme.secondary,
-                                  ),
-                                ),
-                              ],
-                            ),
+                              );
+                            },
                           ),
                         );
-                      },
-                    ),
+                      } else if (state is ProductFailure) {
+                        return Center(child: Text(state.message));
+                      } else {
+                        return const SizedBox();
+                      }
+                    },
                   ),
                 ],
               ),
@@ -359,21 +425,23 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                   child: Text(
                                     'TRENDING NOW',
-                                    style: context.textTheme.labelSmall?.copyWith(
-                                      color: Colors.white,
-                                      fontSize: 10,
-                                      letterSpacing: 1.5,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: context.textTheme.labelSmall
+                                        ?.copyWith(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          letterSpacing: 1.5,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                   ),
                                 ),
                                 const SizedBox(height: 12),
                                 Text(
                                   'The Linen Edit',
-                                  style: context.textTheme.headlineSmall?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w800,
-                                  ),
+                                  style: context.textTheme.headlineSmall
+                                      ?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w800,
+                                      ),
                                 ),
                                 const SizedBox(height: 8),
                                 const Text(
@@ -488,31 +556,4 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-
-  static const List<Map<String, String>> _newArrivals = [
-    {
-      'title': 'Wool Car Coat',
-      'price': '\$450.00',
-      'image':
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuBXEYbd3f48xDiH6iOoJ_tcTSTaLYwBPHcMKBgshZFMG9SoXHZfuhwSWlecPXiDM8ccn_PcAP7dmiip4Yk19A91jmaSOwSe53qWvxs2uOIUITld76xdjGDR-nnduoYUrb3IfUZEM6EvxluCkyFZZzdgRKlQaDDMPWDm2gcxQ5yhT_FiS7R9IAScGh4EdwuIBuV8FoKPiRPLRasTEMf5vRPYmbJSjOOmc2U7bl0R8E5AH4YlXrTwfmBj0Dht-8qdnyJmqUgExAinwLil',
-    },
-    {
-      'title': 'Velocity Runner',
-      'price': '\$180.00',
-      'image':
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuBK35cR4fcT9uT4jbC5GNv2OaJm90ecJi2RdWZOJS9yGTnEkvGVkwki7ydDIqyofjqmDgGtQv7rgfQntGBTQCw0DF3u-eKq2Q8g_YyU6qnFuyKPMNtc1s2_j9P1ZYxVH8a1slhx2XoiL0ei7GMCjXPq5hLDRkZNV4Efb_0Ytw_wa5DrK0B46NQIjDvOhqO28FcUQAD-815btx7ye_k1GeM3B-k4n8aJKPc-dZFVMjX1sGMg9TvABwHZvHvmf2J699lUfiPousxFzS9R',
-    },
-    {
-      'title': 'Chelsea Archive',
-      'price': '\$320.00',
-      'image':
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuBdL7n0tGcwxKle6VNiuREi2cMwwuhTUm9393J9Mxqg1o-Ezw9VXrcu1F3Qbx92Otjpzo2_el0-R4yD5dZm9xTGwHpR_G6MRziOkKtsSKRvw1br85FgJLPZDWJ4JBoB6m0y6hAInpQVHA4H5csqUZc652QvM_2jNWoVNaOCwb-A4zt09CsI29kELKze9rZUIA5fnCIySOl9aIJDz7aixoVpD6abuqgUtMcN4_sZd5dEiYat-SN3cOEv3rVIrDhHSQndLMo0GEGPknJz',
-    },
-    {
-      'title': 'Structure Tote',
-      'price': '\$295.00',
-      'image':
-          'https://lh3.googleusercontent.com/aida-public/AB6AXuAO_u1wZ5lU8socBwnvFjHVX_MY2bhZlv5HhFEyIc9cDRGMbcUZ7YxNS--yPKWAxvtanZaa6T6rUDmeyiX_CevxhLru4HI5hRh-z_2KuUWgrd9Xht2h0V4zY0V3aROKcvHoz7xSCLYPcxndan2OC00S9gRUJdcno7T6xS1BpU4A4MNSzFcSwytGehCy3iwy6xfqW87_03XjTxjyPhpfBn1Oi5zFmNnfezpwafwjq6EsH9ZDzTKPfvhhMdsxx4TSmtRSNbQhZhz-nzWf',
-    },
-  ];
 }
