@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/common/widgets/loader.dart';
@@ -16,6 +18,8 @@ class ProductSearchScreen extends StatefulWidget {
 }
 
 class _ProductSearchScreenState extends State<ProductSearchScreen> {
+  Timer? _debounce;
+
   @override
   void initState() {
     super.initState();
@@ -25,10 +29,35 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
     }
   }
 
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
   Future<void> _refreshProducts() async {
+    final productCubit = context.read<ProductCubit>();
+    final currentCategory = context.read<CategoryCubit>().state;
+
     await Future.delayed(const Duration(seconds: 1));
-    if (mounted) {
+
+    if (!mounted) return;
+
+    if (currentCategory == 'All Objects') {
+      await productCubit.loadProducts();
+    } else {
+      await productCubit.loadProducts(category: currentCategory.toLowerCase());
+    }
+  }
+
+  void _onCategoryTap(String categoryName) {
+    context.read<CategoryCubit>().selectCategory(categoryName);
+    if (categoryName == 'All Objects') {
       context.read<ProductCubit>().loadProducts();
+    } else {
+      context.read<ProductCubit>().loadProducts(
+        category: categoryName.toLowerCase(),
+      );
     }
   }
 
@@ -126,7 +155,14 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                         color: context.colorScheme.outline,
                       ),
                       onChanged: (val) {
-                        context.read<SearchCubit>().search(val);
+                        if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+                        _debounce = Timer(
+                          const Duration(milliseconds: 300),
+                          () {
+                            context.read<ProductCubit>().filterProducts(val);
+                          },
+                        );
                       },
                       onTapOutside: (event) => FocusScope.of(context).unfocus(),
                     );
@@ -139,80 +175,32 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   clipBehavior: Clip.none,
-                  child: Row(
-                    children: [
-                      BlocBuilder<CategoryCubit, String>(
-                        builder: (context, selected) {
-                          return _buildCategoryChip(
-                            'All Objects',
-                            selected == 'All Objects',
-                            context.colorScheme,
-                            context.textTheme,
-                            () => context.read<CategoryCubit>().selectCategory('All Objects'),
+                  child: BlocBuilder<CategoryCubit, String>(
+                    builder: (context, selected) {
+                      final categories = [
+                        'All Objects',
+                        'Apparel',
+                        'Accessories',
+                        'Home Decor',
+                        'Wellness',
+                        'Limited Edition',
+                      ];
+
+                      return Row(
+                        children: categories.map((cat) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 12),
+                            child: _buildCategoryChip(
+                              cat,
+                              selected == cat,
+                              context.colorScheme,
+                              context.textTheme,
+                              () => _onCategoryTap(cat),
+                            ),
                           );
-                        },
-                      ),
-                      const SizedBox(width: 12),
-                      BlocBuilder<CategoryCubit, String>(
-                        builder: (context, selected) {
-                          return _buildCategoryChip(
-                            'Apparel',
-                            selected == 'Apparel',
-                            context.colorScheme,
-                            context.textTheme,
-                            () => context.read<CategoryCubit>().selectCategory('Apparel'),
-                          );
-                        },
-                      ),
-                      const SizedBox(width: 12),
-                      BlocBuilder<CategoryCubit, String>(
-                        builder: (context, selected) {
-                          return _buildCategoryChip(
-                            'Accessories',
-                            selected == 'Accessories',
-                            context.colorScheme,
-                            context.textTheme,
-                            () => context.read<CategoryCubit>().selectCategory('Accessories'),
-                          );
-                        },
-                      ),
-                      const SizedBox(width: 12),
-                      BlocBuilder<CategoryCubit, String>(
-                        builder: (context, selected) {
-                          return _buildCategoryChip(
-                            'Home Decor',
-                            selected == 'Home Decor',
-                            context.colorScheme,
-                            context.textTheme,
-                            () => context.read<CategoryCubit>().selectCategory('Home Decor'),
-                          );
-                        },
-                      ),
-                      const SizedBox(width: 12),
-                      BlocBuilder<CategoryCubit, String>(
-                        builder: (context, selected) {
-                          return _buildCategoryChip(
-                            'Wellness',
-                            selected == 'Wellness',
-                            context.colorScheme,
-                            context.textTheme,
-                            () => context.read<CategoryCubit>().selectCategory('Wellness'),
-                          );
-                        },
-                      ),
-                      const SizedBox(width: 12),
-                      BlocBuilder<CategoryCubit, String>(
-                        builder: (context, selected) {
-                          return _buildCategoryChip(
-                            'Limited Edition',
-                            selected == 'Limited Edition',
-                            context.colorScheme,
-                            context.textTheme,
-                            () => context.read<CategoryCubit>().selectCategory('Limited Edition'),
-                          );
-                        },
-                      ),
-                    ],
+                        }).toList(),
+                      );
+                    },
                   ),
                 ),
 
@@ -225,12 +213,19 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          '248 ITEMS',
-                          style: context.textTheme.labelMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.5,
-                          ),
+                        BlocBuilder<ProductCubit, ProductState>(
+                          builder: (context, state) {
+                            final count = state is ProductLoaded
+                                ? state.products.length
+                                : 0;
+                            return Text(
+                              '$count ITEMS',
+                              style: context.textTheme.labelMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.5,
+                              ),
+                            );
+                          },
                         ),
                         Row(
                           children: [
@@ -294,28 +289,11 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                     if (state is ProductLoading) {
                       return const Loader();
                     } else if (state is ProductLoaded) {
-                      return BlocBuilder<SearchCubit, String>(
-                        builder: (context, searchQuery) {
-                          final filteredProducts = state.products
-                              .where(
-                                (product) => product.name
-                                    .toUpperCase()
-                                    .startsWith(searchQuery.toUpperCase()),
-                              )
-                              .toList();
-                          if (filteredProducts.isEmpty) {
-                            return const Center(
-                              child: Text(
-                                'No products found',
-                                style: TextStyle(fontSize: 15),
-                              ),
-                            );
-                          }
-
-                          return ProductGrid(
-                            filteredProducts: filteredProducts,
-                          );
-                        },
+                      if (state.filteredProducts.isEmpty) {
+                        return const Center(child: Text('No products found'));
+                      }
+                      return ProductGrid(
+                        filteredProducts: state.filteredProducts,
                       );
                     } else if (state is ProductFailure) {
                       return Center(child: Text(state.message));
@@ -359,175 +337,6 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
           ),
         ),
       ),
-
-      // body: Column(
-      //   children: [
-      //     Row(
-      //       children: [
-      //         Expanded(
-      //           child: Padding(
-      //             padding: const EdgeInsets.only(
-      //               left: 15,
-      //               right: 15,
-      //               bottom: 10,
-      //             ),
-      // child: BlocBuilder<SearchCubit, String>(
-      //   builder: (context, state) {
-      //     return SearchBar(
-      //       textStyle: WidgetStatePropertyAll(
-      //         Theme.of(
-      //           context,
-      //         ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.normal),
-      //       ),
-      //       textInputAction: TextInputAction.search,
-      //       elevation: const WidgetStatePropertyAll(3.0),
-      //       hintText: "Search",
-      //       hintStyle: WidgetStatePropertyAll(
-      //         Theme.of(context).textTheme.titleMedium?.copyWith(
-      //           color: AppColor.primary,
-      //           fontWeight: FontWeight.normal,
-      //         ),
-      //       ),
-      //       leading: const Icon(Icons.search, color: AppColor.secondary),
-      //       onChanged: (val) {
-      //         context.read<SearchCubit>().search(val);
-      //       },
-      //       onTapOutside: (event) => FocusScope.of(context).unfocus(),
-      //     );
-      //   },
-      // ),
-      //           ),
-      //         ),
-      //       ],
-      //     ),
-      //     SingleChildScrollView(
-      //       scrollDirection: Axis.horizontal,
-      //       clipBehavior: Clip.none,
-      //       child: Row(
-      //         children: [
-      //           _buildCategoryChip('All Objects', true, colorScheme, textTheme),
-      //           const SizedBox(width: 12),
-      //           _buildCategoryChip('Apparel', false, colorScheme, textTheme),
-      //           const SizedBox(width: 12),
-      //           _buildCategoryChip(
-      //             'Accessories',
-      //             false,
-      //             colorScheme,
-      //             textTheme,
-      //           ),
-      //           const SizedBox(width: 12),
-      //           _buildCategoryChip('Home Decor', false, colorScheme, textTheme),
-      //           const SizedBox(width: 12),
-      //           _buildCategoryChip('Wellness', false, colorScheme, textTheme),
-      //           const SizedBox(width: 12),
-      //           _buildCategoryChip(
-      //             'Limited Edition',
-      //             false,
-      //             colorScheme,
-      //             textTheme,
-      //           ),
-      //         ],
-      //       ),
-      //     ),
-
-      //     Column(
-      //       crossAxisAlignment: CrossAxisAlignment.start,
-      //       children: [
-      //         Row(
-      //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //           children: [
-      //             Text(
-      //               '248 ITEMS',
-      //               style: textTheme.labelSmall?.copyWith(
-      //                 fontWeight: FontWeight.bold,
-      //                 letterSpacing: 1.5,
-      //                 fontSize: 10,
-      //               ),
-      //             ),
-      //             Row(
-      //               children: [
-      //                 Row(
-      //                   children: [
-      //                     Icon(
-      //                       Icons.tune,
-      //                       size: 16,
-      //                       color: colorScheme.onSurfaceVariant,
-      //                     ),
-      //                     const SizedBox(width: 8),
-      //                     Text(
-      //                       'FILTER',
-      //                       style: textTheme.labelSmall?.copyWith(
-      //                         fontWeight: FontWeight.bold,
-      //                         color: colorScheme.onSurfaceVariant,
-      //                         fontSize: 10,
-      //                       ),
-      //                     ),
-      //                   ],
-      //                 ),
-      //                 const SizedBox(width: 24),
-      //                 Row(
-      //                   children: [
-      //                     Text(
-      //                       'SORT BY',
-      //                       style: textTheme.labelSmall?.copyWith(
-      //                         fontWeight: FontWeight.bold,
-      //                         color: colorScheme.onSurfaceVariant,
-      //                         fontSize: 10,
-      //                       ),
-      //                     ),
-      //                     const SizedBox(width: 4),
-      //                     Icon(
-      //                       Icons.expand_more,
-      //                       size: 16,
-      //                       color: colorScheme.onSurfaceVariant,
-      //                     ),
-      //                   ],
-      //                 ),
-      //               ],
-      //             ),
-      //           ],
-      //         ),
-      //         const SizedBox(height: 16),
-      //         Divider(color: colorScheme.outlineVariant.withValues(alpha: 0.2)),
-      //       ],
-      //     ),
-
-      //     BlocBuilder<ProductCubit, ProductState>(
-      //       builder: (context, state) {
-      //         if (state is ProductLoading) {
-      //           return const Loader();
-      //         } else if (state is ProductLoaded) {
-      //           return BlocBuilder<SearchCubit, String>(
-      //             builder: (context, searchQuery) {
-      //               final filteredProducts = state.products
-      //                   .where(
-      //                     (product) => product.name.toUpperCase().startsWith(
-      //                       searchQuery.toUpperCase(),
-      //                     ),
-      //                   )
-      //                   .toList();
-      //               if (filteredProducts.isEmpty) {
-      //                 return const Center(
-      //                   child: Text(
-      //                     'No products found',
-      //                     style: TextStyle(fontSize: 15),
-      //                   ),
-      //                 );
-      //               }
-      //               return Expanded(
-      //                 child: ProductGrid(filteredProducts: filteredProducts),
-      //               );
-      //             },
-      //           );
-      //         } else if (state is ProductFailure) {
-      //           return Center(child: Text(state.message));
-      //         } else {
-      //           return const SizedBox();
-      //         }
-      //       },
-      //     ),
-      //   ],
-      // ),
     );
   }
 

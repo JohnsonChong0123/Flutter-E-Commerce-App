@@ -1,6 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:e_commerce_client/core/errors/failure.dart';
-import 'package:e_commerce_client/core/usecase/usecase.dart';
 import 'package:e_commerce_client/domain/usecases/product/get_product_by_id.dart';
 import 'package:e_commerce_client/domain/usecases/product/get_products.dart';
 import 'package:e_commerce_client/presentation/cubits/product/product_cubit.dart';
@@ -18,7 +17,17 @@ void main() {
   late MockGetProducts mockGetProducts;
   late MockGetProductId mockGetProductId;
   late ProductCubit productCubit;
-  
+
+  const tParams = GetProductsParams(
+    category: 'electronics',
+    limit: 10,
+    page: 1,
+  );
+
+  const category = 'electronics';
+  const limit = 10;
+  const page = 1;
+
   setUp(() {
     mockGetProducts = MockGetProducts();
     mockGetProductId = MockGetProductId();
@@ -33,37 +42,39 @@ void main() {
       'should emit [ProductLoading, ProductLoaded] when get products succeeds',
       build: () {
         when(
-          () => mockGetProducts(NoParams()),
+          () => mockGetProducts(tParams),
         ).thenAnswer((_) async => Right(tProductSummaryEntityList));
 
         return productCubit;
       },
-      act: (cubit) => cubit.loadProducts(),
+      act: (cubit) =>
+          cubit.loadProducts(category: category, limit: limit, page: page),
       expect: () => [
         ProductLoading(),
-        ProductLoaded(products: tProductSummaryEntityList),
+        ProductLoaded(products: tProductSummaryEntityList, filteredProducts: tProductSummaryEntityList),
       ],
       verify: (_) {
-        verify(() => mockGetProducts(NoParams())).called(1);
+        verify(() => mockGetProducts(tParams)).called(1);
       },
     );
 
     blocTest<ProductCubit, ProductState>(
       'should emit [ProductLoading, ProductFailure] when get products fails',
       build: () {
-        when(() => mockGetProducts(NoParams())).thenAnswer(
+        when(() => mockGetProducts(tParams)).thenAnswer(
           (_) async => const Left(Failure('Failed to load products')),
         );
 
         return productCubit;
       },
-      act: (cubit) => cubit.loadProducts(),
+      act: (cubit) =>
+          cubit.loadProducts(category: category, limit: limit, page: page),
       expect: () => [
         ProductLoading(),
         const ProductFailure(message: 'Failed to load products'),
       ],
       verify: (_) {
-        verify(() => mockGetProducts(NoParams())).called(1);
+        verify(() => mockGetProducts(tParams)).called(1);
       },
     );
   });
@@ -74,7 +85,6 @@ void main() {
       build: () {
         when(
           () => mockGetProductId(GetProductByIdParams(productId: tProductId)),
-
         ).thenAnswer((_) async => Right(tProductDetailsEntity));
 
         return productCubit;
@@ -85,14 +95,18 @@ void main() {
         ProductDetailsLoaded(product: tProductDetailsEntity),
       ],
       verify: (_) {
-        verify(() => mockGetProductId(GetProductByIdParams(productId: tProductId))).called(1);
+        verify(
+          () => mockGetProductId(GetProductByIdParams(productId: tProductId)),
+        ).called(1);
       },
     );
 
     blocTest<ProductCubit, ProductState>(
       'should emit [ProductLoading, ProductFailure] when get product by id fails',
       build: () {
-        when(() => mockGetProductId(GetProductByIdParams(productId: tProductId))).thenAnswer(
+        when(
+          () => mockGetProductId(GetProductByIdParams(productId: tProductId)),
+        ).thenAnswer(
           (_) async => const Left(Failure('Failed to load product details')),
         );
 
@@ -104,7 +118,9 @@ void main() {
         const ProductFailure(message: 'Failed to load product details'),
       ],
       verify: (_) {
-        verify(() => mockGetProductId(GetProductByIdParams(productId: tProductId))).called(1);
+        verify(
+          () => mockGetProductId(GetProductByIdParams(productId: tProductId)),
+        ).called(1);
       },
     );
   });

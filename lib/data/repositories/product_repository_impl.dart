@@ -1,4 +1,5 @@
 import 'package:e_commerce_client/core/errors/failure.dart';
+import 'package:e_commerce_client/domain/usecases/product/get_products.dart';
 import '/domain/entity/product/product_details_entity.dart';
 import '../../core/errors/exception.dart';
 import '../../domain/entity/product/product_summary_entity.dart';
@@ -12,9 +13,9 @@ class ProductRepositoryImpl implements ProductRepository {
   ProductRepositoryImpl({required this.productRemoteData});
 
   @override
-  Future<Either<Failure, List<ProductSummaryEntity>>> getProducts() async {
+  Future<Either<Failure, List<ProductSummaryEntity>>> getProducts(GetProductsParams params) async {
     try {
-      final product = await productRemoteData.getProducts();
+      final product = await productRemoteData.getProducts(params);
       return right(product.map((model) => model.toEntity()).toList());
     } on ServerException catch (e) {
       return left(Failure(e.message));

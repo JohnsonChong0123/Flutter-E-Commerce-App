@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:e_commerce_client/domain/usecases/product/get_products.dart';
 
 import '../../../core/errors/exception.dart';
 import '../../models/product/product_details_model.dart';
 import '../../models/product/product_summary_model.dart';
 
 abstract interface class ProductRemoteData {
-  Future<List<ProductSummaryModel>> getProducts();
+  Future<List<ProductSummaryModel>> getProducts(GetProductsParams params);
 
   Future<ProductDetailsModel> getProductById(String productId);
 }
@@ -16,9 +17,16 @@ class ProductRemoteDataImpl implements ProductRemoteData {
   ProductRemoteDataImpl({required this.dio});
 
   @override
-  Future<List<ProductSummaryModel>> getProducts() async {
+  Future<List<ProductSummaryModel>> getProducts(GetProductsParams params) async {
     try {
-      final response = await dio.get('/product/list-products');
+      final response = await dio.get(
+        '/product/list-products',
+        queryParameters: {
+        if (params.category != null) 'q': params.category,
+        if (params.limit != null) 'limit': params.limit,
+        if (params.page != null) 'page': params.page,
+      },
+      );
       return (response.data as List)
           .map((json) => ProductSummaryModel.fromJson(json))
           .toList();
@@ -28,8 +36,8 @@ class ProductRemoteDataImpl implements ProductRemoteData {
         throw error;
       }
       throw ServerException('An unexpected error occurred');
-      } catch (e) {
-        throw ServerException(e.toString());
+    } catch (e) {
+      throw ServerException(e.toString());
     }
   }
   

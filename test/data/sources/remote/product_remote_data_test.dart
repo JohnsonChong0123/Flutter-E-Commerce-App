@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:e_commerce_client/core/errors/exception.dart';
 import 'package:e_commerce_client/data/sources/remote/product_remote_data.dart';
+import 'package:e_commerce_client/domain/usecases/product/get_products.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -17,6 +18,12 @@ void main() {
   late ProductRemoteDataImpl productRemoteData;
   late List tProductSummaryJsonMap;
   late Map<String, dynamic> tProductDetailsJsonMap;
+
+  const tParams = GetProductsParams(
+    category: 'electronics',
+    limit: 10,
+    page: 1,
+  );
   
   setUpAll(() {
     dotenv.loadFromString(envString: 'SERVER_URL=https://example.com');
@@ -38,8 +45,7 @@ void main() {
         when(
           () => mockDio.get(
             '/product/list-products',
-            data: any(named: 'data'),
-            options: any(named: 'options'),
+            queryParameters: any(named: 'queryParameters'),
           ),
         ).thenAnswer(
           (_) async => Response(
@@ -50,15 +56,14 @@ void main() {
         );
 
         // act
-        final result = await productRemoteData.getProducts();
+        final result = await productRemoteData.getProducts(tParams);
 
         // assert
         expect(result, equals(tProductSummaryModelList));
         verify(
           () => mockDio.get(
             '/product/list-products',
-            data: any(named: 'data'),
-            options: any(named: 'options'),
+            queryParameters: any(named: 'queryParameters'),
           ),
         ).called(1);
       },
@@ -68,9 +73,8 @@ void main() {
       // arrange
       when(
         () => mockDio.get(
-          '/products',
-          data: any(named: 'data'),
-          options: any(named: 'options'),
+          '/product/list-products',
+          queryParameters: any(named: 'queryParameters'),
         ),
       ).thenThrow(
         DioException(
@@ -80,7 +84,7 @@ void main() {
       );
 
       // act
-      final result = productRemoteData.getProducts();
+      final result = productRemoteData.getProducts(tParams);
 
       // assert
       expect(result, throwsA(isA<ServerException>()));
@@ -90,14 +94,13 @@ void main() {
       // arrange
       when(
         () => mockDio.get(
-          '/products',
-          data: any(named: 'data'),
-          options: any(named: 'options'),
+          '/product/list-products',
+          queryParameters: any(named: 'queryParameters'),
         ),
       ).thenThrow(Exception('boom'));
 
       // act
-      final result = productRemoteData.getProducts();
+      final result = productRemoteData.getProducts(tParams);
 
       // assert
       expect(result, throwsA(isA<ServerException>()));

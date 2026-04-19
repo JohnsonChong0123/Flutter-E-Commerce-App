@@ -5,31 +5,65 @@ import '../../../domain/usecases/product/get_products.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/usecase/usecase.dart';
-
 part 'product_state.dart';
 
 class ProductCubit extends Cubit<ProductState> {
   final GetProducts _getProducts;
   final GetProductById _getProductById;
 
-  ProductCubit({required GetProducts getProducts, required GetProductById getProductById})
-    : _getProducts = getProducts,
-      _getProductById = getProductById,
-      super(ProductInitial());
+  ProductCubit({
+    required GetProducts getProducts,
+    required GetProductById getProductById,
+  }) : _getProducts = getProducts,
+       _getProductById = getProductById,
+       super(ProductInitial());
 
-  Future<void> loadProducts() async {
+  Future<void> loadProducts({String? category, int? limit, int? page}) async {
     emit(const ProductLoading());
-    final result = await _getProducts(NoParams());
+    final result = await _getProducts(GetProductsParams(
+      category: category,
+      limit: limit,
+      page: page,
+    ));
+
     result.fold(
       (failure) => emit(ProductFailure(message: failure.message)),
-      (products) => emit(ProductLoaded(products: products)),
+      (products) => emit(ProductLoaded(
+        products: products, 
+        filteredProducts: products,
+      )),
     );
+  }
+
+  void filterProducts(String query) {
+    if (state is ProductLoaded) {
+      final currentState = state as ProductLoaded;
+      
+      if (query.isEmpty) {
+        emit(ProductLoaded(
+          products: currentState.products,
+          filteredProducts: currentState.products,
+          searchQuery: query,
+        ));
+      } else {
+        final filtered = currentState.products.where((product) {
+          return product.name.toLowerCase().startsWith(query.toLowerCase());
+        }).toList();
+        
+        emit(ProductLoaded(
+          products: currentState.products,
+          filteredProducts: filtered,
+          searchQuery: query,
+        ));
+      }
+    }
   }
 
   Future<void> loadProductById(String productId) async {
     emit(const ProductLoading());
-    final result = await _getProductById(GetProductByIdParams(productId: productId));
+    final result = await _getProductById(
+      GetProductByIdParams(productId: productId),
+    );
     if (isClosed) return;
     result.fold(
       (failure) => emit(ProductFailure(message: failure.message)),

@@ -1,5 +1,4 @@
 import 'package:e_commerce_client/core/errors/failure.dart';
-import 'package:e_commerce_client/core/usecase/usecase.dart';
 import 'package:e_commerce_client/domain/repositories/product_repository.dart';
 import 'package:e_commerce_client/domain/usecases/product/get_products.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,7 +12,13 @@ class MockProductRepository extends Mock implements ProductRepository {}
 void main() {
   late ProductRepository mockRepository;
   late GetProducts usecase;
-  
+
+  const tParams = GetProductsParams(
+    category: 'electronics',
+    limit: 10,
+    page: 1,
+  );
+
   setUp(() {
     mockRepository = MockProductRepository();
     usecase = GetProducts(mockRepository);
@@ -24,15 +29,15 @@ void main() {
     () async {
       // arrange
       when(
-        () => mockRepository.getProducts(),
+        () => mockRepository.getProducts(tParams),
       ).thenAnswer((_) async => Right(tProductSummaryEntityList));
 
       // act
-      final result = await usecase(NoParams());
+      final result = await usecase(tParams);
 
       // assert
       expect(result, Right(tProductSummaryEntityList));
-      verify(() => mockRepository.getProducts()).called(1);
+      verify(() => mockRepository.getProducts(tParams)).called(1);
       verifyNoMoreInteractions(mockRepository);
     },
   );
@@ -42,15 +47,15 @@ void main() {
     const failure = Failure('Server error');
 
     when(
-      () => mockRepository.getProducts(),
+      () => mockRepository.getProducts(tParams),
     ).thenAnswer((_) async => Left(failure));
 
     // act
-    final result = await usecase(NoParams());
+    final result = await usecase(tParams);
 
     // assert
     expect(result, Left(failure));
-    verify(() => mockRepository.getProducts()).called(1);
+    verify(() => mockRepository.getProducts(tParams)).called(1);
     verifyNoMoreInteractions(mockRepository);
   });
 }
