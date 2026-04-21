@@ -50,10 +50,14 @@ class ProductCard extends StatelessWidget {
                                 return Container(
                                   width: double.infinity,
                                   color: Colors.grey[300],
-                                  child: const Icon(
-                                    Icons.image_not_supported,
-                                    size: 100,
-                                    color: Colors.grey,
+                                  child: SizedBox.expand(
+                                    child: FittedBox(
+                                      fit: BoxFit.contain,
+                                      child: Icon(
+                                        Icons.image_not_supported,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
                                   ),
                                 );
                               },
@@ -61,10 +65,14 @@ class ProductCard extends StatelessWidget {
                           : Container(
                               width: double.infinity,
                               color: Colors.grey[300],
-                              child: const Icon(
-                                Icons.image_not_supported,
-                                size: 100,
-                                color: Colors.grey,
+                              child: SizedBox.expand(
+                                child: FittedBox(
+                                  fit: BoxFit.contain,
+                                  child: Icon(
+                                    Icons.image_not_supported,
+                                    color: Colors.grey,
+                                  ),
+                                ),
                               ),
                             ),
                     ),

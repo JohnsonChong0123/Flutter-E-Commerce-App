@@ -294,23 +294,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             ),
                                                       ),
                                                     ),
-                                                errorWidget:
-                                                    (
-                                                      context,
-                                                      error,
-                                                      stackTrace,
-                                                    ) {
-                                                      return Container(
-                                                        width: double.infinity,
-                                                        color: Colors.grey[300],
-                                                        child: const Icon(
-                                                          Icons
-                                                              .image_not_supported,
-                                                          size: 100,
+                                                errorWidget: (context, url, error) {
+                                                  return Container(
+                                                    width: double.infinity,
+                                                    color: Colors.grey[300],
+                                                    child: SizedBox.expand(
+                                                      child: FittedBox(
+                                                        fit: BoxFit.contain,
+                                                        child: Icon(
+                                                          Icons.image_not_supported,
                                                           color: Colors.grey,
                                                         ),
-                                                      );
-                                                    },
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
                                               ),
                                               Positioned(
                                                 top: 12,
