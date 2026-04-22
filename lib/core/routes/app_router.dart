@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../presentation/blocs/auth/auth_bloc.dart';
 import '../../presentation/cubits/category/category_cubit.dart';
 import '../../presentation/cubits/product/product_cubit.dart';
-import '../../presentation/cubits/search/search_cubit.dart';
 import '../../presentation/screens/account_screen.dart';
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/sign_up_screen.dart';
@@ -121,9 +120,6 @@ class AppRouter {
                             getProducts: sl(),
                             getProductById: sl(),
                           ),
-                        ),
-                        BlocProvider(
-                          create: (context) => SearchCubit(),
                         ),
                         BlocProvider(
                           create: (context) => CategoryCubit(),
