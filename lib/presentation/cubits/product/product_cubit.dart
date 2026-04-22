@@ -59,6 +59,33 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
+  void applyFilters({bool? onSale, double? minPrice, double? maxPrice}) {
+    if (state is ProductLoaded) {
+      final currentState = state as ProductLoaded;
+      final baseProducts = currentState.products;
+      final searchQuery = currentState.searchQuery ?? '';
+
+      final filtered = baseProducts.where((product) {
+        if (searchQuery.isNotEmpty && !product.name.toLowerCase().startsWith(searchQuery.toLowerCase())) {
+          return false;
+        }
+
+        if (onSale == true && !product.hasDiscount) return false;
+
+        if (minPrice != null && product.finalPrice < minPrice) return false;
+        if (maxPrice != null && product.finalPrice > maxPrice) return false;
+
+        return true;
+      }).toList();
+
+      emit(ProductLoaded(
+        products: currentState.products,
+        filteredProducts: filtered,
+        searchQuery: currentState.searchQuery,
+      ));
+    }
+  }
+
   Future<void> loadProductById(String productId) async {
     emit(const ProductLoading());
     final result = await _getProductById(

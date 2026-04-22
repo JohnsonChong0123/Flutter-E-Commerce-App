@@ -6,7 +6,6 @@ import '../../../core/common/widgets/loader.dart';
 import '../../core/extensions/theme_extensions.dart';
 import '../../domain/entity/product/product_summary_entity.dart';
 import '../cubits/product/product_cubit.dart';
-import '../cubits/search/search_cubit.dart';
 import '../widgets/product_card.dart';
 import '../cubits/category/category_cubit.dart';
 
@@ -59,6 +58,137 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
         category: categoryName.toLowerCase(),
       );
     }
+  }
+
+  void _showFilterSheet() {
+    final productCubit = context.read<ProductCubit>();
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        bool onSale = false;
+        final minController = TextEditingController();
+        final maxController = TextEditingController();
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                left: 16,
+                right: 16,
+                top: 16,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Filters',
+                        style: context.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  SwitchListTile(
+                    title: Text('On Sale', style: context.textTheme.bodyLarge),
+                    value: onSale,
+                    onChanged: (val) => setState(() => onSale = val),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Price Range',
+                    style: context.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: minController,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          decoration: InputDecoration(
+                            labelText: 'Min',
+                            hintText: '0',
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextField(
+                          controller: maxController,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          decoration: InputDecoration(
+                            labelText: 'Max',
+                            hintText: '9999',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            onSale = false;
+                            minController.clear();
+                            maxController.clear();
+                          });
+
+                          productCubit.applyFilters(
+                            onSale: null,
+                            minPrice: null,
+                            maxPrice: null,
+                          );
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('RESET'),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: () {
+                          final minPrice = double.tryParse(minController.text);
+                          final maxPrice = double.tryParse(maxController.text);
+
+                          productCubit.applyFilters(
+                            onSale: onSale ? true : null,
+                            minPrice: minPrice,
+                            maxPrice: maxPrice,
+                          );
+
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('APPLY'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -139,34 +269,27 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
 
                 const SizedBox(height: 32),
 
-                BlocBuilder<SearchCubit, String>(
-                  builder: (context, state) {
-                    return SearchBar(
-                      textInputAction: TextInputAction.search,
-                      elevation: const WidgetStatePropertyAll(3.0),
-                      hintText: "Search the atelier...",
-                      hintStyle: WidgetStatePropertyAll(
-                        context.textTheme.bodyLarge?.copyWith(
-                          color: context.colorScheme.outline,
-                        ),
-                      ),
-                      leading: Icon(
-                        Icons.search,
-                        color: context.colorScheme.outline,
-                      ),
-                      onChanged: (val) {
-                        if (_debounce?.isActive ?? false) _debounce!.cancel();
+                SearchBar(
+                  textInputAction: TextInputAction.search,
+                  elevation: const WidgetStatePropertyAll(3.0),
+                  hintText: "Search the atelier...",
+                  hintStyle: WidgetStatePropertyAll(
+                    context.textTheme.bodyLarge?.copyWith(
+                      color: context.colorScheme.outline,
+                    ),
+                  ),
+                  leading: Icon(
+                    Icons.search,
+                    color: context.colorScheme.outline,
+                  ),
+                  onChanged: (val) {
+                    if (_debounce?.isActive ?? false) _debounce!.cancel();
 
-                        _debounce = Timer(
-                          const Duration(milliseconds: 300),
-                          () {
-                            context.read<ProductCubit>().filterProducts(val);
-                          },
-                        );
-                      },
-                      onTapOutside: (event) => FocusScope.of(context).unfocus(),
-                    );
+                    _debounce = Timer(const Duration(milliseconds: 300), () {
+                      context.read<ProductCubit>().filterProducts(val);
+                    });
                   },
+                  onTapOutside: (event) => FocusScope.of(context).unfocus(),
                 ),
 
                 const SizedBox(height: 24),
@@ -229,25 +352,28 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                         ),
                         Row(
                           children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.tune,
-                                  size: 16,
-                                  color: context.colorScheme.onSurfaceVariant,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'FILTER',
-                                  style: context.textTheme.labelMedium
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: context
-                                            .colorScheme
-                                            .onSurfaceVariant,
-                                      ),
-                                ),
-                              ],
+                            GestureDetector(
+                              onTap: _showFilterSheet,
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.tune,
+                                    size: 16,
+                                    color: context.colorScheme.onSurfaceVariant,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'FILTER',
+                                    style: context.textTheme.labelMedium
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: context
+                                              .colorScheme
+                                              .onSurfaceVariant,
+                                        ),
+                                  ),
+                                ],
+                              ),
                             ),
                             const SizedBox(width: 24),
                             Row(

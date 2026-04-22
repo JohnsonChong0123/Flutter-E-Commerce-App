@@ -51,7 +51,10 @@ void main() {
           cubit.loadProducts(category: category, limit: limit, page: page),
       expect: () => [
         ProductLoading(),
-        ProductLoaded(products: tProductSummaryEntityList, filteredProducts: tProductSummaryEntityList),
+        ProductLoaded(
+          products: tProductSummaryEntityList,
+          filteredProducts: tProductSummaryEntityList,
+        ),
       ],
       verify: (_) {
         verify(() => mockGetProducts(tParams)).called(1);
@@ -122,6 +125,87 @@ void main() {
           () => mockGetProductId(GetProductByIdParams(productId: tProductId)),
         ).called(1);
       },
+    );
+  });
+
+  group('filterProducts', () {
+    blocTest<ProductCubit, ProductState>(
+      'Should filter the products based on the query when input is not empty',
+      build: () => productCubit,
+      seed: () =>
+          ProductLoaded(products: tProductSummaryEntityList, filteredProducts: tProductSummaryEntityList),
+      act: (cubit) => cubit.filterProducts('apple'),
+      expect: () => [
+        ProductLoaded(
+          products: tProductSummaryEntityList,
+          filteredProducts: [tProductSummaryEntityList[1]],
+          searchQuery: 'apple',
+        ),
+      ],
+    );
+
+    blocTest<ProductCubit, ProductState>(
+      'Should reset the filtered products when input is an empty string',
+      build: () => productCubit,
+      seed: () => ProductLoaded(
+        products: tProductSummaryEntityList,
+        filteredProducts: [tProductSummaryEntityList[0], tProductSummaryEntityList[1]],
+        searchQuery: 'apple',
+      ),
+      act: (cubit) => cubit.filterProducts(''),
+      expect: () => [
+        ProductLoaded(
+          products: tProductSummaryEntityList,
+          filteredProducts: tProductSummaryEntityList,
+          searchQuery: '',
+        ),
+      ],
+    );
+  });
+
+    group('applyFilters', () {
+    blocTest<ProductCubit, ProductState>(
+      'Should filter products that are on sale when onSale is true',
+      build: () => productCubit,
+      seed: () => ProductLoaded(products: tProductSummaryEntityList, filteredProducts: tProductSummaryEntityList),
+      act: (cubit) => cubit.applyFilters(onSale: true),
+      expect: () => [
+        ProductLoaded(
+          products: tProductSummaryEntityList,
+          filteredProducts: [tProductSummaryEntityList[0]],
+        ),
+      ],
+    );
+
+    blocTest<ProductCubit, ProductState>(
+      'Should filter products based on the price range (minPrice, maxPrice)',
+      build: () => productCubit,
+      seed: () => ProductLoaded(products: tProductSummaryEntityList, filteredProducts: tProductSummaryEntityList),
+      act: (cubit) => cubit.applyFilters(minPrice: 100, maxPrice: 300),
+      expect: () => [
+        ProductLoaded(
+          products: tProductSummaryEntityList,
+          filteredProducts: [tProductSummaryEntityList[1]],
+        ),
+      ],
+    );
+
+    blocTest<ProductCubit, ProductState>(
+      'Should apply filters while having a search query, and meet both search and filter conditions',
+      build: () => productCubit,
+      seed: () => ProductLoaded(
+        products: tProductSummaryEntityList,
+        filteredProducts: tProductSummaryEntityList,
+        searchQuery: 'Apple'
+      ),
+      act: (cubit) => cubit.applyFilters(maxPrice: 300),
+      expect: () => [
+        ProductLoaded(
+          products: tProductSummaryEntityList,
+          filteredProducts: [tProductSummaryEntityList[1]],
+          searchQuery: 'Apple',
+        ),
+      ],
     );
   });
 }
