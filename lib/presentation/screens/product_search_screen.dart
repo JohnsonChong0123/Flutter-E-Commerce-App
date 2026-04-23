@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/common/widgets/loader.dart';
 import '../../core/extensions/theme_extensions.dart';
-import '../../domain/entity/product/product_summary_entity.dart';
+// import '../../domain/entity/product/product_summary_entity.dart';
 import '../blocs/product/product_bloc.dart';
 import '../widgets/product_card.dart';
 import '../cubits/category/category_cubit.dart';
@@ -246,290 +246,337 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
 
       body: RefreshIndicator(
         onRefresh: _refreshProducts,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(top: 30, bottom: 50),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Header
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Curated',
-                      style: context.textTheme.displayLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 48,
-                        height: 1.1,
-                      ),
-                    ),
-                    Text(
-                      'Essentials',
-                      style: context.textTheme.displayLarge?.copyWith(
-                        fontWeight: FontWeight.w300,
-                        fontStyle: FontStyle.italic,
-                        color: context.colorScheme.primary,
-                        fontSize: 48,
-                        height: 1.1,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'A definitive selection of high-performance objects designed for the modern domestic space.',
-                      style: context.textTheme.bodyLarge?.copyWith(
-                        color: context.colorScheme.secondary,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 32),
-
-                SearchBar(
-                  textInputAction: TextInputAction.search,
-                  elevation: const WidgetStatePropertyAll(3.0),
-                  hintText: "Search the atelier...",
-                  hintStyle: WidgetStatePropertyAll(
-                    context.textTheme.bodyLarge?.copyWith(
-                      color: context.colorScheme.outline,
-                    ),
-                  ),
-                  leading: Icon(
-                    Icons.search,
-                    color: context.colorScheme.outline,
-                  ),
-                  onChanged: (val) => context.read<ProductBloc>().filterProducts(val),
-                  onTapOutside: (event) => FocusScope.of(context).unfocus(),
-                ),
-
-                const SizedBox(height: 24),
-
-                // Categories
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  clipBehavior: Clip.none,
-                  child: BlocBuilder<CategoryCubit, String>(
-                    builder: (context, selected) {
-                      final categories = [
-                        'All Objects',
-                        'Apparel',
-                        'Accessories',
-                        'Home Decor',
-                        'Wellness',
-                        'Limited Edition',
-                      ];
-
-                      return Row(
-                        children: categories.map((cat) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 12),
-                            child: _buildCategoryChip(
-                              cat,
-                              selected == cat,
-                              context.colorScheme,
-                              context.textTheme,
-                              () => _onCategoryTap(cat),
-                            ),
-                          );
-                        }).toList(),
-                      );
-                    },
-                  ),
-                ),
-
-                const SizedBox(height: 32),
-
-                // Filter & Grid Controls
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Scrollbar(
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              // Top content: header, search bar, categories and filter controls
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 30, bottom: 0),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        BlocBuilder<ProductBloc, ProductState>(
-                          builder: (context, state) {
-                            final count = state is ProductLoaded
-                                ? state.products.length
-                                : 0;
-                            return Text(
-                              '$count ITEMS',
-                              style: context.textTheme.labelMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.5,
-                              ),
-                            );
-                          },
-                        ),
-                        Row(
+                        // Header
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            GestureDetector(
-                              onTap: _showFilterSheet,
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.tune,
-                                    size: 16,
-                                    color: context.colorScheme.onSurfaceVariant,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'FILTER',
-                                    style: context.textTheme.labelMedium
-                                        ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: context
-                                              .colorScheme
-                                              .onSurfaceVariant,
-                                        ),
-                                  ),
-                                ],
+                            Text(
+                              'Curated',
+                              style: context.textTheme.displayLarge?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 48,
+                                height: 1.1,
                               ),
                             ),
-                            const SizedBox(width: 24),
-                            BlocBuilder<ProductBloc, ProductState>(
-                              builder: (context, state) {
-                                final currentSort = state is ProductLoaded
-                                    ? state.sortOption
-                                    : SortOption.none;
-
-                                final productBloc = context.read<ProductBloc>();
-
-                                return GestureDetector(
-                                  onTapDown: (details) {
-                                    _sortMenuTapPosition = details.globalPosition;
-                                  },
-                                  onTap: () async {
-                                    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-                                    final position = RelativeRect.fromRect(
-                                      Rect.fromLTWH(
-                                        _sortMenuTapPosition.dx,
-                                        _sortMenuTapPosition.dy + 8,
-                                        0,
-                                        0,
-                                      ),
-                                      Offset.zero & overlay.size,
-                                    );
-
-                                    final selected = await showMenu<SortOption>(
-                                      context: context,
-                                      position: position,
-                                      items: [
-                                        const PopupMenuItem(
-                                          value: SortOption.none,
-                                          child: Text('None'),
-                                        ),
-                                        const PopupMenuItem(
-                                          value: SortOption.priceAsc,
-                                          child: Text('Price: Low → High'),
-                                        ),
-                                        const PopupMenuItem(
-                                          value: SortOption.priceDesc,
-                                          child: Text('Price: High → Low'),
-                                        ),
-                                        const PopupMenuItem(
-                                          value: SortOption.nameAsc,
-                                          child: Text('Name: A → Z'),
-                                        ),
-                                        const PopupMenuItem(
-                                          value: SortOption.nameDesc,
-                                          child: Text('Name: Z → A'),
-                                        ),
-                                      ],
-                                    );
-
-                                    if (selected != null) {
-                                      productBloc.sortProducts(selected);
-                                    }
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        _sortLabelFor(currentSort ?? SortOption.none),
-                                        style: context.textTheme.labelMedium
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              color: context
-                                                  .colorScheme
-                                                  .onSurfaceVariant,
-                                            ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Icon(
-                                        Icons.expand_more,
-                                        size: 16,
-                                        color: context.colorScheme.onSurfaceVariant,
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
+                            Text(
+                              'Essentials',
+                              style: context.textTheme.displayLarge?.copyWith(
+                                fontWeight: FontWeight.w300,
+                                fontStyle: FontStyle.italic,
+                                color: context.colorScheme.primary,
+                                fontSize: 48,
+                                height: 1.1,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'A definitive selection of high-performance objects designed for the modern domestic space.',
+                              style: context.textTheme.bodyLarge?.copyWith(
+                                color: context.colorScheme.secondary,
+                              ),
                             ),
                           ],
                         ),
+
+                        const SizedBox(height: 32),
+
+                        SearchBar(
+                          textInputAction: TextInputAction.search,
+                          elevation: const WidgetStatePropertyAll(3.0),
+                          hintText: "Search the atelier...",
+                          hintStyle: WidgetStatePropertyAll(
+                            context.textTheme.bodyLarge?.copyWith(
+                              color: context.colorScheme.outline,
+                            ),
+                          ),
+                          leading: Icon(
+                            Icons.search,
+                            color: context.colorScheme.outline,
+                          ),
+                          onChanged: (val) => context.read<ProductBloc>().filterProducts(val),
+                          onTapOutside: (event) => FocusScope.of(context).unfocus(),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // Categories
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          clipBehavior: Clip.none,
+                          child: BlocBuilder<CategoryCubit, String>(
+                            builder: (context, selected) {
+                              final categories = [
+                                'All Objects',
+                                'Apparel',
+                                'Accessories',
+                                'Home Decor',
+                                'Wellness',
+                                'Limited Edition',
+                              ];
+
+                              return Row(
+                                children: categories.map((cat) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 12),
+                                    child: _buildCategoryChip(
+                                      cat,
+                                      selected == cat,
+                                      context.colorScheme,
+                                      context.textTheme,
+                                      () => _onCategoryTap(cat),
+                                    ),
+                                  );
+                                }).toList(),
+                              );
+                            },
+                          ),
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        // Filter & Grid Controls
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                BlocBuilder<ProductBloc, ProductState>(
+                                  builder: (context, state) {
+                                    final count = state is ProductLoaded
+                                        ? state.products.length
+                                        : 0;
+                                    return Text(
+                                      '$count ITEMS',
+                                      style: context.textTheme.labelMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.5,
+                                      ),
+                                    );
+                                  },
+                                ),
+                                Row(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: _showFilterSheet,
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.tune,
+                                            size: 16,
+                                            color: context.colorScheme.onSurfaceVariant,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            'FILTER',
+                                            style: context.textTheme.labelMedium
+                                                ?.copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: context
+                                                      .colorScheme
+                                                      .onSurfaceVariant,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 24),
+                                    BlocBuilder<ProductBloc, ProductState>(
+                                      builder: (context, state) {
+                                        final currentSort = state is ProductLoaded
+                                            ? state.sortOption
+                                            : SortOption.none;
+
+                                        final productBloc = context.read<ProductBloc>();
+
+                                        return GestureDetector(
+                                          onTapDown: (details) {
+                                            _sortMenuTapPosition = details.globalPosition;
+                                          },
+                                          onTap: () async {
+                                            final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+                                            final position = RelativeRect.fromRect(
+                                              Rect.fromLTWH(
+                                                _sortMenuTapPosition.dx,
+                                                _sortMenuTapPosition.dy + 8,
+                                                0,
+                                                0,
+                                              ),
+                                              Offset.zero & overlay.size,
+                                            );
+
+                                            final selected = await showMenu<SortOption>(
+                                              context: context,
+                                              position: position,
+                                              items: [
+                                                const PopupMenuItem(
+                                                  value: SortOption.none,
+                                                  child: Text('None'),
+                                                ),
+                                                const PopupMenuItem(
+                                                  value: SortOption.priceAsc,
+                                                  child: Text('Price: Low → High'),
+                                                ),
+                                                const PopupMenuItem(
+                                                  value: SortOption.priceDesc,
+                                                  child: Text('Price: High → Low'),
+                                                ),
+                                                const PopupMenuItem(
+                                                  value: SortOption.nameAsc,
+                                                  child: Text('Name: A → Z'),
+                                                ),
+                                                const PopupMenuItem(
+                                                  value: SortOption.nameDesc,
+                                                  child: Text('Name: Z → A'),
+                                                ),
+                                              ],
+                                            );
+
+                                            if (selected != null) {
+                                              productBloc.sortProducts(selected);
+                                            }
+                                          },
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                _sortLabelFor(currentSort ?? SortOption.none),
+                                                style: context.textTheme.labelMedium
+                                                    ?.copyWith(
+                                                      fontWeight: FontWeight.bold,
+                                                      color: context
+                                                          .colorScheme
+                                                          .onSurfaceVariant,
+                                                    ),
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Icon(
+                                                Icons.expand_more,
+                                                size: 16,
+                                                color: context.colorScheme.onSurfaceVariant,
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Divider(
+                              color: context.colorScheme.outlineVariant.withValues(
+                                alpha: 0.2,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 16),
                       ],
-                    ),
-                    const SizedBox(height: 16),
-                    Divider(
-                      color: context.colorScheme.outlineVariant.withValues(
-                        alpha: 0.2,
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Product Grid
-                BlocBuilder<ProductBloc, ProductState>(
-                  builder: (context, state) {
-                    if (state is ProductLoading) {
-                      return const Loader();
-                    } else if (state is ProductLoaded) {
-                      if (state.filteredProducts.isEmpty) {
-                        return const Center(child: Text('No products found'));
-                      }
-                      return ProductGrid(
-                        filteredProducts: state.filteredProducts,
-                      );
-                    } else if (state is ProductFailure) {
-                      return Center(child: Text(state.message));
-                    } else {
-                      return const SizedBox();
-                    }
-                  },
-                ),
-
-                const SizedBox(height: 48),
-
-                // Explore More
-                Center(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          context.colorScheme.surfaceContainerHighest,
-                      foregroundColor: context.colorScheme.onSurface,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 48,
-                        vertical: 16,
-                      ),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    onPressed: () {},
-                    child: Text(
-                      'EXPLORE MORE',
-                      style: context.textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2.0,
-                        fontSize: 10,
-                      ),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+
+              // Product Grid & states
+              BlocBuilder<ProductBloc, ProductState>(
+                builder: (context, state) {
+                  if (state is ProductLoading) {
+                    return SliverToBoxAdapter(
+                      child: SizedBox(
+                        height: 200,
+                        child: Center(child: Loader()),
+                      ),
+                    );
+                  } else if (state is ProductLoaded) {
+                    if (state.filteredProducts.isEmpty) {
+                      return SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(child: Text('No products found')),
+                      );
+                    }
+
+                    return SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0),
+                      sliver: SliverGrid(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final product = state.filteredProducts[index];
+                            return ProductCard(product: product);
+                          },
+                          childCount: state.filteredProducts.length,
+                        ),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 8.0,
+                          mainAxisSpacing: 8.0,
+                          childAspectRatio: 0.7,
+                        ),
+                      ),
+                    );
+                  } else if (state is ProductFailure) {
+                    return SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(child: Text(state.message)),
+                    );
+                  } else {
+                    return const SliverToBoxAdapter(child: SizedBox());
+                  }
+                },
+              ),
+
+              // Spacing
+              // SliverToBoxAdapter(
+              //   child: const SizedBox(height: 48),
+              // ),
+
+              // SliverToBoxAdapter(
+              //   child: Center(
+              //     child: ElevatedButton(
+              //       style: ElevatedButton.styleFrom(
+              //         backgroundColor:
+              //             context.colorScheme.surfaceContainerHighest,
+              //         foregroundColor: context.colorScheme.onSurface,
+              //         padding: const EdgeInsets.symmetric(
+              //           horizontal: 48,
+              //           vertical: 16,
+              //         ),
+              //         elevation: 0,
+              //         shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(30),
+              //         ),
+              //       ),
+              //       onPressed: () {},
+              //       child: Text(
+              //         'EXPLORE MORE',
+              //         style: context.textTheme.labelSmall?.copyWith(
+              //           fontWeight: FontWeight.bold,
+              //           letterSpacing: 2.0,
+              //           fontSize: 10,
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 48),
+              ),
+            ],
           ),
         ),
       ),
@@ -567,35 +614,35 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
   }
 }
 
-class ProductGrid extends StatefulWidget {
-  final List<ProductSummaryEntity> filteredProducts;
+// class ProductGrid extends StatefulWidget {
+//   final List<ProductSummaryEntity> filteredProducts;
 
-  const ProductGrid({required this.filteredProducts, super.key});
+//   const ProductGrid({required this.filteredProducts, super.key});
 
-  @override
-  State<ProductGrid> createState() => _ProductGridState();
-}
+//   @override
+//   State<ProductGrid> createState() => _ProductGridState();
+// }
 
-class _ProductGridState extends State<ProductGrid> {
-  @override
-  Widget build(BuildContext context) {
-    return Scrollbar(
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(8.0),
-        itemCount: widget.filteredProducts.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 8.0,
-          mainAxisSpacing: 8.0,
-          childAspectRatio: 0.7,
-        ),
-        itemBuilder: (context, index) {
-          final product = widget.filteredProducts[index];
-          return ProductCard(product: product);
-        },
-      ),
-    );
-  }
-}
+// class _ProductGridState extends State<ProductGrid> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scrollbar(
+//       child: GridView.builder(
+//         shrinkWrap: true,
+//         physics: const NeverScrollableScrollPhysics(),
+//         padding: const EdgeInsets.all(8.0),
+//         itemCount: widget.filteredProducts.length,
+//         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+//           crossAxisCount: 2,
+//           crossAxisSpacing: 8.0,
+//           mainAxisSpacing: 8.0,
+//           childAspectRatio: 0.7,
+//         ),
+//         itemBuilder: (context, index) {
+//           final product = widget.filteredProducts[index];
+//           return ProductCard(product: product);
+//         },
+//       ),
+//     );
+//   }
+// }
