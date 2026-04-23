@@ -2,7 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:e_commerce_client/core/errors/failure.dart';
 import 'package:e_commerce_client/domain/usecases/product/get_product_by_id.dart';
 import 'package:e_commerce_client/domain/usecases/product/get_products.dart';
-import 'package:e_commerce_client/presentation/cubits/product/product_cubit.dart';
+import 'package:e_commerce_client/presentation/blocs/product/product_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
@@ -16,7 +16,7 @@ class MockGetProductId extends Mock implements GetProductById {}
 void main() {
   late MockGetProducts mockGetProducts;
   late MockGetProductId mockGetProductId;
-  late ProductCubit productCubit;
+  late ProductBloc productBloc;
 
   const tParams = GetProductsParams(
     category: 'electronics',
@@ -31,21 +31,21 @@ void main() {
   setUp(() {
     mockGetProducts = MockGetProducts();
     mockGetProductId = MockGetProductId();
-    productCubit = ProductCubit(
+    productBloc = ProductBloc(
       getProducts: mockGetProducts,
       getProductById: mockGetProductId,
     );
   });
 
   group('loadProducts', () {
-    blocTest<ProductCubit, ProductState>(
+    blocTest<ProductBloc, ProductState>(
       'should emit [ProductLoading, ProductLoaded] when get products succeeds',
       build: () {
         when(
           () => mockGetProducts(tParams),
         ).thenAnswer((_) async => Right(tProductSummaryEntityList));
 
-        return productCubit;
+        return productBloc;
       },
       act: (cubit) =>
           cubit.loadProducts(category: category, limit: limit, page: page),
@@ -62,14 +62,14 @@ void main() {
       },
     );
 
-    blocTest<ProductCubit, ProductState>(
+    blocTest<ProductBloc, ProductState>(
       'should emit [ProductLoading, ProductFailure] when get products fails',
       build: () {
         when(() => mockGetProducts(tParams)).thenAnswer(
           (_) async => const Left(Failure('Failed to load products')),
         );
 
-        return productCubit;
+        return productBloc;
       },
       act: (cubit) =>
           cubit.loadProducts(category: category, limit: limit, page: page),
@@ -84,14 +84,14 @@ void main() {
   });
 
   group('loadProductById', () {
-    blocTest<ProductCubit, ProductState>(
+    blocTest<ProductBloc, ProductState>(
       'should emit [ProductLoading, ProductDetailsLoaded] when get product by id succeeds',
       build: () {
         when(
           () => mockGetProductId(GetProductByIdParams(productId: tProductId)),
         ).thenAnswer((_) async => Right(tProductDetailsEntity));
 
-        return productCubit;
+        return productBloc;
       },
       act: (cubit) => cubit.loadProductById(tProductId),
       expect: () => [
@@ -105,7 +105,7 @@ void main() {
       },
     );
 
-    blocTest<ProductCubit, ProductState>(
+    blocTest<ProductBloc, ProductState>(
       'should emit [ProductLoading, ProductFailure] when get product by id fails',
       build: () {
         when(
@@ -114,7 +114,7 @@ void main() {
           (_) async => const Left(Failure('Failed to load product details')),
         );
 
-        return productCubit;
+        return productBloc;
       },
       act: (cubit) => cubit.loadProductById(tProductId),
       expect: () => [
@@ -130,14 +130,15 @@ void main() {
   });
 
   group('filterProducts', () {
-    blocTest<ProductCubit, ProductState>(
+    blocTest<ProductBloc, ProductState>(
       'Should filter the products based on the query when input is not empty',
-      build: () => productCubit,
+      build: () => productBloc,
       seed: () => ProductLoaded(
         products: tProductSummaryEntityList,
         filteredProducts: tProductSummaryEntityList,
       ),
       act: (cubit) => cubit.filterProducts('apple'),
+      wait: const Duration(milliseconds: 350),
       expect: () => [
         ProductLoaded(
           products: tProductSummaryEntityList,
@@ -147,9 +148,9 @@ void main() {
       ],
     );
 
-    blocTest<ProductCubit, ProductState>(
+    blocTest<ProductBloc, ProductState>(
       'Should reset the filtered products when input is an empty string',
-      build: () => productCubit,
+      build: () => productBloc,
       seed: () => ProductLoaded(
         products: tProductSummaryEntityList,
         filteredProducts: [
@@ -159,6 +160,7 @@ void main() {
         searchQuery: 'apple',
       ),
       act: (cubit) => cubit.filterProducts(''),
+      wait: const Duration(milliseconds: 350),
       expect: () => [
         ProductLoaded(
           products: tProductSummaryEntityList,
@@ -170,9 +172,9 @@ void main() {
   });
 
   group('applyFilters', () {
-    blocTest<ProductCubit, ProductState>(
+    blocTest<ProductBloc, ProductState>(
       'Should filter products that are on sale when onSale is true',
-      build: () => productCubit,
+      build: () => productBloc,
       seed: () => ProductLoaded(
         products: tProductSummaryEntityList,
         filteredProducts: tProductSummaryEntityList,
@@ -186,9 +188,9 @@ void main() {
       ],
     );
 
-    blocTest<ProductCubit, ProductState>(
+    blocTest<ProductBloc, ProductState>(
       'Should filter products based on the price range (minPrice, maxPrice)',
-      build: () => productCubit,
+      build: () => productBloc,
       seed: () => ProductLoaded(
         products: tProductSummaryEntityList,
         filteredProducts: tProductSummaryEntityList,
@@ -202,9 +204,9 @@ void main() {
       ],
     );
 
-    blocTest<ProductCubit, ProductState>(
+    blocTest<ProductBloc, ProductState>(
       'Should apply filters while having a search query, and meet both search and filter conditions',
-      build: () => productCubit,
+      build: () => productBloc,
       seed: () => ProductLoaded(
         products: tProductSummaryEntityList,
         filteredProducts: tProductSummaryEntityList,
@@ -222,9 +224,9 @@ void main() {
   });
 
   group('sortProducts', () {
-    blocTest<ProductCubit, ProductState>(
+    blocTest<ProductBloc, ProductState>(
       'Should sort products by price in ascending order when SortOption.priceAsc is selected',
-      build: () => productCubit,
+      build: () => productBloc,
       seed: () => ProductLoaded(
         products: tProductSummaryEntityList,
         filteredProducts: tProductSummaryEntityList,
@@ -242,9 +244,9 @@ void main() {
       ],
     );
 
-    blocTest<ProductCubit, ProductState>(
+    blocTest<ProductBloc, ProductState>(
       'Should sort products by price in descending order when SortOption.priceDesc is selected',
-      build: () => productCubit,
+      build: () => productBloc,
       seed: () => ProductLoaded(
         products: tProductSummaryEntityList,
         filteredProducts: tProductSummaryEntityList,
@@ -262,9 +264,9 @@ void main() {
       ],
     );
 
-    blocTest<ProductCubit, ProductState>(
+    blocTest<ProductBloc, ProductState>(
       'Should sort products by name in ascending order when SortOption.nameAsc is selected',
-      build: () => productCubit,
+      build: () => productBloc,
       seed: () => ProductLoaded(
         products: tProductSummaryEntityList,
         filteredProducts: tProductSummaryEntityList,
@@ -282,9 +284,9 @@ void main() {
       ],
     );
 
-    blocTest<ProductCubit, ProductState>(
+    blocTest<ProductBloc, ProductState>(
       'Should sort products by name in descending order when SortOption.nameDesc is selected',
-      build: () => productCubit,
+      build: () => productBloc,
       seed: () => ProductLoaded(
         products: tProductSummaryEntityList,
         filteredProducts: tProductSummaryEntityList,
@@ -302,9 +304,9 @@ void main() {
       ],
     );
 
-    blocTest<ProductCubit, ProductState>(
+    blocTest<ProductBloc, ProductState>(
       'Should reset to the original order when SortOption.none is selected',
-      build: () => productCubit,
+      build: () => productBloc,
       seed: () => ProductLoaded(
         products: tProductSummaryEntityList,
         filteredProducts: [
@@ -323,4 +325,4 @@ void main() {
       ],
     );
   });
-}
+ }
