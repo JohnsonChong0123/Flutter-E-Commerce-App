@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/common/widgets/loader.dart';
 import '../../core/extensions/theme_extensions.dart';
 import '../../domain/entity/product/product_summary_entity.dart';
-import '../cubits/product/product_cubit.dart';
+import '../blocs/product/product_bloc.dart';
 import '../widgets/product_card.dart';
 import '../cubits/category/category_cubit.dart';
 
@@ -23,7 +23,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<ProductCubit>().loadProducts();
+    context.read<ProductBloc>().loadProducts();
     if (context.read<CategoryCubit>().state.isEmpty) {
       context.read<CategoryCubit>().selectCategory('All Objects');
     }
@@ -36,7 +36,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
   }
 
   Future<void> _refreshProducts() async {
-    final productCubit = context.read<ProductCubit>();
+    final productBloc = context.read<ProductBloc>();
     final currentCategory = context.read<CategoryCubit>().state;
 
     await Future.delayed(const Duration(seconds: 1));
@@ -44,25 +44,25 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
     if (!mounted) return;
 
     if (currentCategory == 'All Objects') {
-      await productCubit.loadProducts();
+      productBloc.loadProducts();
     } else {
-      await productCubit.loadProducts(category: currentCategory.toLowerCase());
+      productBloc.loadProducts(category: currentCategory.toLowerCase());
     }
   }
 
   void _onCategoryTap(String categoryName) {
     context.read<CategoryCubit>().selectCategory(categoryName);
     if (categoryName == 'All Objects') {
-      context.read<ProductCubit>().loadProducts();
+      context.read<ProductBloc>().loadProducts();
     } else {
-      context.read<ProductCubit>().loadProducts(
+      context.read<ProductBloc>().loadProducts(
         category: categoryName.toLowerCase(),
       );
     }
   }
 
   void _showFilterSheet() {
-    final productCubit = context.read<ProductCubit>();
+    final productBloc = context.read<ProductBloc>();
     final onSaleNotifier = ValueNotifier<bool>(false);
     showModalBottomSheet<void>(
       context: context,
@@ -157,7 +157,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                           minController.clear();
                           maxController.clear();
 
-                          productCubit.applyFilters(
+                          productBloc.applyFilters(
                             onSale: null,
                             minPrice: null,
                             maxPrice: null,
@@ -172,7 +172,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                           final minPrice = double.tryParse(minController.text);
                           final maxPrice = double.tryParse(maxController.text);
 
-                          productCubit.applyFilters(
+                          productBloc.applyFilters(
                             onSale: onSaleNotifier.value ? true : null,
                             minPrice: minPrice,
                             maxPrice: maxPrice,
@@ -300,13 +300,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                     Icons.search,
                     color: context.colorScheme.outline,
                   ),
-                  onChanged: (val) {
-                    if (_debounce?.isActive ?? false) _debounce!.cancel();
-
-                    _debounce = Timer(const Duration(milliseconds: 300), () {
-                      context.read<ProductCubit>().filterProducts(val);
-                    });
-                  },
+                  onChanged: (val) => context.read<ProductBloc>().filterProducts(val),
                   onTapOutside: (event) => FocusScope.of(context).unfocus(),
                 ),
 
@@ -354,7 +348,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        BlocBuilder<ProductCubit, ProductState>(
+                        BlocBuilder<ProductBloc, ProductState>(
                           builder: (context, state) {
                             final count = state is ProductLoaded
                                 ? state.products.length
@@ -394,13 +388,13 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                               ),
                             ),
                             const SizedBox(width: 24),
-                            BlocBuilder<ProductCubit, ProductState>(
+                            BlocBuilder<ProductBloc, ProductState>(
                               builder: (context, state) {
                                 final currentSort = state is ProductLoaded
                                     ? state.sortOption
                                     : SortOption.none;
 
-                                final productCubit = context.read<ProductCubit>();
+                                final productBloc = context.read<ProductBloc>();
 
                                 return GestureDetector(
                                   onTapDown: (details) {
@@ -446,7 +440,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                                     );
 
                                     if (selected != null) {
-                                      productCubit.sortProducts(selected);
+                                      productBloc.sortProducts(selected);
                                     }
                                   },
                                   child: Row(
@@ -486,7 +480,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                 ),
 
                 // Product Grid
-                BlocBuilder<ProductCubit, ProductState>(
+                BlocBuilder<ProductBloc, ProductState>(
                   builder: (context, state) {
                     if (state is ProductLoading) {
                       return const Loader();

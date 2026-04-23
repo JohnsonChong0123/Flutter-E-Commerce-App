@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/common/widgets/loader.dart';
 import '../../core/extensions/theme_extensions.dart';
 import '../../core/routes/app_router.dart';
-import '../cubits/product/product_cubit.dart';
+import '../blocs/product/product_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<ProductCubit>().loadProducts();
+    context.read<ProductBloc>().loadProducts();
   }
 
   @override
@@ -242,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  BlocBuilder<ProductCubit, ProductState>(
+                  BlocBuilder<ProductBloc, ProductState>(
                     builder: (context, state) {
                       if (state is ProductLoading) {
                         return const Loader();

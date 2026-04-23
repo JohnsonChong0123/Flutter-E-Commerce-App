@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/blocs/auth/auth_bloc.dart';
 import '../../presentation/cubits/category/category_cubit.dart';
-import '../../presentation/cubits/product/product_cubit.dart';
+import '../../presentation/blocs/product/product_bloc.dart';
 import '../../presentation/screens/account_screen.dart';
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/sign_up_screen.dart';
@@ -80,7 +80,7 @@ class AppRouter {
               providers: [
                 BlocProvider(
                   create: (context) =>
-                      ProductCubit(getProducts: sl(), getProductById: sl())
+                      ProductBloc(getProducts: sl(), getProductById: sl())
                         ..loadProductById(id),
                 ),
               ],
@@ -101,7 +101,7 @@ class AppRouter {
                   name: homeName,
                   builder: (context, state) => BlocProvider(
                     create: (context) =>
-                        ProductCubit(getProducts: sl(), getProductById: sl()),
+                        ProductBloc(getProducts: sl(), getProductById: sl()),
                     child: const HomeScreen(),
                   ),
                 ),
@@ -116,7 +116,7 @@ class AppRouter {
                     return MultiBlocProvider(
                       providers: [
                         BlocProvider(
-                          create: (context) => ProductCubit(
+                          create: (context) => ProductBloc(
                             getProducts: sl(),
                             getProductById: sl(),
                           ),

@@ -22,7 +22,7 @@ import 'package:e_commerce_client/domain/usecases/product/get_product_by_id.dart
 import 'package:e_commerce_client/domain/usecases/product/get_products.dart';
 import 'package:e_commerce_client/presentation/blocs/auth/auth_bloc.dart';
 import 'package:e_commerce_client/presentation/cubits/cart/cart_cubit.dart';
-import 'package:e_commerce_client/presentation/cubits/product/product_cubit.dart';
+import 'package:e_commerce_client/presentation/blocs/product/product_bloc.dart';
 import 'package:e_commerce_client/service_locator.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../mocks/mock_auth_remote_data.dart';
@@ -76,7 +76,7 @@ Future<void> initTestServiceLocator({
     ..registerLazySingleton(() => GetProducts(sl()))
     ..registerLazySingleton(() => GetProductById(sl()))
     ..registerFactory(
-      () => ProductCubit(getProducts: sl(), getProductById: sl()),
+      () => ProductBloc(getProducts: sl(), getProductById: sl()),
     );
 
   // Cart

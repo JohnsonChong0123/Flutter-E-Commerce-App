@@ -37,7 +37,7 @@ import 'domain/usecases/wishlist/remove_wishlist.dart';
 import 'presentation/blocs/auth/auth_bloc.dart';
 import 'data/sources/remote/product_remote_data.dart';
 import 'presentation/cubits/cart/cart_cubit.dart';
-import 'presentation/cubits/product/product_cubit.dart';
+import 'presentation/blocs/product/product_bloc.dart';
 import 'domain/usecases/product/get_product_by_id.dart';
 
 final sl = GetIt.instance;
@@ -155,7 +155,7 @@ void _initProduct() {
     ..registerLazySingleton(() => GetProductById(sl()))
     // Presentation layer: Cubit
     ..registerFactory(
-      () => ProductCubit(getProducts: sl(), getProductById: sl()),
+      () => ProductBloc(getProducts: sl(), getProductById: sl()),
     );
 }
 

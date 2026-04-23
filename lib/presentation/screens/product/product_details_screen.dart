@@ -9,7 +9,7 @@ import '../../../core/routes/app_router.dart';
 import '../../../core/themes/app_colors.dart';
 import '../../../domain/entity/product/product_details_entity.dart';
 import '../../cubits/cart/cart_cubit.dart';
-import '../../cubits/product/product_cubit.dart';
+import '../../blocs/product/product_bloc.dart';
 import '../../cubits/wishlist/wishlist_cubit.dart';
 import '../../notifiers/product_details_notifier.dart';
 
@@ -41,7 +41,7 @@ class ProductDetailScreen extends StatelessWidget {
             ),
           ],
         ),
-        body: BlocBuilder<ProductCubit, ProductState>(
+        body: BlocBuilder<ProductBloc, ProductState>(
           builder: (context, state) {
             if (state is ProductLoading) {
               return Loader();
@@ -65,7 +65,7 @@ class ProductDetailScreen extends StatelessWidget {
             shape: const RoundedRectangleBorder(),
           ),
           onPressed: () {
-            final state = context.read<ProductCubit>().state;
+            final state = context.read<ProductBloc>().state;
 
             if (state is ProductDetailsLoaded) {
               _showCartDialog(context, state.product);
