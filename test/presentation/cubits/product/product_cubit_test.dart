@@ -54,6 +54,7 @@ void main() {
         ProductLoaded(
           products: tProductSummaryEntityList,
           filteredProducts: tProductSummaryEntityList,
+          sortOption: SortOption.none,
         ),
       ],
       verify: (_) {
@@ -132,8 +133,10 @@ void main() {
     blocTest<ProductCubit, ProductState>(
       'Should filter the products based on the query when input is not empty',
       build: () => productCubit,
-      seed: () =>
-          ProductLoaded(products: tProductSummaryEntityList, filteredProducts: tProductSummaryEntityList),
+      seed: () => ProductLoaded(
+        products: tProductSummaryEntityList,
+        filteredProducts: tProductSummaryEntityList,
+      ),
       act: (cubit) => cubit.filterProducts('apple'),
       expect: () => [
         ProductLoaded(
@@ -149,7 +152,10 @@ void main() {
       build: () => productCubit,
       seed: () => ProductLoaded(
         products: tProductSummaryEntityList,
-        filteredProducts: [tProductSummaryEntityList[0], tProductSummaryEntityList[1]],
+        filteredProducts: [
+          tProductSummaryEntityList[0],
+          tProductSummaryEntityList[1],
+        ],
         searchQuery: 'apple',
       ),
       act: (cubit) => cubit.filterProducts(''),
@@ -163,11 +169,14 @@ void main() {
     );
   });
 
-    group('applyFilters', () {
+  group('applyFilters', () {
     blocTest<ProductCubit, ProductState>(
       'Should filter products that are on sale when onSale is true',
       build: () => productCubit,
-      seed: () => ProductLoaded(products: tProductSummaryEntityList, filteredProducts: tProductSummaryEntityList),
+      seed: () => ProductLoaded(
+        products: tProductSummaryEntityList,
+        filteredProducts: tProductSummaryEntityList,
+      ),
       act: (cubit) => cubit.applyFilters(onSale: true),
       expect: () => [
         ProductLoaded(
@@ -180,7 +189,10 @@ void main() {
     blocTest<ProductCubit, ProductState>(
       'Should filter products based on the price range (minPrice, maxPrice)',
       build: () => productCubit,
-      seed: () => ProductLoaded(products: tProductSummaryEntityList, filteredProducts: tProductSummaryEntityList),
+      seed: () => ProductLoaded(
+        products: tProductSummaryEntityList,
+        filteredProducts: tProductSummaryEntityList,
+      ),
       act: (cubit) => cubit.applyFilters(minPrice: 100, maxPrice: 300),
       expect: () => [
         ProductLoaded(
@@ -196,7 +208,7 @@ void main() {
       seed: () => ProductLoaded(
         products: tProductSummaryEntityList,
         filteredProducts: tProductSummaryEntityList,
-        searchQuery: 'Apple'
+        searchQuery: 'Apple',
       ),
       act: (cubit) => cubit.applyFilters(maxPrice: 300),
       expect: () => [
@@ -204,6 +216,109 @@ void main() {
           products: tProductSummaryEntityList,
           filteredProducts: [tProductSummaryEntityList[1]],
           searchQuery: 'Apple',
+        ),
+      ],
+    );
+  });
+
+  group('sortProducts', () {
+    blocTest<ProductCubit, ProductState>(
+      'Should sort products by price in ascending order when SortOption.priceAsc is selected',
+      build: () => productCubit,
+      seed: () => ProductLoaded(
+        products: tProductSummaryEntityList,
+        filteredProducts: tProductSummaryEntityList,
+      ),
+      act: (cubit) => cubit.sortProducts(SortOption.priceAsc),
+      expect: () => [
+        ProductLoaded(
+          products: tProductSummaryEntityList,
+          filteredProducts: [
+            tProductSummaryEntityList[1],
+            tProductSummaryEntityList[0],
+          ],
+          sortOption: SortOption.priceAsc,
+        ),
+      ],
+    );
+
+    blocTest<ProductCubit, ProductState>(
+      'Should sort products by price in descending order when SortOption.priceDesc is selected',
+      build: () => productCubit,
+      seed: () => ProductLoaded(
+        products: tProductSummaryEntityList,
+        filteredProducts: tProductSummaryEntityList,
+      ),
+      act: (cubit) => cubit.sortProducts(SortOption.priceDesc),
+      expect: () => [
+        ProductLoaded(
+          products: tProductSummaryEntityList,
+          filteredProducts: [
+            tProductSummaryEntityList[0],
+            tProductSummaryEntityList[1],
+          ],
+          sortOption: SortOption.priceDesc,
+        ),
+      ],
+    );
+
+    blocTest<ProductCubit, ProductState>(
+      'Should sort products by name in ascending order when SortOption.nameAsc is selected',
+      build: () => productCubit,
+      seed: () => ProductLoaded(
+        products: tProductSummaryEntityList,
+        filteredProducts: tProductSummaryEntityList,
+      ),
+      act: (cubit) => cubit.sortProducts(SortOption.nameAsc),
+      expect: () => [
+        ProductLoaded(
+          products: tProductSummaryEntityList,
+          filteredProducts: [
+            tProductSummaryEntityList[1],
+            tProductSummaryEntityList[0],
+          ],
+          sortOption: SortOption.nameAsc,
+        ),
+      ],
+    );
+
+    blocTest<ProductCubit, ProductState>(
+      'Should sort products by name in descending order when SortOption.nameDesc is selected',
+      build: () => productCubit,
+      seed: () => ProductLoaded(
+        products: tProductSummaryEntityList,
+        filteredProducts: tProductSummaryEntityList,
+      ),
+      act: (cubit) => cubit.sortProducts(SortOption.nameDesc),
+      expect: () => [
+        ProductLoaded(
+          products: tProductSummaryEntityList,
+          filteredProducts: [
+            tProductSummaryEntityList[0],
+            tProductSummaryEntityList[1],
+          ],
+          sortOption: SortOption.nameDesc,
+        ),
+      ],
+    );
+
+    blocTest<ProductCubit, ProductState>(
+      'Should reset to the original order when SortOption.none is selected',
+      build: () => productCubit,
+      seed: () => ProductLoaded(
+        products: tProductSummaryEntityList,
+        filteredProducts: [
+          tProductSummaryEntityList[1],
+          tProductSummaryEntityList[0],
+        ],
+        sortOption: SortOption.priceAsc,
+      ),
+      act: (cubit) => cubit.sortProducts(SortOption.none),
+      expect: () => [
+        ProductLoaded(
+          products: tProductSummaryEntityList,
+          filteredProducts: tProductSummaryEntityList,
+          sortOption: SortOption.none,
         ),
       ],
     );

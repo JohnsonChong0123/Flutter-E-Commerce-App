@@ -31,6 +31,7 @@ class ProductCubit extends Cubit<ProductState> {
       (products) => emit(ProductLoaded(
         products: products, 
         filteredProducts: products,
+        sortOption: SortOption.none,
       )),
     );
   }
@@ -44,6 +45,7 @@ class ProductCubit extends Cubit<ProductState> {
           products: currentState.products,
           filteredProducts: currentState.products,
           searchQuery: query,
+          sortOption: currentState.sortOption,
         ));
       } else {
         final filtered = currentState.products.where((product) {
@@ -54,6 +56,7 @@ class ProductCubit extends Cubit<ProductState> {
           products: currentState.products,
           filteredProducts: filtered,
           searchQuery: query,
+          sortOption: currentState.sortOption,
         ));
       }
     }
@@ -82,6 +85,49 @@ class ProductCubit extends Cubit<ProductState> {
         products: currentState.products,
         filteredProducts: filtered,
         searchQuery: currentState.searchQuery,
+        sortOption: currentState.sortOption,
+      ));
+    }
+  }
+
+  void sortProducts(SortOption option) {
+    if (state is ProductLoaded) {
+      final currentState = state as ProductLoaded;
+      final List<ProductSummaryEntity> baseList = currentState.filteredProducts.isNotEmpty
+          ? List<ProductSummaryEntity>.from(currentState.filteredProducts)
+          : List<ProductSummaryEntity>.from(currentState.products);
+
+      switch (option) {
+        case SortOption.priceAsc:
+          baseList.sort((a, b) => a.finalPrice.compareTo(b.finalPrice));
+          break;
+        case SortOption.priceDesc:
+          baseList.sort((a, b) => b.finalPrice.compareTo(a.finalPrice));
+          break;
+        case SortOption.nameAsc:
+          baseList.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+          break;
+        case SortOption.nameDesc:
+          baseList.sort((a, b) => b.name.toLowerCase().compareTo(a.name.toLowerCase()));
+          break;
+        case SortOption.none:
+          final baseProducts = currentState.products;
+          final searchQuery = currentState.searchQuery ?? '';
+          final reFiltered = baseProducts.where((product) {
+            if (searchQuery.isNotEmpty && !product.name.toLowerCase().startsWith(searchQuery.toLowerCase())) return false;
+            return true;
+          }).toList();
+          baseList
+            ..clear()
+            ..addAll(reFiltered);
+          break;
+      }
+
+      emit(ProductLoaded(
+        products: currentState.products,
+        filteredProducts: baseList,
+        searchQuery: currentState.searchQuery,
+        sortOption: option,
       ));
     }
   }

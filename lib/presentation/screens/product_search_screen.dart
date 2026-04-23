@@ -18,6 +18,7 @@ class ProductSearchScreen extends StatefulWidget {
 
 class _ProductSearchScreenState extends State<ProductSearchScreen> {
   Timer? _debounce;
+  Offset _sortMenuTapPosition = Offset.zero;
 
   @override
   void initState() {
@@ -189,6 +190,21 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
         );
       },
     );
+  }
+
+  String _sortLabelFor(SortOption option) {
+    switch (option) {
+      case SortOption.priceAsc:
+        return 'Price: Low → High';
+      case SortOption.priceDesc:
+        return 'Price: High → Low';
+      case SortOption.nameAsc:
+        return 'Name: A → Z';
+      case SortOption.nameDesc:
+        return 'Name: Z → A';
+      case SortOption.none:
+        return 'SORT BY';
+    }
   }
 
   @override
@@ -376,25 +392,83 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                               ),
                             ),
                             const SizedBox(width: 24),
-                            Row(
-                              children: [
-                                Text(
-                                  'SORT BY',
-                                  style: context.textTheme.labelMedium
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: context
-                                            .colorScheme
-                                            .onSurfaceVariant,
+                            BlocBuilder<ProductCubit, ProductState>(
+                              builder: (context, state) {
+                                final currentSort = state is ProductLoaded
+                                    ? state.sortOption
+                                    : SortOption.none;
+
+                                final productCubit = context.read<ProductCubit>();
+
+                                return GestureDetector(
+                                  onTapDown: (details) {
+                                    _sortMenuTapPosition = details.globalPosition;
+                                  },
+                                  onTap: () async {
+                                    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+                                    final position = RelativeRect.fromRect(
+                                      Rect.fromLTWH(
+                                        _sortMenuTapPosition.dx,
+                                        _sortMenuTapPosition.dy + 8,
+                                        0,
+                                        0,
                                       ),
-                                ),
-                                const SizedBox(width: 4),
-                                Icon(
-                                  Icons.expand_more,
-                                  size: 16,
-                                  color: context.colorScheme.onSurfaceVariant,
-                                ),
-                              ],
+                                      Offset.zero & overlay.size,
+                                    );
+
+                                    final selected = await showMenu<SortOption>(
+                                      context: context,
+                                      position: position,
+                                      items: [
+                                        const PopupMenuItem(
+                                          value: SortOption.none,
+                                          child: Text('None'),
+                                        ),
+                                        const PopupMenuItem(
+                                          value: SortOption.priceAsc,
+                                          child: Text('Price: Low → High'),
+                                        ),
+                                        const PopupMenuItem(
+                                          value: SortOption.priceDesc,
+                                          child: Text('Price: High → Low'),
+                                        ),
+                                        const PopupMenuItem(
+                                          value: SortOption.nameAsc,
+                                          child: Text('Name: A → Z'),
+                                        ),
+                                        const PopupMenuItem(
+                                          value: SortOption.nameDesc,
+                                          child: Text('Name: Z → A'),
+                                        ),
+                                      ],
+                                    );
+
+                                    if (selected != null) {
+                                      productCubit.sortProducts(selected);
+                                    }
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        _sortLabelFor(currentSort ?? SortOption.none),
+                                        style: context.textTheme.labelMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: context
+                                                  .colorScheme
+                                                  .onSurfaceVariant,
+                                            ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Icon(
+                                        Icons.expand_more,
+                                        size: 16,
+                                        color: context.colorScheme.onSurfaceVariant,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
                             ),
                           ],
                         ),
