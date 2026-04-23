@@ -63,17 +63,16 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
 
   void _showFilterSheet() {
     final productCubit = context.read<ProductCubit>();
-
+    final onSaleNotifier = ValueNotifier<bool>(false);
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       builder: (context) {
-        bool onSale = false;
         final minController = TextEditingController();
         final maxController = TextEditingController();
 
         return StatefulBuilder(
-          builder: (context, setState) {
+          builder: (context, _) {
             return Padding(
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -101,10 +100,15 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  SwitchListTile(
-                    title: Text('On Sale', style: context.textTheme.bodyLarge),
-                    value: onSale,
-                    onChanged: (val) => setState(() => onSale = val),
+                  ValueListenableBuilder<bool>(
+                    valueListenable: onSaleNotifier,
+                    builder: (context, isOnSale, _) {
+                      return SwitchListTile(
+                        title: const Text('On Sale'),
+                        value: isOnSale,
+                        onChanged: (val) => onSaleNotifier.value = val,
+                      );
+                    },
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -149,11 +153,9 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                     children: [
                       TextButton(
                         onPressed: () {
-                          setState(() {
-                            onSale = false;
-                            minController.clear();
-                            maxController.clear();
-                          });
+                          onSaleNotifier.value = false;
+                          minController.clear();
+                          maxController.clear();
 
                           productCubit.applyFilters(
                             onSale: null,
@@ -171,7 +173,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                           final maxPrice = double.tryParse(maxController.text);
 
                           productCubit.applyFilters(
-                            onSale: onSale ? true : null,
+                            onSale: onSaleNotifier.value ? true : null,
                             minPrice: minPrice,
                             maxPrice: maxPrice,
                           );
