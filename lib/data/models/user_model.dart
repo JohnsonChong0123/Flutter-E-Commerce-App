@@ -22,6 +22,7 @@ class UserModel extends UserEntity {
       email: json['email'] ?? '',
       phone: json['phone'] ?? '',
       image: json['image_url'] ?? '',
+      // image: json['avatar'] ?? json['image_url'] ?? '',
       address: json['address'] ?? '',
       latitude: json['latitude'] ?? 0.0,
       longitude: json['longitude'] ?? 0.0,
