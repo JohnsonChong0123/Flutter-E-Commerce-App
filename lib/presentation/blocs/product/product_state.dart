@@ -34,11 +34,12 @@ class ProductLoaded extends ProductState {
 
 final class ProductDetailsLoaded extends ProductState {
   final ProductDetailsEntity product;
+  final List<ProductDisplayAspect> aspect;
 
-  const ProductDetailsLoaded({required this.product});
+  const ProductDetailsLoaded({required this.product, required this.aspect});
 
   @override
-  List<Object> get props => [product];
+  List<Object> get props => [product, aspect];
 }
 
 final class ProductFailure extends ProductState {

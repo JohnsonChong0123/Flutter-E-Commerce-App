@@ -2,6 +2,125 @@
   "id": "v1|377049276589|645539111213",
   "title": "NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked",
   "description": "🔥 NEW SEALED SAMSUNG GALAXY S23 ULTRA 5G FACTORY UNLOCKED GSM CDMA ALL MEMORY🔥 🎁【US IN STOCK🚚 Fast Delivery】 ✅Factory Unlocked 👍 ALL COLOR & MEMORY & CARRIER 🚚Free & Fast Shipping: 3-5 DAYS 💯Brand-New in Sealed Box 🤩Free Exchange in 60 days 🤝 2 Years Warranty.",
-  "price": 481.99,
-  "image_url": "https://i.ebayimg.com/images/g/i20AAOSwvxpna86j/s-l1600.jpg"
+  "price": {
+    "value": 481.99,
+    "currency": "USD"
+  },
+  "image_url": "https://i.ebayimg.com/images/g/i20AAOSwvxpna86j/s-l1600.jpg",
+  "additional_images": [
+    "https://i.ebayimg.com/images/g/7CwAAOSwu2Zna86k/s-l1600.jpg",
+    "https://i.ebayimg.com/images/g/caIAAOSwRX5na86k/s-l1600.jpg"
+  ],
+  "localizedAspects": [
+    {
+      "type": "STRING",
+      "name": "CAPACITY",
+      "value": "512GB"
+    },
+    {
+      "type": "STRING",
+      "name": "Color",
+      "value": "Green"
+    },
+    {
+      "type": "STRING",
+      "name": "Lock Status",
+      "value": "T-Mobile Unlocked"
+    },
+    {
+      "type": "STRING",
+      "name": "Processor",
+      "value": "Qual Comm"
+    },
+    {
+      "type": "STRING",
+      "name": "Screen Size",
+      "value": "6.8 in"
+    },
+    {
+      "type": "STRING",
+      "name": "Manufacturer Color",
+      "value": "Black, Cream, Green, Purple, Graphite, Lime, Bue, Red"
+    },
+    {
+      "type": "STRING",
+      "name": "Custom Bundle",
+      "value": "No"
+    },
+    {
+      "type": "STRING",
+      "name": "MPN",
+      "value": "SM-S918UZKAXAA, SM-S918UZEAXAA, SM-S918UZGAXAA, SM-S918ULIAXAA, SM-S918UZKFXAA, SM-S918UZEFXAA, SM-S918UZGFXAA, SM-S918ULIFXAA, SM-S918UZKNXAA"
+    },
+    {
+      "type": "STRING",
+      "name": "Model Number",
+      "value": "SM-S918U"
+    },
+    {
+      "type": "STRING",
+      "name": "SIM Card Slot",
+      "value": "eSIM"
+    },
+    {
+      "type": "STRING",
+      "name": "Brand",
+      "value": "Samsung"
+    },
+    {
+      "type": "STRING",
+      "name": "Manufacturer Warranty",
+      "value": "Other: see item description"
+    },
+    {
+      "type": "STRING",
+      "name": "Network",
+      "value": "AT&T, Cricket Wireless, Metro PCs, Net 10, SIMPLE Mobile, T-Mobile, Unlocked, Verizon"
+    },
+    {
+      "type": "STRING",
+      "name": "Model",
+      "value": "Samsung Galaxy S23 Ultra"
+    },
+    {
+      "type": "STRING",
+      "name": "Style",
+      "value": "Bar"
+    },
+    {
+      "type": "STRING",
+      "name": "Connectivity",
+      "value": "5G"
+    },
+    {
+      "type": "STRING",
+      "name": "Operating System",
+      "value": "Android 13"
+    },
+    {
+      "type": "STRING",
+      "name": "Features",
+      "value": "Air Gesture, Internet Browser, Touchscreen, 3G Data Capable, 4G Data Capable, Bluetooth Enabled, Fingerprint Sensor, Global Ready, GPS, Music Player, Speakerphone, Wi-Fi Capable"
+    },
+    {
+      "type": "STRING",
+      "name": "Storage Capacity",
+      "value": "256 GB, 512 GB, 1024 GB"
+    },
+    {
+      "type": "STRING",
+      "name": "Contract",
+      "value": "Without Contract"
+    },
+    {
+      "type": "STRING",
+      "name": "Camera Resolution",
+      "value": "50 MP"
+    },
+    {
+      "type": "STRING",
+      "name": "RAM",
+      "value": "12 GB"
+    }
+  ]
 }

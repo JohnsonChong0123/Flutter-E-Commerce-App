@@ -1,28 +1,49 @@
 import 'package:equatable/equatable.dart';
 import '../../../domain/entity/product/product_details_entity.dart';
+import 'localized_aspect_model.dart';
 
 class ProductDetailsModel extends Equatable {
   final String id;
   final String name;
   final String description;
   final double finalPrice;
+  final String currency;
   final String imageUrl;
+  final List<String> additionalImages;
+  final List<LocalizedAspectModel> localizedAspects;
 
   const ProductDetailsModel({
     required this.id,
     required this.name,
     required this.description,
     required this.finalPrice,
+    required this.currency,
     required this.imageUrl,
+    required this.additionalImages,
+    required this.localizedAspects,
   });
 
   factory ProductDetailsModel.fromJson(Map<String, dynamic> json) {
+    final price = json['price'] as Map<String, dynamic>?;
     return ProductDetailsModel(
       id: json['id'] ?? '',
       name: json['title'] ?? '',
       description: json['description'] ?? '',
-      finalPrice: json['price'] ?? 0.0,
+      finalPrice: (price != null && price['value'] != null)
+          ? (price['value'] as num).toDouble()
+          : 0.0,
+      currency: price?['currency'] ?? '',
       imageUrl: json['image_url'] ?? '',
+      additionalImages:
+          (json['additional_images'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
+      localizedAspects:
+          (json['localized_aspects'] as List<dynamic>?)
+              ?.map((e) => LocalizedAspectModel.fromJson(e))
+              .toList() ??
+          [],
     );
   }
 
@@ -32,7 +53,10 @@ class ProductDetailsModel extends Equatable {
       name: name,
       description: description,
       finalPrice: finalPrice,
+      currency: currency,
       imageUrl: imageUrl,
+      additionalImages: additionalImages,
+      localizedAspects: localizedAspects.map((e) => e.toEntity()).toList(),
     );
   }
 
@@ -42,6 +66,8 @@ class ProductDetailsModel extends Equatable {
     name,
     description,
     finalPrice,
+    currency,
     imageUrl,
+    additionalImages,
   ];
 }

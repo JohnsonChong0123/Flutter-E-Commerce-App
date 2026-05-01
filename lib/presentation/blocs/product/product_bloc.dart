@@ -1,5 +1,6 @@
 import 'package:e_commerce_client/domain/entity/product/product_details_entity.dart';
 import 'package:e_commerce_client/domain/usecases/product/get_product_by_id.dart';
+import 'package:e_commerce_client/presentation/models/product_display_aspect.dart';
 import 'package:stream_transform/stream_transform.dart';
 import '../../../domain/entity/product/product_summary_entity.dart';
 import '../../../domain/usecases/product/get_products.dart';
@@ -197,9 +198,26 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       GetProductByIdParams(productId: event.productId),
     );
     if (isClosed) return;
-    result.fold(
-      (failure) => emit(ProductFailure(message: failure.message)),
-      (product) => emit(ProductDetailsLoaded(product: product)),
-    );
+    result.fold((failure) => emit(ProductFailure(message: failure.message)), (
+      productEntity,
+    ) {
+      final displayAspects = productEntity.localizedAspects
+          .where(
+            (aspect) =>
+                aspect.type.toString().toLowerCase().contains('string') &&
+                aspect.name.toString().trim().isNotEmpty,
+          )
+          .map(
+            (aspect) => ProductDisplayAspect(
+              name: aspect.name.toString(),
+              value: aspect.value.toString(),
+            ),
+          )
+          .toList();
+
+      emit(
+        ProductDetailsLoaded(product: productEntity, aspect: displayAspects),
+      );
+    });
   }
 }

@@ -3,6 +3,7 @@ import 'package:e_commerce_client/core/errors/failure.dart';
 import 'package:e_commerce_client/domain/usecases/product/get_product_by_id.dart';
 import 'package:e_commerce_client/domain/usecases/product/get_products.dart';
 import 'package:e_commerce_client/presentation/blocs/product/product_bloc.dart';
+import 'package:e_commerce_client/presentation/models/product_display_aspect.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
@@ -27,6 +28,52 @@ void main() {
   const category = 'electronics';
   const limit = 10;
   const page = 1;
+
+  const tAspect = [
+    ProductDisplayAspect(name: "CAPACITY", value: "512GB"),
+    ProductDisplayAspect(name: "Color", value: "Green"),
+    ProductDisplayAspect(name: "Lock Status", value: "T-Mobile Unlocked"),
+    ProductDisplayAspect(name: "Processor", value: "Qual Comm"),
+    ProductDisplayAspect(name: "Screen Size", value: "6.8 in"),
+    ProductDisplayAspect(
+      name: "Manufacturer Color",
+      value: "Black, Cream, Green, Purple, Graphite, Lime, Bue, Red",
+    ),
+    ProductDisplayAspect(name: "Custom Bundle", value: "No"),
+    ProductDisplayAspect(
+      name: "MPN",
+      value:
+          "SM-S918UZKAXAA, SM-S918UZEAXAA, SM-S918UZGAXAA, SM-S918ULIAXAA, SM-S918UZKFXAA, SM-S918UZEFXAA, SM-S918UZGFXAA, SM-S918ULIFXAA, SM-S918UZKNXAA",
+    ),
+    ProductDisplayAspect(name: "Model Number", value: "SM-S918U"),
+    ProductDisplayAspect(name: "SIM Card Slot", value: "eSIM"),
+    ProductDisplayAspect(name: "Brand", value: "Samsung"),
+    ProductDisplayAspect(
+      name: "Manufacturer Warranty",
+      value: "Other: see item description",
+    ),
+    ProductDisplayAspect(
+      name: "Network",
+      value:
+          "AT&T, Cricket Wireless, Metro PCs, Net 10, SIMPLE Mobile, T-Mobile, Unlocked, Verizon",
+    ),
+    ProductDisplayAspect(name: "Model", value: "Samsung Galaxy S23 Ultra"),
+    ProductDisplayAspect(name: "Style", value: "Bar"),
+    ProductDisplayAspect(name: "Connectivity", value: "5G"),
+    ProductDisplayAspect(name: "Operating System", value: "Android 13"),
+    ProductDisplayAspect(
+      name: "Features",
+      value:
+          "Air Gesture, Internet Browser, Touchscreen, 3G Data Capable, 4G Data Capable, Bluetooth Enabled, Fingerprint Sensor, Global Ready, GPS, Music Player, Speakerphone, Wi-Fi Capable",
+    ),
+    ProductDisplayAspect(
+      name: "Storage Capacity",
+      value: "256 GB, 512 GB, 1024 GB",
+    ),
+    ProductDisplayAspect(name: "Contract", value: "Without Contract"),
+    ProductDisplayAspect(name: "Camera Resolution", value: "50 MP"),
+    ProductDisplayAspect(name: "RAM", value: "12 GB"),
+  ];
 
   setUp(() {
     mockGetProducts = MockGetProducts();
@@ -96,7 +143,7 @@ void main() {
       act: (cubit) => cubit.loadProductById(tProductId),
       expect: () => [
         ProductLoading(),
-        ProductDetailsLoaded(product: tProductDetailsEntity),
+        ProductDetailsLoaded(product: tProductDetailsEntity, aspect: tAspect),
       ],
       verify: (_) {
         verify(
@@ -325,4 +372,4 @@ void main() {
       ],
     );
   });
- }
+}
