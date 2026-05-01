@@ -1,3 +1,4 @@
+import 'dart:math' show min;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -254,7 +255,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               horizontal: 24.0,
                             ),
                             scrollDirection: Axis.horizontal,
-                            itemCount: 10,
+                            // Prevent RangeError by capping the itemCount to available products
+                            itemCount: min(state.products.length, 10),
                             separatorBuilder: (context, index) =>
                                 const SizedBox(width: 16),
                             itemBuilder: (context, index) {

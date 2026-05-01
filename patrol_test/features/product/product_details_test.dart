@@ -23,14 +23,20 @@ void main() {
     expect(find.byType(HomeScreen), findsOneWidget);
     expect(
       find.text(
-        'TWINSLUXES Solar Post Cap Lights Outdoor - Waterproof LED Fence Post Solar Lights for 3.5x3.5/4x4/5x5 Wood Posts in Patio, Deck or Garden Decoration 4 Pack',
+        'NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked',
       ),
       findsOneWidget,
     );
 
+    await $.scrollUntilVisible(
+      finder: find.text(
+        'NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked',
+      ),
+    );
+
     await $(
       find.text(
-        'TWINSLUXES Solar Post Cap Lights Outdoor - Waterproof LED Fence Post Solar Lights for 3.5x3.5/4x4/5x5 Wood Posts in Patio, Deck or Garden Decoration 4 Pack',
+        'NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked',
       ),
     ).tap();
     await $.pumpAndSettle(timeout: const Duration(seconds: 10));
@@ -38,7 +44,7 @@ void main() {
     expect(find.byType(ProductDetailScreen), findsOneWidget);
     expect(
       find.text(
-        'TWINSLUXES Solar Post Cap Lights Outdoor - Waterproof LED Fence Post Solar Lights for 3.5x3.5/4x4/5x5 Wood Posts in Patio, Deck or Garden Decoration 4 Pack',
+        'NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked',
       ),
       findsOneWidget,
     );
