@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/common/utils/show_snackbar.dart';
 import '../../../../core/common/widgets/app_alert_dialog.dart';
 import '../../core/themes/app_colors.dart';
-import '../widgets/account_card.dart';
+// import '../widgets/account_card.dart';
 
 class AccountScreen extends StatelessWidget {
   const AccountScreen({super.key});
@@ -22,37 +22,37 @@ class AccountScreen extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 15),
-            AccountCard(
-              name: "Orders History",
-              icon: const Icon(Icons.shopping_bag, color: AppColor.primary),
-              onTap: () {
-                // Navigator.push(context, OrderHistoryScreen.route());
-              },
-            ),
-            const SizedBox(height: 15),
-            AccountCard(
-              name: "Profile",
-              icon: const Icon(Icons.person, color: AppColor.primary),
-              onTap: () async {
-                // Navigator.push(context, ProfileScreen.route());
-              },
-            ),
-            const SizedBox(height: 15),
-            AccountCard(
-              name: "Address",
-              icon: const Icon(Icons.location_on, color: AppColor.primary),
-              onTap: () async {
-                // Navigator.push(context, LocationScreen.route());
-              },
-            ),
-            const SizedBox(height: 15),
-            AccountCard(
-              name: "Wallet",
-              icon: const Icon(Icons.wallet, color: AppColor.primary),
-              onTap: () async {
-                // Navigator.push(context, WalletScreen.route());
-              },
-            ),
+            // AccountCard(
+            //   name: "Orders History",
+            //   icon: const Icon(Icons.shopping_bag, color: AppColor.primary),
+            //   onTap: () {
+            //     // Navigator.push(context, OrderHistoryScreen.route());
+            //   },
+            // ),
+            // const SizedBox(height: 15),
+            // AccountCard(
+            //   name: "Profile",
+            //   icon: const Icon(Icons.person, color: AppColor.primary),
+            //   onTap: () async {
+            //     // Navigator.push(context, ProfileScreen.route());
+            //   },
+            // ),
+            // const SizedBox(height: 15),
+            // AccountCard(
+            //   name: "Address",
+            //   icon: const Icon(Icons.location_on, color: AppColor.primary),
+            //   onTap: () async {
+            //     // Navigator.push(context, LocationScreen.route());
+            //   },
+            // ),
+            // const SizedBox(height: 15),
+            // AccountCard(
+            //   name: "Wallet",
+            //   icon: const Icon(Icons.wallet, color: AppColor.primary),
+            //   onTap: () async {
+            //     // Navigator.push(context, WalletScreen.route());
+            //   },
+            // ),
             const SizedBox(height: 15),
             // AccountCard(
             //   name: "Change Password",
