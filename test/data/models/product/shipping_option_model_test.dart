@@ -17,14 +17,14 @@ void main() {
     final result = ShippingOptionModel.fromJson(tJsonMap);
 
     // assert
-    expect(result, equals(tShippingOptionModel[0]));
+    expect(result, equals(tShippingOptionModelList[0]));
   });
 
   test('ShippingOptionModel.toEntity should convert correctly', () {
     // act
-    final result = tShippingOptionModel[0].toEntity();
+    final result = tShippingOptionModelList[0].toEntity();
 
     // assert
-    expect(result, equals(tShippingOptionEntity[0]));
+    expect(result, equals(tShippingOptionEntityList[0]));
   });
 }

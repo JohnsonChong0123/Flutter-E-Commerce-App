@@ -66,7 +66,7 @@ final tProductDetailsModel = ProductDetailsModel(
     "https://i.ebayimg.com/images/g/caIAAOSwRX5na86k/s-l1600.jpg",
   ],
   localizedAspects: tLocalizedAspectsModel,
-  shippingOptions: tShippingOptionModel,
+  shippingOptions: tShippingOptionModelList,
 );
 
 final tProductDetailsEntity = ProductDetailsEntity(
@@ -83,7 +83,7 @@ final tProductDetailsEntity = ProductDetailsEntity(
     "https://i.ebayimg.com/images/g/caIAAOSwRX5na86k/s-l1600.jpg",
   ],
   localizedAspects: tLocalizedAspectsEntity,
-  shippingOptions: tShippingOptionEntity
+  shippingOptions: tShippingOptionEntityList
 );
 
 const tProductId = "v1|377049276589|645539111213";
@@ -236,7 +236,7 @@ const tLocalizedAspectsEntity = [
   LocalizedAspectEntity(type: "STRING", name: "RAM", value: "12 GB"),
 ];
 
-const tShippingOptionModel = [
+const tShippingOptionModelList = [
   ShippingOptionModel(
     shippingServiceCode: "Standard Shipping",
     type: "Standard Shipping",
@@ -247,7 +247,7 @@ const tShippingOptionModel = [
   ),
 ];
 
-const tShippingOptionEntity = [
+const tShippingOptionEntityList = [
   ShippingOptionEntity(
     shippingServiceCode: "Standard Shipping",
     type: "Standard Shipping",
