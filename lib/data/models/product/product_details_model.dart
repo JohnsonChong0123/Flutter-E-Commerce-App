@@ -1,3 +1,4 @@
+import 'package:e_commerce_client/data/models/product/shipping_option_model.dart';
 import 'package:equatable/equatable.dart';
 import '../../../domain/entity/product/product_details_entity.dart';
 import 'localized_aspect_model.dart';
@@ -11,6 +12,7 @@ class ProductDetailsModel extends Equatable {
   final String imageUrl;
   final List<String> additionalImages;
   final List<LocalizedAspectModel> localizedAspects;
+  final List<ShippingOptionModel> shippingOptions;
 
   const ProductDetailsModel({
     required this.id,
@@ -21,6 +23,7 @@ class ProductDetailsModel extends Equatable {
     required this.imageUrl,
     required this.additionalImages,
     required this.localizedAspects,
+    required this.shippingOptions,
   });
 
   factory ProductDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -44,6 +47,11 @@ class ProductDetailsModel extends Equatable {
               ?.map((e) => LocalizedAspectModel.fromJson(e))
               .toList() ??
           [],
+      shippingOptions:
+          (json['shipping_options'] as List<dynamic>?)
+              ?.map((e) => ShippingOptionModel.fromJson(e))
+              .toList() ??          
+          [],
     );
   }
 
@@ -57,6 +65,7 @@ class ProductDetailsModel extends Equatable {
       imageUrl: imageUrl,
       additionalImages: additionalImages,
       localizedAspects: localizedAspects.map((e) => e.toEntity()).toList(),
+      shippingOptions: shippingOptions.map((e) => e.toEntity()).toList(),
     );
   }
 

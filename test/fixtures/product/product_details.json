@@ -122,5 +122,21 @@
       "name": "RAM",
       "value": "12 GB"
     }
+  ],
+  "shippingOptions": [
+    {
+      "shippingServiceCode": "Standard Shipping",
+      "type": "Standard Shipping",
+      "shippingCost": {
+        "value": 0.00,
+        "currency": "USD"
+      },
+      "quantityUsedForEstimate": 1,
+      "additionalShippingCostPerUnit": {
+        "value": 0.00,
+        "currency": "USD"
+      },
+      "shippingCostType": "FIXED"
+    }
   ]
 }

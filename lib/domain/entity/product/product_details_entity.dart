@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import 'localized_aspect_entity.dart';
+import 'shipping_option_entity.dart';
 
 class ProductDetailsEntity extends Equatable {
   final String id;
@@ -11,6 +12,7 @@ class ProductDetailsEntity extends Equatable {
   final String imageUrl;
   final List<String> additionalImages;
   final List<LocalizedAspectEntity> localizedAspects;
+  final List<ShippingOptionEntity> shippingOptions;
 
   const ProductDetailsEntity({
     required this.id,
@@ -21,6 +23,7 @@ class ProductDetailsEntity extends Equatable {
     required this.imageUrl,
     required this.additionalImages,
     required this.localizedAspects,
+    required this.shippingOptions,
   });
 
   @override
@@ -33,5 +36,6 @@ class ProductDetailsEntity extends Equatable {
     imageUrl,
     additionalImages,
     localizedAspects,
+    shippingOptions,
   ];
 }
