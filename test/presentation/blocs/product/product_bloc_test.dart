@@ -1,5 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:e_commerce_client/core/errors/failure.dart';
+import 'package:e_commerce_client/core/extensions/currency_extension.dart';
 import 'package:e_commerce_client/domain/usecases/product/get_product_by_id.dart';
 import 'package:e_commerce_client/domain/usecases/product/get_products.dart';
 import 'package:e_commerce_client/presentation/blocs/product/product_bloc.dart';
@@ -75,6 +76,25 @@ void main() {
     ProductDisplayAspect(name: "RAM", value: "12 GB"),
   ];
 
+  final tShippingAspect = [
+    ProductDisplayAspect(
+      name: 'Standard Shipping - Shipping Cost',
+      value: tMoneyEntity.value.formatCurrency(tMoneyEntity.currency),
+    ),
+    ProductDisplayAspect(
+      name: 'Standard Shipping - Additional Shipping Cost Per Unit',
+      value: tMoneyEntity.value.formatCurrency(tMoneyEntity.currency),
+    ),
+    ProductDisplayAspect(
+      name: 'Standard Shipping - Quantity Used For Estimate',
+      value: "1",
+    ),
+    ProductDisplayAspect(
+      name: 'Standard Shipping - Shipping Cost Type',
+      value: "FIXED",
+    ),
+  ];
+
   setUp(() {
     mockGetProducts = MockGetProducts();
     mockGetProductId = MockGetProductId();
@@ -143,7 +163,11 @@ void main() {
       act: (cubit) => cubit.loadProductById(tProductId),
       expect: () => [
         ProductLoading(),
-        ProductDetailsLoaded(product: tProductDetailsEntity, aspect: tAspect),
+        ProductDetailsLoaded(
+          product: tProductDetailsEntity,
+          aspect: tAspect,
+          shippingAspects: tShippingAspect,
+        ),
       ],
       verify: (_) {
         verify(

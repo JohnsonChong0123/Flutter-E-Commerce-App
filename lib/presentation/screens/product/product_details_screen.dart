@@ -315,7 +315,7 @@ class ProductDetailScreen extends StatelessWidget {
                                   dividerColor: Colors.transparent,
                                 ),
                                 child: _AdaptiveExpansionTile(
-                                  title: 'SHIPPING & RETURNS',
+                                  title: 'SHIPPING',
                                   initiallyExpanded: false,
                                   childrenPadding: const EdgeInsets.fromLTRB(
                                     16,
@@ -323,7 +323,72 @@ class ProductDetailScreen extends StatelessWidget {
                                     16,
                                     16,
                                   ),
-                                  children: const [],
+                                  children: [
+                                    if (state.shippingAspects.isEmpty)
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                        ),
+                                        child: Text(
+                                          'No shipping details available.',
+                                          style: context.textTheme.bodySmall
+                                              ?.copyWith(
+                                                color: context
+                                                    .colorScheme
+                                                    .onSurfaceVariant,
+                                              ),
+                                        ),
+                                      )
+                                    else
+                                      Column(
+                                        children: state.shippingAspects
+                                            .map(
+                                              (aspect) => Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      vertical: 8.0,
+                                                    ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Flexible(
+                                                      child: Text(
+                                                        aspect.name,
+                                                        style: context
+                                                            .textTheme
+                                                            .bodyMedium
+                                                            ?.copyWith(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 12),
+                                                    Flexible(
+                                                      child: Text(
+                                                        aspect.value,
+                                                        textAlign:
+                                                            TextAlign.end,
+                                                        style: context
+                                                            .textTheme
+                                                            .bodySmall
+                                                            ?.copyWith(
+                                                              color: context
+                                                                  .colorScheme
+                                                                  .onSurfaceVariant,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            )
+                                            .toList(),
+                                      ),
+                                  ],
                                 ),
                               ),
                             ],
