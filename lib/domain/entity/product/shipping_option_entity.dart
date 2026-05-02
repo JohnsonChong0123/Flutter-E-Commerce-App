@@ -19,6 +19,24 @@ class ShippingOptionEntity extends Equatable {
     this.shippingCostType,
   });
 
+  ShippingOptionEntity copyWith({
+    String? shippingServiceCode,
+    String? type,
+    MoneyEntity? shippingCost,
+    int? quantityUsedForEstimate,
+    MoneyEntity? additionalShippingCostPerUnit,
+    String? shippingCostType,
+  }) {
+    return ShippingOptionEntity(
+      shippingServiceCode: shippingServiceCode ?? this.shippingServiceCode,
+      type: type ?? this.type,
+      shippingCost: shippingCost ?? this.shippingCost,
+      quantityUsedForEstimate: quantityUsedForEstimate ?? this.quantityUsedForEstimate,
+      additionalShippingCostPerUnit: additionalShippingCostPerUnit ?? this.additionalShippingCostPerUnit,
+      shippingCostType: shippingCostType ?? this.shippingCostType,
+    );
+  }
+
   @override
   List<Object?> get props => [
         shippingServiceCode,

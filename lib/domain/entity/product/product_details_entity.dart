@@ -26,6 +26,30 @@ class ProductDetailsEntity extends Equatable {
     required this.shippingOptions,
   });
 
+  ProductDetailsEntity copyWith({
+    String? id,
+    String? name,
+    String? description,
+    double? finalPrice,
+    String? currency,
+    String? imageUrl,
+    List<String>? additionalImages,
+    List<LocalizedAspectEntity>? localizedAspects,
+    List<ShippingOptionEntity>? shippingOptions,
+  }) {
+    return ProductDetailsEntity(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      finalPrice: finalPrice ?? this.finalPrice,
+      currency: currency ?? this.currency,
+      imageUrl: imageUrl ?? this.imageUrl,
+      additionalImages: additionalImages ?? this.additionalImages,
+      localizedAspects: localizedAspects ?? this.localizedAspects,
+      shippingOptions: shippingOptions ?? this.shippingOptions,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,

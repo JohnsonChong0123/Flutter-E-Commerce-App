@@ -1,4 +1,3 @@
-import 'package:e_commerce_client/core/extensions/currency_extension.dart';
 import 'package:e_commerce_client/domain/entity/product/product_details_entity.dart';
 import 'package:e_commerce_client/domain/usecases/product/get_product_by_id.dart';
 import 'package:e_commerce_client/presentation/models/product_display_aspect.dart';
@@ -7,6 +6,8 @@ import '../../../domain/entity/product/product_summary_entity.dart';
 import '../../../domain/usecases/product/get_products.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../mappers/product_details_mapper.dart';
 
 part 'product_state.dart';
 part 'product_event.dart';
@@ -202,52 +203,17 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     result.fold((failure) => emit(ProductFailure(message: failure.message)), (
       productEntity,
     ) {
-      final displayAspects = productEntity.localizedAspects
-          .where(
-            (aspect) =>
-                aspect.type.toString().toLowerCase().contains('string') &&
-                aspect.name.toString().trim().isNotEmpty,
-          )
-          .map(
-            (aspect) => ProductDisplayAspect(
-              name: aspect.name.toString(),
-              value: aspect.value.toString(),
-            ),
-          )
-          .toList();
-
-      // Add shipping option key/value pairs as display aspects.
-      final shippingAspects = productEntity.shippingOptions
-          .expand((opt) {
-            final servicePrefix = opt.shippingServiceCode.trim().isNotEmpty
-                ? '${opt.shippingServiceCode} - '
-                : '';
-
-            final shippingCost = opt.shippingCost != null
-                ? opt.shippingCost!.value.formatCurrency(opt.shippingCost!.currency)
-                : 'N/A';
-
-            final additional = opt.additionalShippingCostPerUnit != null
-                ? opt.additionalShippingCostPerUnit!.value.formatCurrency(opt.additionalShippingCostPerUnit!.currency)
-                : 'N/A';
-
-            final qty = opt.quantityUsedForEstimate != null
-                ? opt.quantityUsedForEstimate.toString()
-                : 'N/A';
-
-            final costType = opt.shippingCostType ?? 'N/A';
-
-            return [
-              ProductDisplayAspect(name: '${servicePrefix}Shipping Cost', value: shippingCost),
-              ProductDisplayAspect(name: '${servicePrefix}Additional Shipping Cost Per Unit', value: additional),
-              ProductDisplayAspect(name: '${servicePrefix}Quantity Used For Estimate', value: qty),
-              ProductDisplayAspect(name: '${servicePrefix}Shipping Cost Type', value: costType),
-            ];
-          })
-          .toList();
+      final displayAspects = ProductDetailsMapper.mapAspects(productEntity);
+      final shippingAspects = ProductDetailsMapper.mapShippingAspects(
+        productEntity,
+      );
 
       emit(
-        ProductDetailsLoaded(product: productEntity, aspect: displayAspects, shippingAspects: shippingAspects),
+        ProductDetailsLoaded(
+          product: productEntity,
+          aspect: displayAspects,
+          shippingAspects: shippingAspects,
+        ),
       );
     });
   }
