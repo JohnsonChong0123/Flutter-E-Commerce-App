@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
+import '../../../core/common/utils/show_snackbar.dart';
 import '../../../core/common/widgets/app_button.dart';
 import '../../../core/common/widgets/loader.dart';
 import '../../../core/extensions/currency_extension.dart';
 import '../../../core/extensions/theme_extensions.dart';
+import '../../../domain/entity/product/product_details_entity.dart';
 import '../../blocs/product/product_bloc.dart';
+import '../../cubits/cart/cart_cubit.dart';
+import '../../notifiers/product_details_notifier.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   final String productId;
@@ -187,7 +192,12 @@ class ProductDetailScreen extends StatelessWidget {
 
                         const SizedBox(height: 32),
 
-                        AppButton(onPressed: () {}, title: 'Add To Cart'),
+                        AppButton(
+                          onPressed: () {
+                            _showCartDialog(context, product);
+                          },
+                          title: 'Add To Cart',
+                        ),
 
                         const SizedBox(height: 32),
 
@@ -413,6 +423,25 @@ class ProductDetailScreen extends StatelessWidget {
       ),
     );
   }
+
+  void _showCartDialog(BuildContext context, ProductDetailsEntity product) {
+    final cartCubit = context.read<CartCubit>();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => BlocProvider.value(
+        value: cartCubit,
+        child: ChangeNotifierProvider(
+          create: (_) => ProductDetailsNotifier(price: product.finalPrice),
+          child: CartDialog(product: product),
+        ),
+      ),
+    );
+  }
 }
 
 // New adaptive ExpansionTile that changes its title style when expanded vs collapsed.
@@ -466,6 +495,115 @@ class _AdaptiveExpansionTileState extends State<_AdaptiveExpansionTile> {
       childrenPadding: widget.childrenPadding,
       onExpansionChanged: (val) => setState(() => _isExpanded = val),
       children: widget.children,
+    );
+  }
+}
+
+class CartDialog extends StatelessWidget {
+  final ProductDetailsEntity product;
+
+  const CartDialog({super.key, required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<CartCubit, CartState>(
+      listener: (context, state) {
+        if (state is CartSuccess) {
+          Navigator.of(context).pop();
+          showSnackBar(context, "Added to cart");
+        } else if (state is CartFailure) {
+          Navigator.of(context).pop();
+          showSnackBar(context, "Failed to add: ${state.message}");
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: context.colorScheme.onSurface.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(product.name, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 10),
+            Consumer<ProductDetailsNotifier>(
+              builder: (context, notifier, _) {
+                return Text(
+                  "\$${notifier.price.toStringAsFixed(2)}",
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: context.colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              },
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Quantity',
+                  style: TextStyle(
+                    color: context.colorScheme.onSurface.withValues(alpha: 0.5),
+                    fontSize: 15,
+                  ),
+                ),
+                Consumer<ProductDetailsNotifier>(
+                  builder: (context, notifier, _) {
+                    return Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            notifier.minusQuantity();
+                          },
+                          icon: Icon(
+                            Icons.remove,
+                            color: context.colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          '${notifier.quantity}',
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                        const SizedBox(width: 5),
+                        IconButton(
+                          onPressed: () {
+                            notifier.addQuantity();
+                          },
+                          icon: Icon(
+                            Icons.add,
+                            color: context.colorScheme.primary,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            AppButton(
+              onPressed: () {
+                final notifier = context.read<ProductDetailsNotifier>();
+                context.read<CartCubit>().addToCart(
+                  productId: product.id,
+                  quantity: notifier.quantity,
+                );
+              },
+              title: 'Add to cart',
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
