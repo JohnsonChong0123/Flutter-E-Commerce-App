@@ -9,7 +9,7 @@ import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/sign_up_screen.dart';
 import '../../presentation/screens/cart/cart_screen.dart';
 import '../../presentation/screens/home_screen.dart';
-import '../../presentation/screens/product_search_screen.dart';
+import '../../presentation/screens/product/product_search_screen.dart';
 import '../../presentation/screens/navbar_screen.dart';
 import '../../presentation/screens/product/invalid_route_screen.dart';
 import '../../presentation/screens/product/product_details_screen.dart';

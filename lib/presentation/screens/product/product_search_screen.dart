@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/common/widgets/loader.dart';
-import '../../core/extensions/theme_extensions.dart';
+import '../../../../core/common/widgets/loader.dart';
+import '../../../core/extensions/theme_extensions.dart';
 // import '../../domain/entity/product/product_summary_entity.dart';
-import '../blocs/product/product_bloc.dart';
-import '../widgets/product_card.dart';
-import '../cubits/category/category_cubit.dart';
+import '../../blocs/product/product_bloc.dart';
+import '../../widgets/product_card.dart';
+import '../../cubits/category/category_cubit.dart';
 
 class ProductSearchScreen extends StatefulWidget {
   const ProductSearchScreen({super.key});
