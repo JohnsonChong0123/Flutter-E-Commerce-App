@@ -62,7 +62,7 @@ class ProductDetailScreen extends StatelessWidget {
             final product = state.product;
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.only(top: 100, bottom: 40),
+              padding: const EdgeInsets.only(top: 100),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -351,52 +351,57 @@ class ProductDetailScreen extends StatelessWidget {
                                       )
                                     else
                                       Column(
-                                        children: state.shippingAspects
-                                            .map(
-                                              (aspect) => Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      vertical: 8.0,
-                                                    ),
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: () {
+                                          final widgets = <Widget>[];
+                                          state.shippingAspects.forEach((prefix, items) {
+                                            if (prefix.isNotEmpty) {
+                                              widgets.add(Padding(
+                                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                                child: Text(
+                                                  prefix,
+                                                  style: context.textTheme.bodyMedium?.copyWith(
+                                                    fontWeight: FontWeight.w800,
+                                                    fontStyle: FontStyle.italic,
+                                                  ),
+                                                ),
+                                              ));
+                                            }
+
+                                            for (final item in items) {
+                                              widgets.add(Padding(
+                                                padding: const EdgeInsets.only(bottom: 8.0),
                                                 child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                   children: [
-                                                    Flexible(
+                                                    Expanded(
                                                       child: Text(
-                                                        aspect.name,
-                                                        style: context
-                                                            .textTheme
-                                                            .bodyMedium
-                                                            ?.copyWith(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w700,
-                                                            ),
+                                                        '• ${item.name}',
+                                                        style: context.textTheme.bodyMedium?.copyWith(
+                                                          fontWeight: FontWeight.w700,
+                                                        ),
                                                       ),
                                                     ),
                                                     const SizedBox(width: 12),
                                                     Flexible(
                                                       child: Text(
-                                                        aspect.value,
-                                                        textAlign:
-                                                            TextAlign.end,
-                                                        style: context
-                                                            .textTheme
-                                                            .bodySmall
-                                                            ?.copyWith(
-                                                              color: context
-                                                                  .colorScheme
-                                                                  .onSurfaceVariant,
-                                                            ),
+                                                        item.value,
+                                                        textAlign: TextAlign.end,
+                                                        style: context.textTheme.bodySmall?.copyWith(
+                                                          color: context.colorScheme.onSurfaceVariant,
+                                                        ),
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-                                              ),
-                                            )
-                                            .toList(),
+                                              ));
+                                            }
+
+                                            widgets.add(const SizedBox(height: 6));
+                                          });
+
+                                          return widgets;
+                                        }(),
                                       ),
                                   ],
                                 ),

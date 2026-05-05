@@ -39,24 +39,23 @@ void main() {
         tProductDetailsEntity,
       );
 
-      expect(result, [
-        ProductDisplayAspect(
-          name: 'Standard Shipping - Shipping Cost',
-          value: tMoneyEntity.value.formatCurrency(tMoneyEntity.currency),
-        ),
-        ProductDisplayAspect(
-          name: 'Standard Shipping - Additional Shipping Cost Per Unit',
-          value: tMoneyEntity.value.formatCurrency(tMoneyEntity.currency),
-        ),
-        const ProductDisplayAspect(
-          name: 'Standard Shipping - Quantity Used For Estimate',
-          value: '1',
-        ),
-        const ProductDisplayAspect(
-          name: 'Standard Shipping - Shipping Cost Type',
-          value: 'FIXED',
-        ),
-      ]);
+      expect(result, {
+        'Standard Shipping': [
+          ProductDisplayAspect(
+            name: 'Cost',
+            value: tMoneyEntity.value.formatCurrency(tMoneyEntity.currency),
+          ),
+          ProductDisplayAspect(
+            name: 'Addition Cost / Unit',
+            value: tMoneyEntity.value.formatCurrency(tMoneyEntity.currency),
+          ),
+          const ProductDisplayAspect(
+            name: 'Qty (estimate)',
+            value: '1',
+          ),
+          const ProductDisplayAspect(name: 'Cost Type', value: 'FIXED'),
+        ],
+      });
     });
 
     test('should return N/A when shipping values are null', () {
@@ -66,24 +65,20 @@ void main() {
 
       final result = ProductDetailsMapper.mapShippingAspects(product);
 
-      expect(result, [
-        const ProductDisplayAspect(
-          name: 'Standard Shipping - Shipping Cost',
-          value: 'N/A',
-        ),
-        const ProductDisplayAspect(
-          name: 'Standard Shipping - Additional Shipping Cost Per Unit',
-          value: 'N/A',
-        ),
-        const ProductDisplayAspect(
-          name: 'Standard Shipping - Quantity Used For Estimate',
-          value: 'N/A',
-        ),
-        const ProductDisplayAspect(
-          name: 'Standard Shipping - Shipping Cost Type',
-          value: 'N/A',
-        ),
-      ]);
+      expect(result, {
+        'Standard Shipping': [
+          const ProductDisplayAspect(name: 'Cost', value: 'N/A'),
+          const ProductDisplayAspect(
+            name: 'Addition Cost / Unit',
+            value: 'N/A',
+          ),
+          const ProductDisplayAspect(
+            name: 'Qty (estimate)',
+            value: 'N/A',
+          ),
+          const ProductDisplayAspect(name: 'Cost Type', value: 'N/A'),
+        ],
+      });
     });
 
     test('should omit prefix when shippingServiceCode is empty', () {
@@ -98,9 +93,9 @@ void main() {
       final result = ProductDetailsMapper.mapShippingAspects(product);
 
       expect(
-        result.first,
+        result.values.first.first,
         ProductDisplayAspect(
-          name: 'Shipping Cost',
+          name: 'Cost',
           value: tMoneyEntity.value.formatCurrency(tMoneyEntity.currency),
         ),
       );

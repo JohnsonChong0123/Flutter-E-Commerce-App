@@ -21,13 +21,15 @@ class ProductDetailsMapper {
         .toList();
   }
 
-  static List<ProductDisplayAspect> mapShippingAspects(
+  static Map<String, List<ProductDisplayAspect>> mapShippingAspects(
     ProductDetailsEntity product,
   ) {
-    return product.shippingOptions.expand((opt) {
+    final Map<String, List<ProductDisplayAspect>> groups = {};
+
+    for (final opt in product.shippingOptions) {
       final servicePrefix = opt.shippingServiceCode.trim().isNotEmpty
-          ? '${opt.shippingServiceCode} - '
-          : '';
+          ? opt.shippingServiceCode.trim()
+          : (opt.type.trim().isNotEmpty ? opt.type.trim() : '');
 
       final shippingCost = opt.shippingCost != null
           ? opt.shippingCost!.value.formatCurrency(
@@ -45,24 +47,14 @@ class ProductDetailsMapper {
 
       final costType = opt.shippingCostType ?? 'N/A';
 
-      return [
-        ProductDisplayAspect(
-          name: '${servicePrefix}Shipping Cost',
-          value: shippingCost,
-        ),
-        ProductDisplayAspect(
-          name: '${servicePrefix}Additional Shipping Cost Per Unit',
-          value: additional,
-        ),
-        ProductDisplayAspect(
-          name: '${servicePrefix}Quantity Used For Estimate',
-          value: qty,
-        ),
-        ProductDisplayAspect(
-          name: '${servicePrefix}Shipping Cost Type',
-          value: costType,
-        ),
-      ];
-    }).toList();
+      groups.putIfAbsent(servicePrefix, () => []).addAll([
+        ProductDisplayAspect(name: 'Cost', value: shippingCost),
+        ProductDisplayAspect(name: 'Addition Cost / Unit', value: additional),
+        ProductDisplayAspect(name: 'Qty (estimate)', value: qty),
+        ProductDisplayAspect(name: 'Cost Type', value: costType),
+      ]);
+    }
+
+    return groups;
   }
 }

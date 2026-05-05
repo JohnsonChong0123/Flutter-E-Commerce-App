@@ -35,7 +35,7 @@ class ProductLoaded extends ProductState {
 final class ProductDetailsLoaded extends ProductState {
   final ProductDetailsEntity product;
   final List<ProductDisplayAspect> aspect;
-  final List<ProductDisplayAspect> shippingAspects;
+  final Map<String, List<ProductDisplayAspect>> shippingAspects;
 
   const ProductDetailsLoaded({required this.product, required this.aspect, required this.shippingAspects});
 

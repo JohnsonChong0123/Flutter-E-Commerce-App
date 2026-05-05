@@ -76,24 +76,26 @@ void main() {
     ProductDisplayAspect(name: "RAM", value: "12 GB"),
   ];
 
-  final tShippingAspect = [
-    ProductDisplayAspect(
-      name: 'Standard Shipping - Shipping Cost',
-      value: tMoneyEntity.value.formatCurrency(tMoneyEntity.currency),
-    ),
-    ProductDisplayAspect(
-      name: 'Standard Shipping - Additional Shipping Cost Per Unit',
-      value: tMoneyEntity.value.formatCurrency(tMoneyEntity.currency),
-    ),
-    ProductDisplayAspect(
-      name: 'Standard Shipping - Quantity Used For Estimate',
-      value: "1",
-    ),
-    ProductDisplayAspect(
-      name: 'Standard Shipping - Shipping Cost Type',
-      value: "FIXED",
-    ),
-  ];
+  final tShippingAspect = {
+    'Standard Shipping': [
+      ProductDisplayAspect(
+        name: 'Cost',
+        value: tMoneyEntity.value.formatCurrency(tMoneyEntity.currency),
+      ),
+      ProductDisplayAspect(
+        name: 'Addition Cost / Unit',
+        value: tMoneyEntity.value.formatCurrency(tMoneyEntity.currency),
+      ),
+      ProductDisplayAspect(
+        name: 'Qty (estimate)',
+        value: "1",
+      ),
+      ProductDisplayAspect(
+        name: 'Cost Type',
+        value: "FIXED",
+      ),
+    ],
+  };
 
   setUp(() {
     mockGetProducts = MockGetProducts();
