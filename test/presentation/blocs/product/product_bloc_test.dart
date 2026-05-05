@@ -87,10 +87,6 @@ void main() {
         value: tMoneyEntity.value.formatCurrency(tMoneyEntity.currency),
       ),
       ProductDisplayAspect(
-        name: 'Qty (estimate)',
-        value: "1",
-      ),
-      ProductDisplayAspect(
         name: 'Cost Type',
         value: "FIXED",
       ),

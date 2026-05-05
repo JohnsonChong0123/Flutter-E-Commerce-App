@@ -49,10 +49,6 @@ void main() {
             name: 'Addition Cost / Unit',
             value: tMoneyEntity.value.formatCurrency(tMoneyEntity.currency),
           ),
-          const ProductDisplayAspect(
-            name: 'Qty (estimate)',
-            value: '1',
-          ),
           const ProductDisplayAspect(name: 'Cost Type', value: 'FIXED'),
         ],
       });
@@ -70,10 +66,6 @@ void main() {
           const ProductDisplayAspect(name: 'Cost', value: 'N/A'),
           const ProductDisplayAspect(
             name: 'Addition Cost / Unit',
-            value: 'N/A',
-          ),
-          const ProductDisplayAspect(
-            name: 'Qty (estimate)',
             value: 'N/A',
           ),
           const ProductDisplayAspect(name: 'Cost Type', value: 'N/A'),

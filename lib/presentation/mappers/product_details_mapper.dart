@@ -43,14 +43,11 @@ class ProductDetailsMapper {
             )
           : 'N/A';
 
-      final qty = opt.quantityUsedForEstimate?.toString() ?? 'N/A';
-
       final costType = opt.shippingCostType ?? 'N/A';
 
       groups.putIfAbsent(servicePrefix, () => []).addAll([
         ProductDisplayAspect(name: 'Cost', value: shippingCost),
         ProductDisplayAspect(name: 'Addition Cost / Unit', value: additional),
-        ProductDisplayAspect(name: 'Qty (estimate)', value: qty),
         ProductDisplayAspect(name: 'Cost Type', value: costType),
       ]);
     }

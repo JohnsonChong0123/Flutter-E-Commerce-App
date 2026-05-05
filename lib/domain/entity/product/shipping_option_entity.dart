@@ -6,7 +6,6 @@ class ShippingOptionEntity extends Equatable {
   final String shippingServiceCode;
   final String type;
   final MoneyEntity? shippingCost;
-  final int? quantityUsedForEstimate;
   final MoneyEntity? additionalShippingCostPerUnit;
   final String? shippingCostType;
 
@@ -14,7 +13,6 @@ class ShippingOptionEntity extends Equatable {
     required this.shippingServiceCode,
     required this.type,
     this.shippingCost,
-    this.quantityUsedForEstimate,
     this.additionalShippingCostPerUnit,
     this.shippingCostType,
   });
@@ -23,7 +21,6 @@ class ShippingOptionEntity extends Equatable {
     String? shippingServiceCode,
     String? type,
     MoneyEntity? shippingCost,
-    int? quantityUsedForEstimate,
     MoneyEntity? additionalShippingCostPerUnit,
     String? shippingCostType,
   }) {
@@ -31,7 +28,6 @@ class ShippingOptionEntity extends Equatable {
       shippingServiceCode: shippingServiceCode ?? this.shippingServiceCode,
       type: type ?? this.type,
       shippingCost: shippingCost ?? this.shippingCost,
-      quantityUsedForEstimate: quantityUsedForEstimate ?? this.quantityUsedForEstimate,
       additionalShippingCostPerUnit: additionalShippingCostPerUnit ?? this.additionalShippingCostPerUnit,
       shippingCostType: shippingCostType ?? this.shippingCostType,
     );
@@ -42,7 +38,6 @@ class ShippingOptionEntity extends Equatable {
         shippingServiceCode,
         type,
         shippingCost,
-        quantityUsedForEstimate,
         additionalShippingCostPerUnit,
         shippingCostType,
       ];

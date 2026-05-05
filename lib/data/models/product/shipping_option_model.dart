@@ -7,7 +7,6 @@ class ShippingOptionModel extends Equatable {
   final String shippingServiceCode;
   final String type;
   final MoneyModel? shippingCost;
-  final int? quantityUsedForEstimate;
   final MoneyModel? additionalShippingCostPerUnit;
   final String? shippingCostType;
 
@@ -15,7 +14,6 @@ class ShippingOptionModel extends Equatable {
     required this.shippingServiceCode,
     required this.type,
     this.shippingCost,
-    this.quantityUsedForEstimate,
     this.additionalShippingCostPerUnit,
     this.shippingCostType,
   });
@@ -25,7 +23,6 @@ class ShippingOptionModel extends Equatable {
       shippingServiceCode: json['shippingServiceCode'] ?? '',
       type: json['type'] ?? '',
       shippingCost: json['shippingCost'] is Map ? MoneyModel.fromJson(json['shippingCost']) : null,
-      quantityUsedForEstimate: json['quantityUsedForEstimate'] is int ? json['quantityUsedForEstimate'] : (json['quantityUsedForEstimate'] != null ? int.tryParse(json['quantityUsedForEstimate'].toString()) : null),
       additionalShippingCostPerUnit: json['additionalShippingCostPerUnit'] is Map ? MoneyModel.fromJson(json['additionalShippingCostPerUnit']) : null,
       shippingCostType: json['shippingCostType']?.toString(),
     );
@@ -36,7 +33,6 @@ class ShippingOptionModel extends Equatable {
       shippingServiceCode: shippingServiceCode,
       type: type,
       shippingCost: shippingCost?.toEntity(),
-      quantityUsedForEstimate: quantityUsedForEstimate,
       additionalShippingCostPerUnit: additionalShippingCostPerUnit?.toEntity(),
       shippingCostType: shippingCostType,
     );
@@ -47,7 +43,6 @@ class ShippingOptionModel extends Equatable {
         shippingServiceCode,
         type,
         shippingCost,
-        quantityUsedForEstimate,
         additionalShippingCostPerUnit,
         shippingCostType,
       ];

@@ -241,7 +241,6 @@ const tShippingOptionModelList = [
     shippingServiceCode: "Standard Shipping",
     type: "Standard Shipping",
     shippingCost: tMoneyModel,
-    quantityUsedForEstimate: 1,
     additionalShippingCostPerUnit: tMoneyModel,
     shippingCostType: "FIXED",
   ),
@@ -252,7 +251,6 @@ const tShippingOptionEntityList = [
     shippingServiceCode: "Standard Shipping",
     type: "Standard Shipping",
     shippingCost: tMoneyEntity,
-    quantityUsedForEstimate: 1,
     additionalShippingCostPerUnit: tMoneyEntity,
     shippingCostType: "FIXED",
   ),
@@ -262,7 +260,6 @@ const tShippingOptionEntity = ShippingOptionEntity(
   shippingServiceCode: "Standard Shipping",
   type: "Standard Shipping",
   shippingCost: tMoneyEntity,
-  quantityUsedForEstimate: 1,
   additionalShippingCostPerUnit: tMoneyEntity,
   shippingCostType: "FIXED",
 );
@@ -271,7 +268,6 @@ const tShippingOptionEntityNullValues = ShippingOptionEntity(
   shippingServiceCode: "Standard Shipping",
   type: "Standard Shipping",
   shippingCost: null,
-  quantityUsedForEstimate: null,
   additionalShippingCostPerUnit: null,
   shippingCostType: null,
 );

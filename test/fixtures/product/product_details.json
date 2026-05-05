@@ -131,7 +131,6 @@
         "value": 0.00,
         "currency": "USD"
       },
-      "quantityUsedForEstimate": 1,
       "additionalShippingCostPerUnit": {
         "value": 0.00,
         "currency": "USD"
