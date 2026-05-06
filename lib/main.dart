@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'core/routes/app_router.dart';
 import 'core/themes/app_theme.dart';
 import 'presentation/blocs/auth/auth_bloc.dart';
-import 'presentation/cubits/cart/cart_cubit.dart';
+import 'presentation/blocs/cart/cart_bloc.dart';
 import 'presentation/cubits/wishlist/wishlist_cubit.dart';
 import 'service_locator.dart';
 
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
           create: (_) => sl<AuthBloc>()..add(const AuthCheckStatus()),
         ),
         BlocProvider(
-          create: (_) => sl<CartCubit>(),
+          create: (_) => sl<CartBloc>(),
         ),
         BlocProvider(
           create: (_) => sl<WishlistCubit>(),

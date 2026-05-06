@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/extensions/currency_extension.dart';
 import '../../../core/extensions/theme_extensions.dart';
-import '../../cubits/cart/cart_cubit.dart';
+import '../../blocs/cart/cart_bloc.dart'; // contains CartBloc and events now
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -16,7 +16,8 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<CartCubit>().getCart();
+    // switch from calling cubit method to adding GetCartEvent to the bloc
+    context.read<CartBloc>().add(const GetCartEvent());
   }
 
   @override
@@ -83,7 +84,7 @@ class _CartScreenState extends State<CartScreen> {
               const SizedBox(height: 32),
 
               // Cart-specific content
-              BlocBuilder<CartCubit, CartState>(
+              BlocBuilder<CartBloc, CartState>(
                 builder: (context, state) {
                   if (state is CartLoading) {
                     return const Center(child: CircularProgressIndicator());
@@ -435,7 +436,10 @@ class _CartScreenState extends State<CartScreen> {
                             color: colorScheme.outline,
                             size: 20,
                           ),
-                          onPressed: () {},
+                          onPressed: () async {
+                            // dispatch remove event
+                            context.read<CartBloc>().add(RemoveCartItemEvent(productId));
+                          },
                         ),
                       ],
                     ),
@@ -486,20 +490,17 @@ class _CartScreenState extends State<CartScreen> {
                 ),
                 child: Row(
                   children: [
-                    // Quantity controls: call CartCubit.updateCart on change
+                    // Quantity controls: call CartBloc by adding events on change
                     IconButton(
                       visualDensity: VisualDensity.compact,
                       icon: const Icon(Icons.remove, size: 16),
                       onPressed: () async {
-                        final cubit = context.read<CartCubit>();
+                        final bloc = context.read<CartBloc>();
                         if (quantity > 1) {
-                          await cubit.updateCart(
-                            productId: productId,
-                            quantity: quantity - 1,
-                          );
+                          bloc.add(UpdateCartEvent(productId: productId, quantity: quantity - 1));
                         } else {
                           // if quantity would go to 0, remove the item
-                          await cubit.removeCartItem(productId);
+                          bloc.add(RemoveCartItemEvent(productId));
                         }
                       },
                     ),
@@ -516,10 +517,7 @@ class _CartScreenState extends State<CartScreen> {
                       visualDensity: VisualDensity.compact,
                       icon: const Icon(Icons.add, size: 16),
                       onPressed: () async {
-                        await context.read<CartCubit>().updateCart(
-                          productId: productId,
-                          quantity: quantity + 1,
-                        );
+                        context.read<CartBloc>().add(UpdateCartEvent(productId: productId, quantity: quantity + 1));
                       },
                     ),
                   ],

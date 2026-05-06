@@ -8,7 +8,7 @@ import '../../../core/extensions/currency_extension.dart';
 import '../../../core/extensions/theme_extensions.dart';
 import '../../../domain/entity/product/product_details_entity.dart';
 import '../../blocs/product/product_bloc.dart';
-import '../../cubits/cart/cart_cubit.dart';
+import '../../blocs/cart/cart_bloc.dart';
 import '../../models/product_display_aspect.dart';
 import '../../notifiers/product_details_notifier.dart';
 
@@ -228,7 +228,7 @@ class _ProductHeader extends StatelessWidget {
   }
 
   void _showCartDialog(BuildContext context, ProductDetailsEntity product) {
-    final cartCubit = context.read<CartCubit>();
+    final cartCubit = context.read<CartBloc>();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -454,7 +454,7 @@ class CartDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CartCubit, CartState>(
+    return BlocListener<CartBloc, CartState>(
       listener: (context, state) {
         if (state is CartSuccess) {
           Navigator.of(context).pop();
@@ -542,9 +542,11 @@ class CartDialog extends StatelessWidget {
             AppButton(
               onPressed: () {
                 final notifier = context.read<ProductDetailsNotifier>();
-                context.read<CartCubit>().addToCart(
-                  productId: product.id,
-                  quantity: notifier.quantity,
+                context.read<CartBloc>().add(
+                  AddToCartEvent(
+                    productId: product.id,
+                    quantity: notifier.quantity,
+                  ),
                 );
               },
               title: 'Add to cart',

@@ -17,6 +17,22 @@ class CartItemEntity extends Equatable {
     required this.imageUrl,
   });
 
+  CartItemEntity copyWith({
+    String? productId,
+    String? name,
+    double? price,
+    int? quantity,
+    String? imageUrl,
+  }) {
+    return CartItemEntity(
+      productId: productId ?? this.productId,
+      name: name ?? this.name,
+      price: price ?? this.price,
+      quantity: quantity ?? this.quantity,
+      imageUrl: imageUrl ?? this.imageUrl,
+    );
+  }
+
   @override
   List<Object?> get props => [productId, name, price, quantity, imageUrl];
 }

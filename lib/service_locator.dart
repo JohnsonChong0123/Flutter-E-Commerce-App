@@ -37,7 +37,7 @@ import 'domain/usecases/wishlist/get_wishlist.dart';
 import 'domain/usecases/wishlist/remove_wishlist.dart';
 import 'presentation/blocs/auth/auth_bloc.dart';
 import 'data/sources/remote/product_remote_data.dart';
-import 'presentation/cubits/cart/cart_cubit.dart';
+import 'presentation/blocs/cart/cart_bloc.dart';
 import 'presentation/blocs/product/product_bloc.dart';
 import 'domain/usecases/product/get_product_by_id.dart';
 
@@ -154,7 +154,7 @@ void _initProduct() {
     // Domain layer: Use case
     ..registerLazySingleton(() => GetProducts(sl()))
     ..registerLazySingleton(() => GetProductById(sl()))
-    // Presentation layer: Cubit
+    // Presentation layer: Bloc
     ..registerFactory(
       () => ProductBloc(getProducts: sl(), getProductById: sl()),
     );
@@ -174,9 +174,9 @@ void _initCart() {
     ..registerLazySingleton(() => RemoveCartItem(sl()))
     ..registerLazySingleton(() => ClearCart(sl()))
     ..registerLazySingleton(() => UpdateCart(sl()))
-    // Presentation layer: Cubit
+    // Presentation layer: Bloc
     ..registerFactory(
-      () => CartCubit(
+      () => CartBloc(
         addToCart: sl(),
         getCart: sl(),
         removeCartItem: sl(),

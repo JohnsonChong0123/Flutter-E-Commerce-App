@@ -8,7 +8,7 @@ import 'package:e_commerce_client/domain/usecases/cart/clear_cart.dart';
 import 'package:e_commerce_client/domain/usecases/cart/get_cart.dart';
 import 'package:e_commerce_client/domain/usecases/cart/remove_cart_item.dart';
 import 'package:e_commerce_client/domain/usecases/cart/update_cart.dart';
-import 'package:e_commerce_client/presentation/cubits/cart/cart_cubit.dart';
+import 'package:e_commerce_client/presentation/blocs/cart/cart_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
@@ -29,11 +29,11 @@ void main() {
   late MockRemoveCartItem mockRemoveCartItem;
   late MockClearCart mockClearCart;
   late MockUpdateCart mockUpdateCart;
-  late CartCubit cartCubit;
+  late CartBloc cartBloc;
 
   const tParams = AddToCartParams(productId: '1', quantity: 2);
 
-  const tUpdateParams = UpdateCartParams(productId: '1', quantity: 2);
+  const tUpdateParams = UpdateCartParams(productId: 'B09NQJFRW6', quantity: 2);
 
   const productId = '1';
   const quantity = 2;
@@ -68,7 +68,7 @@ void main() {
     mockRemoveCartItem = MockRemoveCartItem();
     mockClearCart = MockClearCart();
     mockUpdateCart = MockUpdateCart();
-    cartCubit = CartCubit(
+    cartBloc = CartBloc(
       addToCart: mockAddToCart,
       getCart: mockGetCart,
       removeCartItem: mockRemoveCartItem,
@@ -77,32 +77,32 @@ void main() {
     );
   });
 
-  group('CartCubit AddToCart', () {
-    blocTest<CartCubit, CartState>(
+  group('CartBloc AddToCart', () {
+    blocTest<CartBloc, CartState>(
       'should emit [CartLoading, CartSuccess] when add to cart succeeds',
       build: () {
         when(
           () => mockAddToCart(tParams),
         ).thenAnswer((_) async => const Right(unit));
-        return cartCubit;
+        return cartBloc;
       },
-      act: (cubit) => cubit.addToCart(productId: productId, quantity: quantity),
+      act: (bloc) => bloc.add(const AddToCartEvent(productId: productId, quantity: quantity)),
       expect: () => [CartLoading(), CartSuccess()],
       verify: (_) {
         verify(() => mockAddToCart(tParams)).called(1);
       },
     );
 
-    blocTest<CartCubit, CartState>(
+    blocTest<CartBloc, CartState>(
       'should emit [CartLoading, CartFailure] when add to cart fails',
       build: () {
         when(
           () => mockAddToCart(tParams),
         ).thenAnswer((_) async => const Left(Failure('Failed to add to cart')));
 
-        return cartCubit;
+        return cartBloc;
       },
-      act: (cubit) => cubit.addToCart(productId: productId, quantity: quantity),
+      act: (bloc) => bloc.add(const AddToCartEvent(productId: productId, quantity: quantity)),
       expect: () => [
         CartLoading(),
         const CartFailure(message: 'Failed to add to cart'),
@@ -113,32 +113,32 @@ void main() {
     );
   });
 
-  group('CartCubit GetCart', () {
-    blocTest<CartCubit, CartState>(
-      'should emit [CartLoading, CartSuccess] when get cart succeeds',
+  group('CartBloc GetCart', () {
+    blocTest<CartBloc, CartState>(
+      'should emit [CartLoading, CartLoaded] when get cart succeeds',
       build: () {
         when(
           () => mockGetCart(NoParams()),
         ).thenAnswer((_) async => const Right(tCartEntity));
-        return cartCubit;
+        return cartBloc;
       },
-      act: (cubit) => cubit.getCart(),
+      act: (bloc) => bloc.add(const GetCartEvent()),
       expect: () => [CartLoading(), CartLoaded(carts: tCartEntity)],
       verify: (_) {
         verify(() => mockGetCart(NoParams())).called(1);
       },
     );
 
-    blocTest<CartCubit, CartState>(
+    blocTest<CartBloc, CartState>(
       'should emit [CartLoading, CartFailure] when get cart fails',
       build: () {
         when(
           () => mockGetCart(NoParams()),
         ).thenAnswer((_) async => const Left(Failure('Failed to get cart')));
 
-        return cartCubit;
+        return cartBloc;
       },
-      act: (cubit) => cubit.getCart(),
+      act: (bloc) => bloc.add(const GetCartEvent()),
       expect: () => [
         CartLoading(),
         const CartFailure(message: 'Failed to get cart'),
@@ -149,9 +149,9 @@ void main() {
     );
   });
 
-  group('CartCubit RemoveCartItem', () {
-    blocTest<CartCubit, CartState>(
-      'should emit [CartLoading, CartSuccess] when remove cart item succeeds',
+  group('CartBloc RemoveCartItem', () {
+    blocTest<CartBloc, CartState>(
+      'should emit [CartLoading, CartLoaded] when remove cart item succeeds',
       build: () {
         when(
           () => mockRemoveCartItem(RemoveCartItemParams(productId: productId)),
@@ -159,9 +159,9 @@ void main() {
         when(
           () => mockGetCart(NoParams()),
         ).thenAnswer((_) async => Right(tCartEntity));
-        return cartCubit;
+        return cartBloc;
       },
-      act: (cubit) => cubit.removeCartItem(productId),
+      act: (bloc) => bloc.add(const RemoveCartItemEvent(productId)),
       expect: () => [CartLoading(), CartLoaded(carts: tCartEntity)],
       verify: (_) {
         verify(
@@ -172,7 +172,7 @@ void main() {
       },
     );
 
-    blocTest<CartCubit, CartState>(
+    blocTest<CartBloc, CartState>(
       'should emit [CartLoading, CartFailure] when remove cart item fails',
       build: () {
         when(
@@ -181,9 +181,9 @@ void main() {
           (_) async => const Left(Failure('Failed to remove cart item')),
         );
 
-        return cartCubit;
+        return cartBloc;
       },
-      act: (cubit) => cubit.removeCartItem(productId),
+      act: (bloc) => bloc.add(const RemoveCartItemEvent(productId)),
       expect: () => [
         CartLoading(),
         const CartFailure(message: 'Failed to remove cart item'),
@@ -197,9 +197,9 @@ void main() {
     );
   });
 
-  group('CartCubit ClearCart', () {
-    blocTest<CartCubit, CartState>(
-      'should emit [CartLoading, CartSuccess] when clear cart succeeds',
+  group('CartBloc ClearCart', () {
+    blocTest<CartBloc, CartState>(
+      'should emit [CartLoading, CartLoaded] when clear cart succeeds',
       build: () {
         when(
           () => mockClearCart(NoParams()),
@@ -207,9 +207,9 @@ void main() {
         when(
           () => mockGetCart(NoParams()),
         ).thenAnswer((_) async => Right(tCartEntity));
-        return cartCubit;
+        return cartBloc;
       },
-      act: (cubit) => cubit.clearCart(),
+      act: (bloc) => bloc.add(const ClearCartEvent()),
       expect: () => [CartLoading(), CartLoaded(carts: tCartEntity)],
       verify: (_) {
         verify(() => mockClearCart(NoParams())).called(1);
@@ -217,15 +217,15 @@ void main() {
       },
     );
 
-    blocTest<CartCubit, CartState>(
+    blocTest<CartBloc, CartState>(
       'should emit [CartLoading, CartFailure] when clear cart fails',
       build: () {
         when(
           () => mockClearCart(NoParams()),
         ).thenAnswer((_) async => const Left(Failure('Failed to clear cart')));
-        return cartCubit;
+        return cartBloc;
       },
-      act: (cubit) => cubit.clearCart(),
+      act: (bloc) => bloc.add(const ClearCartEvent()),
       expect: () => [
         CartLoading(),
         const CartFailure(message: 'Failed to clear cart'),
@@ -237,45 +237,63 @@ void main() {
     );
   });
 
-  group('CartCubit UpdateCart', () {
-    blocTest<CartCubit, CartState>(
-      'should emit [CartLoading, CartLoaded] when update cart succeeds',
+  group('CartBloc UpdateCart', () {
+    blocTest<CartBloc, CartState>(
+      'should emit [CartLoaded] with updated item when update cart succeeds',
       build: () {
         when(
           () => mockUpdateCart(tUpdateParams),
         ).thenAnswer((_) async => const Right(unit));
-        when(
-          () => mockGetCart(NoParams()),
-        ).thenAnswer((_) async => Right(tCartEntity));
-        return cartCubit;
+        return cartBloc;
       },
-      act: (cubit) => cubit.updateCart(
-        productId: tUpdateParams.productId,
-        quantity: tUpdateParams.quantity,
-      ),
-      expect: () => [CartLoading(), CartLoaded(carts: tCartEntity)],
+
+      seed: () => CartLoaded(carts: tCartEntity),
+
+      act: (bloc) => bloc.add(UpdateCartEvent(productId: tUpdateParams.productId, quantity: tUpdateParams.quantity)),
+      wait: const Duration(milliseconds: 100),
+
+      expect: () {
+        final updatedItems = tCartEntity.items.map((item) {
+          if (item.productId == tUpdateParams.productId) {
+            return item.copyWith(quantity: tUpdateParams.quantity);
+          }
+          return item;
+        }).toList();
+
+        final expectedTotal = updatedItems.fold<double>(
+          0,
+          (prev, element) => prev + (element.price * element.quantity),
+        );
+
+        return [
+          CartLoaded(
+            carts: tCartEntity.copyWith(
+              items: updatedItems,
+              cartTotal: expectedTotal,
+            ),
+          ),
+        ];
+      },
       verify: (_) {
         verify(() => mockUpdateCart(tUpdateParams)).called(1);
-        verify(() => mockGetCart(NoParams())).called(1);
+        verifyNever(() => mockGetCart(NoParams()));
       },
     );
 
-    blocTest<CartCubit, CartState>(
-      'should emit [CartLoading, CartFailure] when update cart fails',
+    blocTest<CartBloc, CartState>(
+      'should emit [CartFailure] when update cart fails',
       build: () {
         when(
           () => mockUpdateCart(tUpdateParams),
         ).thenAnswer((_) async => const Left(Failure('Failed to update cart')));
-        return cartCubit;
+        return cartBloc;
       },
-      act: (cubit) => cubit.updateCart(
-        productId: tUpdateParams.productId,
-        quantity: tUpdateParams.quantity,
-      ),
-      expect: () => [
-        CartLoading(),
-        const CartFailure(message: 'Failed to update cart'),
-      ],
+      seed: () => CartLoaded(carts: tCartEntity),
+
+      act: (bloc) => bloc.add(UpdateCartEvent(productId: tUpdateParams.productId, quantity: tUpdateParams.quantity)),
+
+      expect: () => [const CartFailure(message: 'Failed to update cart')],
+
       verify: (_) {
         verify(() => mockUpdateCart(tUpdateParams)).called(1);
         verifyNever(() => mockGetCart(NoParams()));
