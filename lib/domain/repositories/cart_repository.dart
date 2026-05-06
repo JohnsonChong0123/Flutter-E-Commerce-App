@@ -13,4 +13,9 @@ abstract interface class CartRepository {
   Future<Either<Failure, Unit>> removeCartItem(String productId);
 
   Future<Either<Failure, Unit>> clearCart();
+
+  Future<Either<Failure, Unit>> updateCart({
+    required String productId,
+    required int quantity,
+  });
 }
