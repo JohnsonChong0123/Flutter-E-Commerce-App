@@ -30,7 +30,7 @@ class CartRepositoryImpl implements CartRepository {
       return left(Failure(e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, Unit>> removeCartItem(String productId) async {
     try {
@@ -40,11 +40,24 @@ class CartRepositoryImpl implements CartRepository {
       return left(Failure(e.message));
     }
   }
-  
+
   @override
   Future<Either<Failure, Unit>> clearCart() async {
     try {
       await cartRemoteData.clearCart();
+      return right(unit);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> updateCart({
+    required String productId,
+    required int quantity,
+  }) async {
+    try {
+      await cartRemoteData.updateCart(productId: productId, quantity: quantity);
       return right(unit);
     } on ServerException catch (e) {
       return left(Failure(e.message));

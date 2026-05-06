@@ -15,7 +15,7 @@ void main() {
   late CartRepositoryImpl cartRepository;
 
   const tQuantity = 2;
-  
+
   setUp(() {
     mockCartRemoteData = MockCartRemoteData();
     cartRepository = CartRepositoryImpl(cartRemoteData: mockCartRemoteData);
@@ -177,6 +177,63 @@ void main() {
       // assert
       expect(result, equals(left(const Failure('Failed to clear cart'))));
       verify(() => mockCartRemoteData.clearCart()).called(1);
+      verifyNoMoreInteractions(mockCartRemoteData);
+    });
+  });
+
+  group('updateCart', () {
+    test(
+      'should return Right(Unit) when updating cart is successful',
+      () async {
+        // arrange
+        when(
+          () => mockCartRemoteData.updateCart(
+            productId: tProductId,
+            quantity: tQuantity,
+          ),
+        ).thenAnswer((_) async => {});
+
+        // act
+        final result = await cartRepository.updateCart(
+          productId: tProductId,
+          quantity: tQuantity,
+        );
+
+        // assert
+        expect(result, equals(right(unit)));
+        verify(
+          () => mockCartRemoteData.updateCart(
+            productId: tProductId,
+            quantity: tQuantity,
+          ),
+        ).called(1);
+        verifyNoMoreInteractions(mockCartRemoteData);
+      },
+    );
+
+    test('should return Left(Failure) when updating cart fails', () async {
+      // arrange
+      when(
+        () => mockCartRemoteData.updateCart(
+          productId: tProductId,
+          quantity: tQuantity,
+        ),
+      ).thenThrow(ServerException('Failed to update cart'));
+
+      // act
+      final result = await cartRepository.updateCart(
+        productId: tProductId,
+        quantity: tQuantity,
+      );
+
+      // assert
+      expect(result, equals(left(const Failure('Failed to update cart'))));
+      verify(
+        () => mockCartRemoteData.updateCart(
+          productId: tProductId,
+          quantity: tQuantity,
+        ),
+      ).called(1);
       verifyNoMoreInteractions(mockCartRemoteData);
     });
   });

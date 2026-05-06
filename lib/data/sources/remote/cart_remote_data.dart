@@ -8,6 +8,7 @@ abstract interface class CartRemoteData {
   Future<CartModel> getCart();
   Future<void> removeCartItem(String productId);
   Future<void> clearCart();
+  Future<void> updateCart({required String productId, required int quantity});
 }
 
 class CartRemoteDataImpl implements CartRemoteData {
@@ -92,6 +93,28 @@ class CartRemoteDataImpl implements CartRemoteData {
           headers: {'Content-Type': 'application/json'},
           extra: {'requiredAuth': true},
         ),
+      );
+    } on DioException catch (e) {
+      final error = e.error;
+      if (error is ServerException) {
+        throw error;
+      }
+      throw ServerException('An unexpected error occurred');
+    } catch (e) {
+      throw ServerException(e.toString());
+    }
+  }
+
+  @override
+  Future<void> updateCart({required String productId, required int quantity}) async {
+    try {
+      await dio.put(
+        '/cart/update',
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+          extra: {'requiredAuth': true},
+        ),
+        data: {'product_id': productId, 'quantity': quantity},
       );
     } on DioException catch (e) {
       final error = e.error;

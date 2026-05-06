@@ -310,4 +310,85 @@ void main() {
       expect(result, throwsA(isA<ServerException>()));
     });
   });
+
+  group('updateCart', () {
+    test('should complete when response code is 200', () async {
+      // arrange
+      when(
+        () => mockDio.post(
+          any(),
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: '/cart/update'),
+          statusCode: 200,
+          data: {},
+        ),
+      );
+
+      // act
+      final result = cartRemoteData.updateCart(
+        productId: tProductId,
+        quantity: tQuantity,
+      );
+
+      // assert
+      expect(result, completes);
+
+      verify(
+        () => mockDio.post(
+          '/cart/update',
+          data: {'product_id': tProductId, 'quantity': tQuantity},
+          options: any(named: 'options'),
+        ),
+      ).called(1);
+    });
+
+    test('should throw ServerException on DioException', () async {
+      // arrange
+      when(
+        () => mockDio.post(
+          '/carts/update',
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/'),
+          message: 'Timeout',
+        ),
+      );
+
+      // act
+      final result = cartRemoteData.updateCart(
+        productId: tProductId,
+        quantity: tQuantity,
+      );
+
+      // assert
+      expect(result, throwsA(isA<ServerException>()));
+    });
+
+    test('should throw ServerException on unknown exception', () async {
+      // arrange
+      when(
+        () => mockDio.post(
+          '/carts/update',
+          data: any(named: 'data'),
+          options: any(named: 'options'),
+        ),
+      ).thenThrow(Exception('boom'));
+
+      // act
+      final result = cartRemoteData.updateCart(
+        productId: tProductId,
+        quantity: tQuantity,
+      );
+
+      // assert
+      expect(result, throwsA(isA<ServerException>()));
+    });
+  });
 }
