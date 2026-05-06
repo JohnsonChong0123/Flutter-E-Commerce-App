@@ -51,7 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
               IconButton(
                 icon: const Icon(Icons.shopping_bag_outlined),
                 color: Colors.grey.shade600,
-                onPressed: () {},
+                onPressed: () {
+                  context.goNamed(AppRouter.cartName);
+                },
               ),
               const SizedBox(width: 8),
             ],
