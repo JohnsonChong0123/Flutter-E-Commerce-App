@@ -30,6 +30,7 @@ import 'domain/usecases/auth/sign_up.dart';
 import 'domain/usecases/cart/add_to_cart.dart';
 import 'domain/usecases/cart/clear_cart.dart';
 import 'domain/usecases/cart/get_cart.dart';
+import 'domain/usecases/cart/update_cart.dart';
 import 'domain/usecases/product/get_products.dart';
 import 'domain/usecases/wishlist/clear_wishlist.dart';
 import 'domain/usecases/wishlist/get_wishlist.dart';
@@ -172,6 +173,7 @@ void _initCart() {
     ..registerLazySingleton(() => GetCart(sl()))
     ..registerLazySingleton(() => RemoveCartItem(sl()))
     ..registerLazySingleton(() => ClearCart(sl()))
+    ..registerLazySingleton(() => UpdateCart(sl()))
     // Presentation layer: Cubit
     ..registerFactory(
       () => CartCubit(
@@ -179,6 +181,7 @@ void _initCart() {
         getCart: sl(),
         removeCartItem: sl(),
         clearCart: sl(),
+        updateCart: sl(),
       ),
     );
 }

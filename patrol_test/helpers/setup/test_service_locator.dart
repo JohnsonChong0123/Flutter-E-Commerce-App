@@ -18,6 +18,7 @@ import 'package:e_commerce_client/domain/usecases/cart/add_to_cart.dart';
 import 'package:e_commerce_client/domain/usecases/cart/clear_cart.dart';
 import 'package:e_commerce_client/domain/usecases/cart/get_cart.dart';
 import 'package:e_commerce_client/domain/usecases/cart/remove_cart_item.dart';
+import 'package:e_commerce_client/domain/usecases/cart/update_cart.dart';
 import 'package:e_commerce_client/domain/usecases/product/get_product_by_id.dart';
 import 'package:e_commerce_client/domain/usecases/product/get_products.dart';
 import 'package:e_commerce_client/presentation/blocs/auth/auth_bloc.dart';
@@ -89,12 +90,14 @@ Future<void> initTestServiceLocator({
     ..registerLazySingleton(() => GetCart(sl()))
     ..registerLazySingleton(() => RemoveCartItem(sl()))
     ..registerLazySingleton(() => ClearCart(sl()))
+    ..registerLazySingleton(() => UpdateCart(sl()))
     ..registerFactory(
       () => CartCubit(
         addToCart: sl(),
         getCart: sl(),
         removeCartItem: sl(),
         clearCart: sl(),
+        updateCart: sl(),
       ),
     );
 

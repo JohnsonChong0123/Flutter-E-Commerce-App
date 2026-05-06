@@ -7,6 +7,7 @@ import '../../../core/usecase/usecase.dart';
 import '../../../domain/entity/cart_entity.dart';
 import '../../../domain/usecases/cart/add_to_cart.dart';
 import '../../../domain/usecases/cart/clear_cart.dart';
+import '../../../domain/usecases/cart/update_cart.dart';
 
 part 'cart_state.dart';
 
@@ -15,16 +16,19 @@ class CartCubit extends Cubit<CartState> {
   final GetCart _getCart;
   final RemoveCartItem _removeCartItem;
   final ClearCart _clearCart;
+  final UpdateCart _updateCart;
 
   CartCubit({
     required AddToCart addToCart,
     required GetCart getCart,
     required RemoveCartItem removeCartItem,
     required ClearCart clearCart,
+    required UpdateCart updateCart,
   }) : _addToCart = addToCart,
        _getCart = getCart,
        _removeCartItem = removeCartItem,
        _clearCart = clearCart,
+       _updateCart = updateCart,
        super(CartInitial());
 
   Future<void> addToCart({
@@ -73,6 +77,25 @@ class CartCubit extends Cubit<CartState> {
 
     final result = await _clearCart(NoParams());
 
+    result.fold((failure) => emit(CartFailure(message: failure.message)), (
+      _,
+    ) async {
+      final cartResult = await _getCart(NoParams());
+      cartResult.fold(
+        (failure) => emit(CartFailure(message: failure.message)),
+        (carts) => emit(CartLoaded(carts: carts)),
+      );
+    });
+  }
+
+  Future<void> updateCart({
+    required String productId,
+    required int quantity,
+  }) async {
+    emit(CartLoading());
+    final result = await _updateCart(
+      UpdateCartParams(productId: productId, quantity: quantity),
+    );
     result.fold((failure) => emit(CartFailure(message: failure.message)), (
       _,
     ) async {
