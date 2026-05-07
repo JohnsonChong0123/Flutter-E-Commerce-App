@@ -315,7 +315,7 @@ void main() {
     test('should complete when response code is 200', () async {
       // arrange
       when(
-        () => mockDio.post(
+        () => mockDio.put(
           any(),
           data: any(named: 'data'),
           options: any(named: 'options'),
@@ -338,7 +338,7 @@ void main() {
       expect(result, completes);
 
       verify(
-        () => mockDio.post(
+        () => mockDio.put(
           '/cart/update',
           data: {'product_id': tProductId, 'quantity': tQuantity},
           options: any(named: 'options'),
