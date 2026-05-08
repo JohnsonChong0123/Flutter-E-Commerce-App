@@ -86,7 +86,9 @@ void main() {
         ).thenAnswer((_) async => const Right(unit));
         return cartBloc;
       },
-      act: (bloc) => bloc.add(const AddToCartEvent(productId: productId, quantity: quantity)),
+      act: (bloc) => bloc.add(
+        const AddToCartEvent(productId: productId, quantity: quantity),
+      ),
       expect: () => [CartLoading(), CartSuccess()],
       verify: (_) {
         verify(() => mockAddToCart(tParams)).called(1);
@@ -102,7 +104,9 @@ void main() {
 
         return cartBloc;
       },
-      act: (bloc) => bloc.add(const AddToCartEvent(productId: productId, quantity: quantity)),
+      act: (bloc) => bloc.add(
+        const AddToCartEvent(productId: productId, quantity: quantity),
+      ),
       expect: () => [
         CartLoading(),
         const CartFailure(message: 'Failed to add to cart'),
@@ -249,29 +253,32 @@ void main() {
 
       seed: () => CartLoaded(carts: tCartEntity),
 
-      act: (bloc) => bloc.add(UpdateCartEvent(productId: tUpdateParams.productId, quantity: tUpdateParams.quantity)),
-      wait: const Duration(milliseconds: 100),
+      act: (bloc) {
+        bloc.add(
+          UpdateCartQuantityLocalEvent(
+            productId: tUpdateParams.productId,
+            newQuantity: tUpdateParams.quantity,
+          ),
+        );
+        bloc.add(
+          UpdateCartEvent(
+            productId: tUpdateParams.productId,
+            quantity: tUpdateParams.quantity,
+          ),
+        );
+      },
+
+      wait: const Duration(milliseconds: 600),
 
       expect: () {
-        final updatedItems = tCartEntity.items.map((item) {
-          if (item.productId == tUpdateParams.productId) {
-            return item.copyWith(quantity: tUpdateParams.quantity);
-          }
-          return item;
-        }).toList();
-
-        final expectedTotal = updatedItems.fold<double>(
-          0,
-          (prev, element) => prev + (element.price * element.quantity),
+        final tUpdateCart = tCartEntity.updateQuantityAndTotal(
+          tUpdateParams.productId,
+          tUpdateParams.quantity,
         );
 
         return [
-          CartLoaded(
-            carts: tCartEntity.copyWith(
-              items: updatedItems,
-              cartTotal: expectedTotal,
-            ),
-          ),
+          CartLoaded(carts: tUpdateCart, isCalculating: true),
+          CartLoaded(carts: tUpdateCart, isCalculating: false),
         ];
       },
       verify: (_) {
@@ -290,9 +297,32 @@ void main() {
       },
       seed: () => CartLoaded(carts: tCartEntity),
 
-      act: (bloc) => bloc.add(UpdateCartEvent(productId: tUpdateParams.productId, quantity: tUpdateParams.quantity)),
+      act: (bloc) {
+        bloc.add(
+          UpdateCartQuantityLocalEvent(
+            productId: tUpdateParams.productId,
+            newQuantity: tUpdateParams.quantity,
+          ),
+        );
+        bloc.add(
+          UpdateCartEvent(
+            productId: tUpdateParams.productId,
+            quantity: tUpdateParams.quantity,
+          ),
+        );
+      },
+      wait: const Duration(milliseconds: 600),
+      expect: () {
+        final tUpdateCart = tCartEntity.updateQuantityAndTotal(
+          tUpdateParams.productId,
+          tUpdateParams.quantity,
+        );
 
-      expect: () => [const CartFailure(message: 'Failed to update cart')],
+        return [
+          CartLoaded(carts: tUpdateCart, isCalculating: true),
+          const CartFailure(message: 'Failed to update cart'),
+        ];
+      },
 
       verify: (_) {
         verify(() => mockUpdateCart(tUpdateParams)).called(1);

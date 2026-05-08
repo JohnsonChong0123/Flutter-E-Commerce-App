@@ -93,7 +93,7 @@ class _CartScreenState extends State<CartScreen> {
                   } else if (state is CartLoaded) {
                     final cartItems = state.carts.items;
                     final cartTotal = state.carts.cartTotal;
-
+                    final bool isCalculating = state.isCalculating; 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -151,7 +151,7 @@ class _CartScreenState extends State<CartScreen> {
                                 context.theme.textTheme,
                                 context.theme.colorScheme,
                                 'Subtotal',
-                                '\$${cartTotal.toStringAsFixed(2)}',
+                                isCalculating ? 'Calculating...' : '\$${cartTotal.toStringAsFixed(2)}',
                               ),
 
                               const SizedBox(height: 16),
@@ -438,7 +438,9 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                           onPressed: () async {
                             // dispatch remove event
-                            context.read<CartBloc>().add(RemoveCartItemEvent(productId));
+                            context.read<CartBloc>().add(
+                              RemoveCartItemEvent(productId),
+                            );
                           },
                         ),
                       ],
@@ -497,7 +499,19 @@ class _CartScreenState extends State<CartScreen> {
                       onPressed: () async {
                         final bloc = context.read<CartBloc>();
                         if (quantity > 1) {
-                          bloc.add(UpdateCartEvent(productId: productId, quantity: quantity - 1));
+                          final newQty = quantity - 1;
+                          bloc.add(
+                            UpdateCartQuantityLocalEvent(
+                              productId: productId,
+                              newQuantity: newQty,
+                            ),
+                          );
+                          bloc.add(
+                            UpdateCartEvent(
+                              productId: productId,
+                              quantity: newQty,
+                            ),
+                          );
                         } else {
                           // if quantity would go to 0, remove the item
                           bloc.add(RemoveCartItemEvent(productId));
@@ -517,7 +531,20 @@ class _CartScreenState extends State<CartScreen> {
                       visualDensity: VisualDensity.compact,
                       icon: const Icon(Icons.add, size: 16),
                       onPressed: () async {
-                        context.read<CartBloc>().add(UpdateCartEvent(productId: productId, quantity: quantity + 1));
+                        final bloc = context.read<CartBloc>();
+                        final newQty = quantity + 1;
+                        bloc.add(
+                          UpdateCartQuantityLocalEvent(
+                            productId: productId,
+                            newQuantity: newQty,
+                          ),
+                        );
+                        bloc.add(
+                          UpdateCartEvent(
+                            productId: productId,
+                            quantity: newQty,
+                          ),
+                        );
                       },
                     ),
                   ],

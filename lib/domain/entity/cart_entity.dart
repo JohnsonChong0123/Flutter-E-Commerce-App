@@ -13,6 +13,22 @@ class CartEntity extends Equatable {
     required this.cartTotal,
   });
 
+  CartEntity updateQuantityAndTotal(String productId, int newQuantity) {
+    final updatedItems = items.map((item) {
+      if (item.productId == productId) {
+        return item.copyWith(quantity: newQuantity);
+      }
+      return item;
+    }).toList();
+
+    final newTotal = updatedItems.fold<double>(
+      0,
+      (sum, item) => sum + (item.price * item.quantity),
+    );
+
+    return copyWith(items: updatedItems, cartTotal: newTotal);
+  }
+
   CartEntity copyWith({
     String? id,
     List<CartItemEntity>? items,
