@@ -1,8 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:e_commerce_client/core/errors/failure.dart';
 import 'package:e_commerce_client/core/usecase/usecase.dart';
-import 'package:e_commerce_client/domain/entity/cart_entity.dart';
-import 'package:e_commerce_client/domain/entity/cart_item_entity.dart';
 import 'package:e_commerce_client/domain/usecases/cart/add_to_cart.dart';
 import 'package:e_commerce_client/domain/usecases/cart/clear_cart.dart';
 import 'package:e_commerce_client/domain/usecases/cart/get_cart.dart';
@@ -12,6 +10,8 @@ import 'package:e_commerce_client/presentation/blocs/cart/cart_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
+import '../../../fixtures/cart/cart_fixtures.dart';
+import '../../../fixtures/product/product_fixtures.dart';
 
 class MockAddToCart extends Mock implements AddToCart {}
 
@@ -31,35 +31,16 @@ void main() {
   late MockUpdateCart mockUpdateCart;
   late CartBloc cartBloc;
 
-  const tParams = AddToCartParams(productId: '1', quantity: 2);
+  const tQuantity = 3;
 
-  const tUpdateParams = UpdateCartParams(productId: 'B09NQJFRW6', quantity: 2);
+  const tParams = AddToCartParams(
+    productId: tProductId,
+    quantity: tQuantity,
+  );
 
-  const productId = '1';
-  const quantity = 2;
-
-  const tCartEntity = CartEntity(
-    id: '1d3ed0a0-b460-4137-81b6-7e4befc3b63b',
-    items: [
-      CartItemEntity(
-        productId: 'B09NQJFRW6',
-        name: 'Saucony Men\'s Kinvara 13 Running Shoe',
-        price: 57.79,
-        quantity: 3,
-        imageUrl:
-            'https://m.media-amazon.com/images/I/71QeGmahUnL._AC_UX500_.jpg',
-      ),
-      CartItemEntity(
-        productId: 'B0CY242B8P',
-        name:
-            '4th of July Door Sign Independence Day Wreath Patriotic Door Decoration Flower US Wooden Sign for Memorial Day Front for Door Decor 12 Inch Outdoor',
-        price: 7.99,
-        quantity: 3,
-        imageUrl:
-            'https://m.media-amazon.com/images/I/81BvLYGKcuL._AC_SL1500_.jpg',
-      ),
-    ],
-    cartTotal: 197.34,
+  const tUpdateParams = UpdateCartParams(
+    productId: tProductId,
+    quantity: tQuantity,
   );
 
   setUp(() {
@@ -87,7 +68,7 @@ void main() {
         return cartBloc;
       },
       act: (bloc) => bloc.add(
-        const AddToCartEvent(productId: productId, quantity: quantity),
+        const AddToCartEvent(productId: tProductId, quantity: tQuantity),
       ),
       expect: () => [CartLoading(), CartSuccess()],
       verify: (_) {
@@ -105,7 +86,7 @@ void main() {
         return cartBloc;
       },
       act: (bloc) => bloc.add(
-        const AddToCartEvent(productId: productId, quantity: quantity),
+        const AddToCartEvent(productId: tProductId, quantity: tQuantity),
       ),
       expect: () => [
         CartLoading(),
@@ -158,18 +139,18 @@ void main() {
       'should emit [CartLoading, CartLoaded] when remove cart item succeeds',
       build: () {
         when(
-          () => mockRemoveCartItem(RemoveCartItemParams(productId: productId)),
+          () => mockRemoveCartItem(RemoveCartItemParams(productId: tProductId)),
         ).thenAnswer((_) async => const Right(unit));
         when(
           () => mockGetCart(NoParams()),
         ).thenAnswer((_) async => Right(tCartEntity));
         return cartBloc;
       },
-      act: (bloc) => bloc.add(const RemoveCartItemEvent(productId)),
+      act: (bloc) => bloc.add(const RemoveCartItemEvent(tProductId)),
       expect: () => [CartLoading(), CartLoaded(carts: tCartEntity)],
       verify: (_) {
         verify(
-          () => mockRemoveCartItem(RemoveCartItemParams(productId: productId)),
+          () => mockRemoveCartItem(RemoveCartItemParams(productId: tProductId)),
         ).called(1);
 
         verify(() => mockGetCart(NoParams())).called(1);
@@ -180,21 +161,21 @@ void main() {
       'should emit [CartLoading, CartFailure] when remove cart item fails',
       build: () {
         when(
-          () => mockRemoveCartItem(RemoveCartItemParams(productId: productId)),
+          () => mockRemoveCartItem(RemoveCartItemParams(productId: tProductId)),
         ).thenAnswer(
           (_) async => const Left(Failure('Failed to remove cart item')),
         );
 
         return cartBloc;
       },
-      act: (bloc) => bloc.add(const RemoveCartItemEvent(productId)),
+      act: (bloc) => bloc.add(const RemoveCartItemEvent(tProductId)),
       expect: () => [
         CartLoading(),
         const CartFailure(message: 'Failed to remove cart item'),
       ],
       verify: (_) {
         verify(
-          () => mockRemoveCartItem(RemoveCartItemParams(productId: productId)),
+          () => mockRemoveCartItem(RemoveCartItemParams(productId: tProductId)),
         ).called(1);
         verifyNever(() => mockGetCart(NoParams()));
       },

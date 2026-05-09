@@ -21,11 +21,20 @@ void main() {
 
   test('CartModel.toEntity should convert correctly', () {
     // act
-    final tCartEntity = tCartModel.toEntity();
+    final result = tCartModel.toEntity();
 
     // assert
-    expect(tCartEntity.id, tCartModel.id);
-    expect(tCartEntity.items, tCartModel.items.map((item) => item.toEntity()).toList());
-    expect(tCartEntity.cartTotal, tCartModel.cartTotal);
+    expect (result, tCartEntity);
+
+    expect(result.id, tCartModel.id);
+    expect(result.cartTotal, tCartModel.cartTotal);
+
+    expect(result.items.length, tCartModel.items.length);
+
+    expect(result.items.first.productId, tCartModel.items.first.productId);
+    expect(result.items.first.name, tCartModel.items.first.name);
+    expect(result.items.first.price, tCartModel.items.first.price);
+    expect(result.items.first.quantity, tCartModel.items.first.quantity);
+    expect(result.items.first.imageUrl, tCartModel.items.first.imageUrl);
   });
 }

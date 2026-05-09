@@ -13,8 +13,7 @@ void main() {
   late CartRepository mockRepository;
   late AddToCart usecase;
 
-  const tQuantity = 1;
-  const tParams = AddToCartParams(productId: tProductId, quantity: tQuantity);
+  const tParams = AddToCartParams(productId: tProductId, quantity: 2);
 
   setUp(() {
     mockRepository = MockCartRepository();

@@ -3,6 +3,7 @@ import 'package:e_commerce_client/data/models/cart/cart_model.dart';
 import 'package:e_commerce_client/domain/entity/cart_entity.dart';
 import 'package:e_commerce_client/domain/entity/cart_item_entity.dart';
 
+// CartModel and CartItemModel fixtures
 const tCartModel = CartModel(
   id: '1d3ed0a0-b460-4137-81b6-7e4befc3b63b',
   items: [
@@ -35,6 +36,7 @@ const tCartItemModel = CartItemModel(
   imageUrl: 'https://i.ebayimg.com/images/g/ZAIAAOSws5Nna86X/s-l225.jpg',
 );
 
+// CartEntity and CartItemEntity fixtures
 const tCartEntity = CartEntity(
   id: '1d3ed0a0-b460-4137-81b6-7e4befc3b63b',
   items: [
@@ -56,6 +58,15 @@ const tCartEntity = CartEntity(
     ),
   ],
   cartTotal: 2102.97,
+);
+
+const tCartItemEntity = CartItemEntity(
+  productId: 'v1|377049276589|645539111213',
+  name:
+      'NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked',
+  price: 481.99,
+  quantity: 3,
+  imageUrl: 'https://i.ebayimg.com/images/g/ZAIAAOSws5Nna86X/s-l225.jpg',
 );
 
 

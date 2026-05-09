@@ -13,7 +13,7 @@ void main() {
   late CartRepository mockRepository;
   late UpdateCart usecase;
 
-  const tQuantity = 1;
+  const tQuantity = 3;
   const tParams = UpdateCartParams(productId: tProductId, quantity: tQuantity);
 
   setUp(() {
