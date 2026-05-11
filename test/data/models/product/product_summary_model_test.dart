@@ -1,8 +1,7 @@
+import 'dart:convert';
 import 'package:e_commerce_client/data/models/product/product_summary_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../../../fixtures/fixture_reader.dart';
-import 'dart:convert';
-
 import '../../../fixtures/product/product_fixtures.dart';
 
 void main() {
@@ -12,19 +11,33 @@ void main() {
     tJsonMap = jsonDecode(fixture('product/product_summary.json'));
   });
 
-  test('fromJson should return valid ProductSummaryModel', () {
-    // act
-    final result = ProductSummaryModel.fromJson(tJsonMap);
+  group('ProductSummaryModel', () {
+    test('fromJson should return valid ProductSummaryModel', () {
+      // Act
+      final result = ProductSummaryModel.fromJson(tJsonMap);
 
-    // assert
-    expect(result, equals(tProductSummaryModel));
-  });
+      // Assert
+      expect(result, tProductSummaryModel);
 
-  test('ProductSummaryModel.toEntity should convert correctly', () {
-    // act
-    final tProductDetailsModeltoEntity = tProductSummaryModel.toEntity();
+      expect(result.id, tProductSummaryModel.id);
+      expect(result.name, tProductSummaryModel.name);
+      expect(result.initialPrice, tProductSummaryModel.initialPrice);
+      expect(result.finalPrice, tProductSummaryModel.finalPrice);
+      expect(result.imageUrl, tProductSummaryModel.imageUrl);
+    });
 
-    // assert
-    expect(tProductDetailsModeltoEntity, equals(tProductSummaryEntity));
+    test('toEntity should convert to ProductSummaryEntity correctly', () {
+      // Act
+      final result = tProductSummaryModel.toEntity();
+
+      // Assert
+      expect(result, tProductSummaryEntity);
+
+      expect(result.id, tProductSummaryModel.id);
+      expect(result.name, tProductSummaryModel.name);
+      expect(result.initialPrice, tProductSummaryModel.initialPrice);
+      expect(result.finalPrice, tProductSummaryModel.finalPrice);
+      expect(result.imageUrl, tProductSummaryModel.imageUrl);
+    });
   });
 }

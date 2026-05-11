@@ -11,7 +11,7 @@
     "https://i.ebayimg.com/images/g/7CwAAOSwu2Zna86k/s-l1600.jpg",
     "https://i.ebayimg.com/images/g/caIAAOSwRX5na86k/s-l1600.jpg"
   ],
-  "localizedAspects": [
+  "localized_aspects": [
     {
       "type": "STRING",
       "name": "CAPACITY",
@@ -123,7 +123,7 @@
       "value": "12 GB"
     }
   ],
-  "shippingOptions": [
+  "shipping_options": [
     {
       "shippingServiceCode": "Standard Shipping",
       "type": "Standard Shipping",

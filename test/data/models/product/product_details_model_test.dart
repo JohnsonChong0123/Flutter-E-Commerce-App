@@ -12,19 +12,41 @@ void main() {
     tJsonMap = jsonDecode(fixture('product/product_details.json'));
   });
 
-  test('fromJson should return valid ProductDetailsModel', () {
-    // act
-    final result = ProductDetailsModel.fromJson(tJsonMap);
+  group('ProductDetailsModel', () {
+    test('fromJson should return valid ProductDetailsModel', () {
+      // act
+      final result = ProductDetailsModel.fromJson(tJsonMap);
 
-    // assert
-    expect(result, equals(tProductDetailsModel));
-  });
+      // assert
+      expect(result, equals(tProductDetailsModel));
 
-  test('ProductDetailsModel.toEntity should convert correctly', () {
-    // act
-    final tProductDetailsModeltoEntity = tProductDetailsModel.toEntity();
+      expect(result.id, tProductDetailsModel.id);
+      expect(result.name, tProductDetailsModel.name);
+      expect(result.finalPrice, tProductDetailsModel.finalPrice);
+      expect(result.description, tProductDetailsModel.description);
+      expect(result.imageUrl, tProductDetailsModel.imageUrl);
+      expect(result.additionalImages, tProductDetailsModel.additionalImages);
+      expect(result.localizedAspects.length, tProductDetailsModel.localizedAspects.length);
+      expect(result.localizedAspects.first, tProductDetailsModel.localizedAspects.first);
+      expect(result.localizedAspects.first.name, tProductDetailsModel.localizedAspects.first.name);
+      expect(result.shippingOptions.length, tProductDetailsModel.shippingOptions.length);
+      expect(result.shippingOptions.first, tProductDetailsModel.shippingOptions.first);
+      expect(result.shippingOptions.first.shippingCost, tProductDetailsModel.shippingOptions.first.shippingCost);
+    });
 
-    // assert
-    expect(tProductDetailsModeltoEntity, equals(tProductDetailsEntity));
+    test('ProductDetailsModel.toEntity should convert correctly', () {
+      // act
+      final result = tProductDetailsModel.toEntity();
+
+      // assert
+      expect(result, tProductDetailsEntity);
+
+      expect(result.id, tProductDetailsModel.id);
+      expect(result.name, tProductDetailsModel.name);
+      expect(result.finalPrice, tProductDetailsModel.finalPrice);
+      expect(result.description, tProductDetailsModel.description);
+      expect(result.imageUrl, tProductDetailsModel.imageUrl);
+      expect(result.additionalImages, tProductDetailsModel.additionalImages);
+    });
   });
 }
