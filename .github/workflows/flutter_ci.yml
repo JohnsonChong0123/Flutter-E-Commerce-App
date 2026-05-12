@@ -8,10 +8,35 @@ on:
   pull_request:
     paths-ignore:
       - '**.md'
-      
+
 jobs:
+  unit_test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.38.9
+      
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+          key: ${{ runner.os }}-flutter-test-${{ hashFiles('**/pubspec.lock') }}
+      
+      - name: Install Dependencies
+        run: flutter pub get
+      
+      - name: Run Tests
+        run: flutter test
+
   release_build:
     name: Release Build
+    needs: unit_test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,7 +52,7 @@ jobs:
           path: |
             ~/.pub-cache
             ~/.gradle/caches
-          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+          key: ${{ runner.os }}-flutter-build-${{ hashFiles('**/pubspec.lock') }}
       
       - name: Decode and Setup Keystore
         run: |
@@ -51,9 +76,6 @@ jobs:
       
       - name: Install Dependencies
         run: flutter pub get
-      
-      - name: Run Tests
-        run: flutter test
       
       - name: Build Release APK
         run: flutter build apk --release -v
