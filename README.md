@@ -66,6 +66,7 @@ flutter test --coverage
 Test types covered:
 - Unit tests (use cases, repositories)
 - BLoC tests (`bloc_test`)
+- Integration tests (patrol tests)
 
 ---
 
@@ -104,21 +105,42 @@ cd Flutter-E-Commerce-App
 
 # 2. Set up environment variables
 cp .env.example .env
-# Fill in your credentials in .env
+cp ios/FlutterConfig.xcconfig.template ios/FlutterConfig.xcconfig
+# Fill in your credentials in .env and ios/FlutterConfig.xcconfig
 
 # 3. Install dependencies
 flutter pub get
+cd ios && pod install && cd ..
 
 # 4. Run the app
 flutter run
 ```
 
-### Environment Variables
+### Environment Variables & iOS Configurations
 
+To run this project, you need to configure environment variables for both the Dart layer and the iOS native layer.
+
+1. Dart Layer (.env)
+Create a .env file in the root directory:
 ```env
 GOOGLE_CLIENT_ID=your_google_client_id
 SERVER_URL=your_backend_api_url
 ```
+
+2. iOS Native Layer (FlutterConfig.xcconfig)
+To securely manage Google Sign-In credentials on iOS without leaking them to public GitHub, this project uses an xcconfig file mapped to Info.plist.
+
+Create ios/FlutterConfig.xcconfig (this file is ignored by git) and populate it with your Google iOS client IDs:
+```xcconfig
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"
+#include "Flutter/Generated.xcconfig"
+
+GOOGLE_CLIENT_ID = your_ios_client_id.apps.googleusercontent.com
+GOOGLE_REVERSED_CLIENT_ID = com.googleusercontent.apps.your_ios_client_id
+```
+
 > **Note**: If the backend service is not deployed online, please follow the instructions in the [Backend Repository](https://github.com/JohnsonChong0123/FastAPI-E-Commerce-Backend) to start the API service locally, and set `SERVER_URL` to your local address.
 
 ---
