@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../../../domain/entity/cart_item_entity.dart';
+import '../../../domain/entity/cart/cart_item_entity.dart';
 
 class CartItemModel extends Equatable {
   final String productId;

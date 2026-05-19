@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 import '../../../core/usecase/usecase.dart';
-import '../../../domain/entity/cart_entity.dart';
+import '../../../domain/entity/cart/cart_entity.dart';
 import '../../../domain/usecases/cart/add_to_cart.dart';
 import '../../../domain/usecases/cart/clear_cart.dart';
 import '../../../domain/usecases/cart/update_cart.dart';

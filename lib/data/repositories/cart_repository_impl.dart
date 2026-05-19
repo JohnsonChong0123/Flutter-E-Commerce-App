@@ -1,5 +1,5 @@
 import 'package:e_commerce_client/core/errors/failure.dart';
-import 'package:e_commerce_client/domain/entity/cart_entity.dart';
+import 'package:e_commerce_client/domain/entity/cart/cart_entity.dart';
 import 'package:fpdart/fpdart.dart';
 import '../../core/errors/exception.dart';
 import '../../domain/repositories/cart_repository.dart';

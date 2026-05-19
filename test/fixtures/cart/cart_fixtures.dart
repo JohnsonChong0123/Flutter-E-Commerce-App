@@ -1,7 +1,7 @@
 import 'package:e_commerce_client/data/models/cart/cart_item_model.dart';
 import 'package:e_commerce_client/data/models/cart/cart_model.dart';
-import 'package:e_commerce_client/domain/entity/cart_entity.dart';
-import 'package:e_commerce_client/domain/entity/cart_item_entity.dart';
+import 'package:e_commerce_client/domain/entity/cart/cart_entity.dart';
+import 'package:e_commerce_client/domain/entity/cart/cart_item_entity.dart';
 
 // CartModel and CartItemModel fixtures
 const tCartModel = CartModel(
