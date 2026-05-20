@@ -65,6 +65,7 @@ flutter test --coverage
 
 Test types covered:
 - Unit tests (use cases, repositories)
+- Widget tests (UI components)
 - BLoC tests (`bloc_test`)
 - Integration tests (patrol tests)
 
