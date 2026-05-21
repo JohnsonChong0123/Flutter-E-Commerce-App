@@ -94,10 +94,14 @@ void main() {
         await tester.pumpWidget(makeTestableWidget(const SignUpScreen()));
 
         // Initially, password should be obscured
-        TextField passwordField = tester.widget(
-          find.byKey(const Key('passwordField')),
+        final passwordFieldFinder = find.byKey(const Key('passwordField'));
+        final textFieldFinder = find.descendant(
+          of: passwordFieldFinder,
+          matching: find.byType(TextField),
         );
-        expect(passwordField.obscureText, isTrue);
+
+        TextField textField = tester.widget(textFieldFinder);
+        expect(textField.obscureText, isTrue);
 
         // Tap the eye icon to toggle visibility
         await tester.tap(
@@ -109,8 +113,8 @@ void main() {
         await tester.pump(); // Trigger a rebuild
 
         // After tapping, password should be visible
-        passwordField = tester.widget(find.byKey(const Key('passwordField')));
-        expect(passwordField.obscureText, isFalse);
+        textField = tester.widget(textFieldFinder);
+        expect(textField.obscureText, isFalse);
       },
     );
 
