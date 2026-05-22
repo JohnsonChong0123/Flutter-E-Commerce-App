@@ -75,8 +75,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         AspectRatio(
                           aspectRatio: 4 / 5,
-                          child: Image.network(
-                            'https://lh3.googleusercontent.com/aida-public/AB6AXuCmj49mhgcYWlriJDCZI8cuehYQaEsoD0F3SXtTupaYE4mlZzssOoaw4Ja1605Grv1E-1jM2ApAuMi4PPmmaGvjVDEaif4mLxwE-nZ1am4HPayjtxCZaUTa-671IuDW3aNmeSLlo_hVKXYuDUl_undr6AsZsT8GiBKaywBgkFXyj2FeyxPnUMJ1gRl4B5Dm2_s-Z2kNMFqlJGwj8VppiAq5FttV18vrkhp4VKDfIv3Epy3rwI7UdWdMEP3yLI9J4oGRuK4h7dPfZB0X',
+                          child: CachedNetworkImage(
+                            imageUrl:
+                                'https://lh3.googleusercontent.com/aida-public/AB6AXuCmj49mhgcYWlriJDCZI8cuehYQaEsoD0F3SXtTupaYE4mlZzssOoaw4Ja1605Grv1E-1jM2ApAuMi4PPmmaGvjVDEaif4mLxwE-nZ1am4HPayjtxCZaUTa-671IuDW3aNmeSLlo_hVKXYuDUl_undr6AsZsT8GiBKaywBgkFXyj2FeyxPnUMJ1gRl4B5Dm2_s-Z2kNMFqlJGwj8VppiAq5FttV18vrkhp4VKDfIv3Epy3rwI7UdWdMEP3yLI9J4oGRuK4h7dPfZB0X',
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -306,7 +307,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       child: FittedBox(
                                                         fit: BoxFit.contain,
                                                         child: Icon(
-                                                          Icons.image_not_supported,
+                                                          Icons
+                                                              .image_not_supported,
                                                           color: Colors.grey,
                                                         ),
                                                       ),
@@ -392,8 +394,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           AspectRatio(
                             aspectRatio: 16 / 9,
-                            child: Image.network(
-                              'https://lh3.googleusercontent.com/aida-public/AB6AXuCuwulb1RjHeZxO5wpAzhvs4hLOABTBqDsfeAY0uNrE1yTsp582X5-KKI_R4tdPfbuME48hz-MNHQBZE8LvhmgRtHGLX3mzimJx9bEW4hQfKcKv3y4RBFQSGzeT8n3q7Jb8SEKFz-U0hXiZl1tsGNt4Bujjqj03Ft-2hE2UoaXrVJNvhWPm_bRt9KChrCLFIjwTNKrf9gZq_dFx3USFNC9h8vd0K37odJrRT82QCEpwRpcn-wvomBJqS4nO4nkxFKAlEFWj3VSpOZ0o',
+                            child: CachedNetworkImage(
+                              imageUrl:
+                                  'https://lh3.googleusercontent.com/aida-public/AB6AXuCuwulb1RjHeZxO5wpAzhvs4hLOABTBqDsfeAY0uNrE1yTsp582X5-KKI_R4tdPfbuME48hz-MNHQBZE8LvhmgRtHGLX3mzimJx9bEW4hQfKcKv3y4RBFQSGzeT8n3q7Jb8SEKFz-U0hXiZl1tsGNt4Bujjqj03Ft-2hE2UoaXrVJNvhWPm_bRt9KChrCLFIjwTNKrf9gZq_dFx3USFNC9h8vd0K37odJrRT82QCEpwRpcn-wvomBJqS4nO4nkxFKAlEFWj3VSpOZ0o',
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -482,8 +485,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   aspectRatio: 1,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(12),
-                                    child: Image.network(
-                                      'https://lh3.googleusercontent.com/aida-public/AB6AXuD_kUq9xQM5I_n7C8IrSORhr6FW1MQ264w4M897b3vhmV-r4kV4qMGctfdaql1REd3tOESo-QY9r-JODT8XQIZPlffXGSBH1nUKhl4bYq-UPjecLIoyK23ses1yuaxxJe5o7tnMhJtCYT8WZWreFpTP0PsC-BpewO3crisUA9qQ-fRmYANJgq8GZk8ComGH_F5OM3DAoqzdkMb1j-j_oiezzUZd7C5Cr5DZOuJFcm5swbM1e0ejMhUZZDdccH7YvDV0R-PSm_kzT9fP',
+                                    child: CachedNetworkImage(
+                                      imageUrl:
+                                          'https://lh3.googleusercontent.com/aida-public/AB6AXuD_kUq9xQM5I_n7C8IrSORhr6FW1MQ264w4M897b3vhmV-r4kV4qMGctfdaql1REd3tOESo-QY9r-JODT8XQIZPlffXGSBH1nUKhl4bYq-UPjecLIoyK23ses1yuaxxJe5o7tnMhJtCYT8WZWreFpTP0PsC-BpewO3crisUA9qQ-fRmYANJgq8GZk8ComGH_F5OM3DAoqzdkMb1j-j_oiezzUZd7C5Cr5DZOuJFcm5swbM1e0ejMhUZZDdccH7YvDV0R-PSm_kzT9fP',
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -523,8 +527,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 aspectRatio: 1,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(12),
-                                  child: Image.network(
-                                    'https://lh3.googleusercontent.com/aida-public/AB6AXuAUwtYRM7hM0Zf96eQMISnXCMPo6LdBO2JI1PcOrv7B3YvhehJR_KKrU1R1AL-KE4Hj15nD96AnkqWwyrSDpufgL_HkuErOOomCJUsHNKUZsRQmk3pjkd7ZesGztpbeRpx74QnKzR3oO34Esil03QpACZTV77AVDh-egnHIb8xoPWJlV883nZXuB9btcKCxnykzUlhsJQcQsz6dvKuP3lZF-h7XBOcs9rtAYj3dqpEohw19DKFYhcNUJ4mnIEyc7-ZqXZSAesMPEP08',
+                                  child: CachedNetworkImage(
+                                    imageUrl:
+                                        'https://lh3.googleusercontent.com/aida-public/AB6AXuAUwtYRM7hM0Zf96eQMISnXCMPo6LdBO2JI1PcOrv7B3YvhehJR_KKrU1R1AL-KE4Hj15nD96AnkqWwyrSDpufgL_HkuErOOomCJUsHNKUZsRQmk3pjkd7ZesGztpbeRpx74QnKzR3oO34Esil03QpACZTV77AVDh-egnHIb8xoPWJlV883nZXuB9btcKCxnykzUlhsJQcQsz6dvKuP3lZF-h7XBOcs9rtAYj3dqpEohw19DKFYhcNUJ4mnIEyc7-ZqXZSAesMPEP08',
                                     fit: BoxFit.cover,
                                   ),
                                 ),
