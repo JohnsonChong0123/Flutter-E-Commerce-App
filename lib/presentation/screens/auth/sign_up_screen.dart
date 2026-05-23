@@ -47,6 +47,7 @@ class SignUpScreen extends StatelessWidget {
                 context.goNamed(AppRouter.loginName);
               },
               child: RichText(
+                key: const Key('loginText'),
                 text: TextSpan(
                   text: 'Already have an account? ',
                   style: context.textTheme.bodyLarge,

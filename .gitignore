@@ -71,3 +71,6 @@ macos/Flutter/ephemeral/
 # Xcode
 DerivedData/
 FlutterConfig.xcconfig
+
+# Patrol
+patrol_test/test_bundle.dart
