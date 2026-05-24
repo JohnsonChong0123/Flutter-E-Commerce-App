@@ -49,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             actions: [
               IconButton(
+                key: const Key('topRightCartButton'),
                 icon: const Icon(Icons.shopping_bag_outlined),
                 color: Colors.grey.shade600,
                 onPressed: () {
@@ -157,6 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: 24),
                         ElevatedButton(
+                          key: const Key('exploreNowButton'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: context.colorScheme.primary,
                             foregroundColor: Colors.white,
