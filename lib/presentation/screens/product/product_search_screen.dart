@@ -294,6 +294,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
                         const SizedBox(height: 32),
 
                         SearchBar(
+                          key: const Key('productSearchBar'),
                           textInputAction: TextInputAction.search,
                           elevation: const WidgetStatePropertyAll(3.0),
                           hintText: "Search the atelier...",
