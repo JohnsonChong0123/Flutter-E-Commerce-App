@@ -61,12 +61,15 @@ flutter test
 
 # Run with coverage
 flutter test --coverage
+
+# Run patrol tests (integration tests)
+patrol test
 ```
 
 Test types covered:
 - Unit tests (use cases, repositories)
-- Widget tests (UI components)
 - BLoC tests (`bloc_test`)
+- Widget tests (UI components)
 - Integration tests (patrol tests)
 
 ---
