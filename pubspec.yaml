@@ -56,6 +56,9 @@ dependencies:
   google_fonts: ^8.0.2
   stream_transform: ^2.1.1
   intl: ^0.20.2
+  firebase_core: ^4.9.0
+  firebase_crashlytics: ^5.2.2
+  firebase_analytics: ^12.4.1
 
 dev_dependencies:
   flutter_test:

@@ -9,6 +9,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "91.0.0"
+  _flutterfire_internals:
+    dependency: transitive
+    description:
+      name: _flutterfire_internals
+      sha256: "8f89e371e2883de35cdc78f648e725fa4da5f3b6c927269f00fa68f1ea92b598"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.71"
   analyzer:
     dependency: transitive
     description:
@@ -225,6 +233,70 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.1"
+  firebase_analytics:
+    dependency: "direct main"
+    description:
+      name: firebase_analytics
+      sha256: "56641bc6dd7b6a8c63ad5f5d46664af5b66db452f1c5ad052b1eec0188cf3183"
+      url: "https://pub.dev"
+    source: hosted
+    version: "12.4.1"
+  firebase_analytics_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_analytics_platform_interface
+      sha256: "432492ba57024a35dfb67ebcf0c64bac31e19d2c46b3dd222bccbc05f8839efe"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.1"
+  firebase_analytics_web:
+    dependency: transitive
+    description:
+      name: firebase_analytics_web
+      sha256: e613fca6511ab8f13adb355f7bc486c49fa6aea72fb6703cfb34df29b3b568a6
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.1+7"
+  firebase_core:
+    dependency: "direct main"
+    description:
+      name: firebase_core
+      sha256: "93a5bde9775fd5adcc937f39dfa04ae0bc89c4d79bea6abc49de3f7b049d9ff6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.9.0"
+  firebase_core_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_core_platform_interface
+      sha256: "4a120366dbf7d5a8ee9438978530b664b855728fb8dcc3a201017660817e555b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.0.1"
+  firebase_core_web:
+    dependency: transitive
+    description:
+      name: firebase_core_web
+      sha256: "7c98f10b8c8e5adedc0b810b66a877120696675e2c22d9ca9caca092da0d9e57"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.7.0"
+  firebase_crashlytics:
+    dependency: "direct main"
+    description:
+      name: firebase_crashlytics
+      sha256: "9935ea36aaae0dfc789b80a1981fd70c6c7e9956791e9e7c2210ab83f9c963bd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.2.2"
+  firebase_crashlytics_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_crashlytics_platform_interface
+      sha256: ade20d7d86698ded596bf16ab0e7060ef1dae9258ab6705536a39ae047ccef59
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.8.22"
   fixnum:
     dependency: transitive
     description:
@@ -731,26 +803,26 @@ packages:
     dependency: "direct dev"
     description:
       name: patrol
-      sha256: ca7d659c58ef735e27c4300af43cc367b67a129a0a1720082dc21b5a096efb1c
+      sha256: f43fda9425e90c0e69d2dac9e495e3a3036a22a550466365b4720fa4dd53d6ae
       url: "https://pub.dev"
     source: hosted
-    version: "4.3.0"
+    version: "4.6.1"
   patrol_finders:
     dependency: transitive
     description:
       name: patrol_finders
-      sha256: ac0bfaf3eaaa6cc3d49c8a365329cc7f4361a5f486f1adb45edc96dbfc854da9
+      sha256: "915da1e63fe7fd024418ab30b2394b1c8d6e812ce25be7d0b11634202521f0a9"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.0"
+    version: "3.4.0"
   patrol_log:
     dependency: transitive
     description:
       name: patrol_log
-      sha256: b3bd2862c15bd6b163763d7d2a80ae07c24af6da07d62d202798ceea327045d7
+      sha256: "16ab747b28621640115d9493138eae82a1d410a613857cb0caf9000ce62fc546"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.1"
+    version: "0.9.0"
   platform:
     dependency: transitive
     description:
