@@ -48,6 +48,8 @@ This project is a hands-on practice of production-level Flutter engineering:
 | Functional Programming | `fpdart` ^1.2.0 |
 | Environment Variables | `flutter_dotenv` ^6.0.0 |
 | Testing | `mocktail`, `bloc_test` |
+| Firebase Crashlytics | `firebase_crashlytics` |
+| Firebase Analytics   | `firebase_analytics`   |
 
 ---
 
