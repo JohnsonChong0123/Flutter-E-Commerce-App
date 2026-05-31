@@ -1,4 +1,6 @@
 import 'package:e_commerce_client/presentation/screens/splash_screen.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/blocs/auth/auth_bloc.dart';
@@ -48,6 +50,9 @@ class AppRouter {
   static GoRouter router(AuthBloc authBloc) {
     return GoRouter(
       initialLocation: splash,
+      observers: [
+        FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+      ],
       navigatorKey: _rootNavigatorKey,
       routes: [
         GoRoute(
@@ -121,9 +126,7 @@ class AppRouter {
                             getProductById: sl(),
                           ),
                         ),
-                        BlocProvider(
-                          create: (context) => CategoryCubit(),
-                        ),
+                        BlocProvider(create: (context) => CategoryCubit()),
                       ],
                       child: const ProductSearchScreen(),
                     );
