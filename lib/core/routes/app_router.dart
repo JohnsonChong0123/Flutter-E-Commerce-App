@@ -1,6 +1,5 @@
 import 'package:e_commerce_client/presentation/screens/splash_screen.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_analytics/observer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/blocs/auth/auth_bloc.dart';
@@ -15,7 +14,6 @@ import '../../presentation/screens/product/product_search_screen.dart';
 import '../../presentation/screens/navbar_screen.dart';
 import '../../presentation/screens/product/invalid_route_screen.dart';
 import '../../presentation/screens/product/product_details_screen.dart';
-import '../../presentation/screens/wishlist/wishlist_screen.dart';
 import '../../service_locator.dart';
 import 'package:flutter/widgets.dart';
 

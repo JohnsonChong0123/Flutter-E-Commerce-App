@@ -50,12 +50,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (_) => sl<AuthBloc>()..add(const AuthCheckStatus()),
         ),
-        BlocProvider(
-          create: (_) => sl<CartBloc>(),
-        ),
-        BlocProvider(
-          create: (_) => sl<WishlistCubit>(),
-        ),
+        BlocProvider(create: (_) => sl<CartBloc>()..add(const GetCartEvent())),
+        BlocProvider(create: (_) => sl<WishlistCubit>()),
       ],
       child: const AppView(),
     );
@@ -87,7 +83,8 @@ class _AppViewState extends State<AppView> {
             _router.routerDelegate.currentConfiguration.uri.path;
 
         if (state is AuthUnauthenticated) {
-          if (currentLocation != AppRouter.login && currentLocation != AppRouter.signUp) {
+          if (currentLocation != AppRouter.login &&
+              currentLocation != AppRouter.signUp) {
             _router.goNamed(AppRouter.loginName);
           }
         } else if (state is AuthAuthenticated) {
