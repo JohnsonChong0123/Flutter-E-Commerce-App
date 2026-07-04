@@ -57,9 +57,16 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     final result = await _addToCart(
       AddToCartParams(productId: event.productId, quantity: event.quantity),
     );
-    result.fold(
-      (failure) => emit(CartFailure(message: failure.message)),
-      (_) => emit(const CartSuccess()),
+    await result.fold(
+      (failure) async => emit(CartFailure(message: failure.message)),
+      (_) async {
+        final cartResult = await _getCart(NoParams());
+
+        cartResult.fold(
+          (failure) => emit(CartFailure(message: failure.message)),
+          (carts) => emit(CartLoaded(carts: carts, isActionSuccess: true)),
+        );
+      },
     );
   }
 

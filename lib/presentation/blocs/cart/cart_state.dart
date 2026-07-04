@@ -22,11 +22,12 @@ final class CartSuccess extends CartState {
 final class CartLoaded extends CartState {
   final CartEntity carts;
   final bool isCalculating;
+  final bool isActionSuccess;
 
-  const CartLoaded({required this.carts, this.isCalculating = false});
+  const CartLoaded({required this.carts, this.isCalculating = false, this.isActionSuccess = false});
 
   @override
-  List<Object> get props => [carts, isCalculating];
+  List<Object> get props => [carts, isCalculating, isActionSuccess];
 }
 
 final class CartFailure extends CartState {

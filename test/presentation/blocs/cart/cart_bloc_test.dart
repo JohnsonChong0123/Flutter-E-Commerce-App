@@ -60,17 +60,20 @@ void main() {
 
   group('CartBloc AddToCart', () {
     blocTest<CartBloc, CartState>(
-      'should emit [CartLoading, CartSuccess] when add to cart succeeds',
+      'should emit [CartLoading, CartLoaded] when add to cart succeeds',
       build: () {
         when(
           () => mockAddToCart(tParams),
         ).thenAnswer((_) async => const Right(unit));
+        when(
+          () => mockGetCart(NoParams()),
+        ).thenAnswer((_) async => Right(tCartEntity));
         return cartBloc;
       },
       act: (bloc) => bloc.add(
         const AddToCartEvent(productId: tProductId, quantity: tQuantity),
       ),
-      expect: () => [CartLoading(), CartSuccess()],
+      expect: () => [CartLoading(), CartLoaded(carts: tCartEntity, isActionSuccess: true)],
       verify: (_) {
         verify(() => mockAddToCart(tParams)).called(1);
       },

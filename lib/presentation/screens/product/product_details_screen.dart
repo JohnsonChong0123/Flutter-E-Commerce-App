@@ -397,9 +397,7 @@ class _AdaptiveExpansionTileState extends State<_AdaptiveExpansionTile> {
     );
 
     return Theme(
-      data: context.theme.copyWith(
-        dividerColor: Colors.transparent,
-      ),
+      data: context.theme.copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
         controller: _controller,
         title: Text(
@@ -454,17 +452,7 @@ class CartDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CartBloc, CartState>(
-      listener: (context, state) {
-        if (state is CartSuccess) {
-          Navigator.of(context).pop();
-          showSnackBar(context, "Added to cart");
-        } else if (state is CartFailure) {
-          Navigator.of(context).pop();
-          showSnackBar(context, "Failed to add: ${state.message}");
-        }
-      },
-      child: Padding(
+    return Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -539,22 +527,36 @@ class CartDialog extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            AppButton(
-              onPressed: () {
-                final notifier = context.read<ProductDetailsNotifier>();
-                context.read<CartBloc>().add(
-                  AddToCartEvent(
-                    productId: product.id,
-                    quantity: notifier.quantity,
-                  ),
+            BlocConsumer<CartBloc, CartState>(
+              listener: (context, state) {
+                if (state is CartLoaded && state.isActionSuccess) {
+                  Navigator.of(context).pop();
+                  showSnackBar(context, "Added to cart");
+                } else if (state is CartFailure) {
+                  showSnackBar(context, "Failed to add: ${state.message}");
+                } 
+              },
+              builder: (context, state) {
+                if (state is CartLoading) {
+                  return const Center(child: Loader());
+                }
+                return AppButton(
+                  onPressed: () {
+                    final notifier = context.read<ProductDetailsNotifier>();
+                    context.read<CartBloc>().add(
+                      AddToCartEvent(
+                        productId: product.id,
+                        quantity: notifier.quantity,
+                      ),
+                    );
+                  },
+                  title: 'Add to cart',
                 );
               },
-              title: 'Add to cart',
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }
 
