@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/common/utils/show_snackbar.dart';
 import '../../../core/common/widgets/app_button.dart';
 import '../../../core/common/widgets/loader.dart';
 import '../../../core/extensions/currency_extension.dart';
 import '../../../core/extensions/theme_extensions.dart';
+import '../../../core/routes/app_router.dart';
 import '../../../domain/entity/product/product_details_entity.dart';
 import '../../blocs/product/product_bloc.dart';
 import '../../blocs/cart/cart_bloc.dart';
@@ -73,7 +75,9 @@ class ProductDetailScreen extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.shopping_bag_outlined),
               color: Colors.grey.shade600,
-              onPressed: () {},
+              onPressed: () {
+                  context.goNamed(AppRouter.cartName);
+              },
             ),
             const SizedBox(width: 8),
           ],

@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/common/widgets/loader.dart';
 import '../../../core/extensions/theme_extensions.dart';
-// import '../../domain/entity/product/product_summary_entity.dart';
+import '../../../core/routes/app_router.dart';
 import '../../blocs/product/product_bloc.dart';
 import '../../widgets/product_card.dart';
 import '../../cubits/category/category_cubit.dart';
@@ -236,7 +237,9 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
               IconButton(
                 icon: const Icon(Icons.shopping_bag_outlined),
                 color: Colors.grey.shade600,
-                onPressed: () {},
+                onPressed: () {
+                  context.goNamed(AppRouter.cartName);
+                },
               ),
               const SizedBox(width: 8),
             ],
