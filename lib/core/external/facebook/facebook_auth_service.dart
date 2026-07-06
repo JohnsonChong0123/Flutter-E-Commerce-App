@@ -24,7 +24,7 @@ class FacebookAuthServiceImpl implements FacebookAuthService {
       }
 
       // 3. retrieve the access token
-      final token = result.accessToken?.token;
+      final token = result.accessToken?.tokenString;
 
       // 4. check if the token is null
       if (token == null) {

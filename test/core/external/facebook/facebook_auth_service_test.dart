@@ -31,7 +31,7 @@ void main() {
     ).thenAnswer((_) async => mockResult);
     when(() => mockResult.status).thenReturn(LoginStatus.success);
     when(() => mockResult.accessToken).thenReturn(mockAccessToken);
-    when(() => mockAccessToken.token).thenReturn(tIdToken);
+    when(() => mockAccessToken.tokenString).thenReturn(tIdToken);
 
     // act
     final token = await service.getAccessToken();
