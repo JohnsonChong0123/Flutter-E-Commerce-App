@@ -1,4 +1,4 @@
-import 'package:e_commerce_client/data/models/product/shipping_option_model.dart';
+import 'package:e_commerce_client/data/models/shipping/shipping_option_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../../../fixtures/fixture_reader.dart';
 import 'dart:convert';

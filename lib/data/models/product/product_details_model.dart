@@ -1,4 +1,4 @@
-import 'package:e_commerce_client/data/models/product/shipping_option_model.dart';
+import 'package:e_commerce_client/data/models/shipping/shipping_option_model.dart';
 import 'package:equatable/equatable.dart';
 import '../../../domain/entity/product/product_details_entity.dart';
 import 'localized_aspect_model.dart';
