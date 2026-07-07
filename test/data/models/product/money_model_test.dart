@@ -8,7 +8,7 @@ void main() {
   late Map<String, dynamic> tJsonMap;
 
   setUp(() {
-    tJsonMap = jsonDecode(fixture('product/money.json'));
+    tJsonMap = jsonDecode(fixture('shipping/money.json'));
   });
 
   test('fromJson should return valid MoneyModel', () {
