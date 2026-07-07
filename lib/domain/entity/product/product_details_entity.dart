@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import 'localized_aspect_entity.dart';
-import 'shipping_option_entity.dart';
+import '../shipping/shipping_option_entity.dart';
 
 class ProductDetailsEntity extends Equatable {
   final String id;

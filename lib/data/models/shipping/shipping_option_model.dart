@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../../../domain/entity/product/shipping_option_entity.dart';
+import '../../../domain/entity/shipping/shipping_option_entity.dart';
 import 'money_model.dart';
 
 class ShippingOptionModel extends Equatable {

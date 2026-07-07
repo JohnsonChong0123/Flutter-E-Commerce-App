@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../../../domain/entity/product/money_entity.dart';
+import '../../../domain/entity/shipping/money_entity.dart';
 
 class MoneyModel extends Equatable {
   final String currency;
