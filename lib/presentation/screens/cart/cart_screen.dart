@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../core/common/widgets/app_button.dart';
 import '../../../core/extensions/currency_extension.dart';
 import '../../../core/extensions/theme_extensions.dart';
-import '../../blocs/cart/cart_bloc.dart'; // contains CartBloc and events now
+import '../../../core/routes/app_router.dart';
+import '../../blocs/cart/cart_bloc.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -16,7 +19,6 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     super.initState();
-    // switch from calling cubit method to adding GetCartEvent to the bloc
     context.read<CartBloc>().add(const GetCartEvent());
   }
 
@@ -117,7 +119,7 @@ class _CartScreenState extends State<CartScreen> {
                                 'Quantity: ${item.quantity}',
                                 item.price.formatCurrency('USD'),
                                 item.imageUrl,
-                                item.productId, // new: pass productId
+                                item.productId,
                                 item.quantity,
                                 null,
                               ),
@@ -146,7 +148,6 @@ class _CartScreenState extends State<CartScreen> {
                                     ),
                               ),
                               const SizedBox(height: 24),
-                              // Use subtotal from CartNotifiers (sum of all registered notifiers)
                               _buildSummaryRow(
                                 context.theme.textTheme,
                                 context.theme.colorScheme,
@@ -276,40 +277,9 @@ class _CartScreenState extends State<CartScreen> {
 
                         const SizedBox(height: 32),
 
-                        // Proceed Button
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: context
-                                .theme
-                                .colorScheme
-                                .primary, // using solid primary instead of gradient for simplicity
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size(double.infinity, 60),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            elevation: 8,
-                            shadowColor: context.theme.colorScheme.primary
-                                .withValues(alpha: 0.4),
-                          ),
-                          onPressed: () {},
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'PROCEED TO CHECKOUT',
-                                style: context.theme.textTheme.labelLarge
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: 2.0,
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                    ),
-                              ),
-                              const SizedBox(width: 12),
-                              const Icon(Icons.arrow_forward, size: 18),
-                            ],
-                          ),
+                        AppButton (
+                          onPressed: () {}, 
+                          title: 'PROCEED TO CHECKOUT',
                         ),
 
                         const SizedBox(height: 24),
@@ -381,125 +351,165 @@ class _CartScreenState extends State<CartScreen> {
     String subtitle,
     String price,
     String imgUrl,
-    String productId, // added productId
+    String productId,
     int quantity,
     String? tag,
   ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 40,
-            offset: const Offset(0, 20),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: SizedBox(
-                  width: 100,
-                  height: 120,
-                  child: Image.network(imgUrl, fit: BoxFit.cover),
+    return GestureDetector(
+      onTap: () {
+        context.pushNamed(
+          AppRouter.productDetailsName,
+          pathParameters: {'id': productId},
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 40,
+              offset: const Offset(0, 20),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: SizedBox(
+                    width: 100,
+                    height: 120,
+                    child: Image.network(imgUrl, fit: BoxFit.cover),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              title,
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                height: 1.2,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            constraints: const BoxConstraints(),
+                            padding: EdgeInsets.zero,
+                            icon: Icon(
+                              Icons.close,
+                              color: colorScheme.outline,
+                              size: 20,
+                            ),
+                            onPressed: () async {
+                              // dispatch remove event
+                              context.read<CartBloc>().add(
+                                RemoveCartItemEvent(productId),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.secondary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      if (tag != null) ...[
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colorScheme.tertiaryContainer,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
                           child: Text(
-                            title,
-                            style: textTheme.titleMedium?.copyWith(
+                            tag.toUpperCase(),
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onTertiaryContainer,
+                              fontSize: 8,
                               fontWeight: FontWeight.bold,
-                              height: 1.2,
+                              letterSpacing: 1.0,
                             ),
                           ),
                         ),
-                        IconButton(
-                          constraints: const BoxConstraints(),
-                          padding: EdgeInsets.zero,
-                          icon: Icon(
-                            Icons.close,
-                            color: colorScheme.outline,
-                            size: 20,
-                          ),
-                          onPressed: () async {
-                            // dispatch remove event
-                            context.read<CartBloc>().add(
-                              RemoveCartItemEvent(productId),
-                            );
-                          },
-                        ),
                       ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colorScheme.secondary,
-                        fontWeight: FontWeight.w500,
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    children: [
+                      // Quantity controls: call CartBloc by adding events on change
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        icon: const Icon(Icons.remove, size: 16),
+                        onPressed: () async {
+                          final bloc = context.read<CartBloc>();
+                          if (quantity > 1) {
+                            final newQty = quantity - 1;
+                            bloc.add(
+                              UpdateCartQuantityLocalEvent(
+                                productId: productId,
+                                newQuantity: newQty,
+                              ),
+                            );
+                            bloc.add(
+                              UpdateCartEvent(
+                                productId: productId,
+                                quantity: newQty,
+                              ),
+                            );
+                          } else {
+                            // if quantity would go to 0, remove the item
+                            bloc.add(RemoveCartItemEvent(productId));
+                          }
+                        },
                       ),
-                    ),
-                    if (tag != null) ...[
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.tertiaryContainer,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
                         child: Text(
-                          tag.toUpperCase(),
-                          style: textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onTertiaryContainer,
-                            fontSize: 8,
+                          quantity.toString(),
+                          style: textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.bold,
-                            letterSpacing: 1.0,
                           ),
                         ),
                       ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  children: [
-                    // Quantity controls: call CartBloc by adding events on change
-                    IconButton(
-                      visualDensity: VisualDensity.compact,
-                      icon: const Icon(Icons.remove, size: 16),
-                      onPressed: () async {
-                        final bloc = context.read<CartBloc>();
-                        if (quantity > 1) {
-                          final newQty = quantity - 1;
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        icon: const Icon(Icons.add, size: 16),
+                        onPressed: () async {
+                          final bloc = context.read<CartBloc>();
+                          final newQty = quantity + 1;
                           bloc.add(
                             UpdateCartQuantityLocalEvent(
                               productId: productId,
@@ -512,54 +522,22 @@ class _CartScreenState extends State<CartScreen> {
                               quantity: newQty,
                             ),
                           );
-                        } else {
-                          // if quantity would go to 0, remove the item
-                          bloc.add(RemoveCartItemEvent(productId));
-                        }
-                      },
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                      child: Text(
-                        quantity.toString(),
-                        style: textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        },
                       ),
-                    ),
-                    IconButton(
-                      visualDensity: VisualDensity.compact,
-                      icon: const Icon(Icons.add, size: 16),
-                      onPressed: () async {
-                        final bloc = context.read<CartBloc>();
-                        final newQty = quantity + 1;
-                        bloc.add(
-                          UpdateCartQuantityLocalEvent(
-                            productId: productId,
-                            newQuantity: newQty,
-                          ),
-                        );
-                        bloc.add(
-                          UpdateCartEvent(
-                            productId: productId,
-                            quantity: newQty,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Text(
-                price,
-                style: textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.primary,
+                Text(
+                  price,
+                  style: textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.primary,
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
