@@ -3,6 +3,7 @@ import 'package:e_commerce_client/presentation/mappers/product_details_mapper.da
 import 'package:e_commerce_client/presentation/models/product_display_aspect.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../../fixtures/product/product_fixtures.dart';
+import '../../fixtures/shipping/shipping_fixtures.dart';
 
 void main() {
   group('ProductDetailsMapper.mapAspects', () {

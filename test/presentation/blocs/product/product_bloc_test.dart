@@ -10,6 +10,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../fixtures/product/product_fixtures.dart';
+import '../../../fixtures/shipping/shipping_fixtures.dart';
 
 class MockGetProducts extends Mock implements GetProducts {}
 

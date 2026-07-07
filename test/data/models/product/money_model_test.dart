@@ -2,8 +2,7 @@ import 'package:e_commerce_client/data/models/shipping/money_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import '../../../fixtures/fixture_reader.dart';
 import 'dart:convert';
-
-import '../../../fixtures/product/product_fixtures.dart';
+import '../../../fixtures/shipping/shipping_fixtures.dart';
 
 void main() {
   late Map<String, dynamic> tJsonMap;
