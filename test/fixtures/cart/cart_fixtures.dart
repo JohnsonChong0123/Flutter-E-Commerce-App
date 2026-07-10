@@ -3,6 +3,8 @@ import 'package:e_commerce_client/data/models/cart/cart_model.dart';
 import 'package:e_commerce_client/domain/entity/cart/cart_entity.dart';
 import 'package:e_commerce_client/domain/entity/cart/cart_item_entity.dart';
 
+import '../shipping/shipping_fixtures.dart';
+
 // CartModel and CartItemModel fixtures
 const tCartModel = CartModel(
   id: '1d3ed0a0-b460-4137-81b6-7e4befc3b63b',
@@ -14,6 +16,7 @@ const tCartModel = CartModel(
       price: 481.99,
       quantity: 3,
       imageUrl: 'https://i.ebayimg.com/images/g/ZAIAAOSws5Nna86X/s-l225.jpg',
+      shippingOptions: tShippingOptionModelList,
     ),
     CartItemModel(
       productId: 'v1|386936766515|654209735321',
@@ -22,6 +25,7 @@ const tCartModel = CartModel(
       price: 219.0,
       quantity: 3,
       imageUrl: 'https://i.ebayimg.com/images/g/fe4AAOSwVkRmIHzv/s-l225.jpg',
+      shippingOptions: tShippingOptionModelList,
     ),
   ],
   cartTotal: 2102.97,
@@ -34,6 +38,7 @@ const tCartItemModel = CartItemModel(
   price: 481.99,
   quantity: 3,
   imageUrl: 'https://i.ebayimg.com/images/g/ZAIAAOSws5Nna86X/s-l225.jpg',
+  shippingOptions: tShippingOptionModelList,
 );
 
 // CartEntity and CartItemEntity fixtures
@@ -47,6 +52,7 @@ const tCartEntity = CartEntity(
       price: 481.99,
       quantity: 3,
       imageUrl: 'https://i.ebayimg.com/images/g/ZAIAAOSws5Nna86X/s-l225.jpg',
+      shippingOptions: tShippingOptionEntityList,
     ),
     CartItemEntity(
       productId: 'v1|386936766515|654209735321',
@@ -55,6 +61,7 @@ const tCartEntity = CartEntity(
       price: 219.0,
       quantity: 3,
       imageUrl: 'https://i.ebayimg.com/images/g/fe4AAOSwVkRmIHzv/s-l225.jpg',
+      shippingOptions: tShippingOptionEntityList,
     ),
   ],
   cartTotal: 2102.97,
@@ -67,6 +74,7 @@ const tCartItemEntity = CartItemEntity(
   price: 481.99,
   quantity: 3,
   imageUrl: 'https://i.ebayimg.com/images/g/ZAIAAOSws5Nna86X/s-l225.jpg',
+  shippingOptions: tShippingOptionEntityList,
 );
 
 
