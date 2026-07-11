@@ -5,8 +5,8 @@ import 'package:e_commerce_client/domain/entity/cart/cart_item_entity.dart';
 import 'package:e_commerce_client/domain/entity/shipping/money_entity.dart';
 import 'package:e_commerce_client/domain/entity/shipping/shipping_option_entity.dart';
 
-import '../../fixtures/cart/cart_fixtures.dart';
-import '../../fixtures/product/product_fixtures.dart';
+import '../../../fixtures/cart/cart_fixtures.dart';
+import '../../../fixtures/product/product_fixtures.dart';
 
 void main() {
   const tQuantity = 2;
