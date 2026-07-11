@@ -13,6 +13,13 @@ class CartEntity extends Equatable {
     required this.cartTotal,
   });
 
+  double calculateTotalShipping(Map<String, String?> selectedCodes) {
+    return items.fold(0.0, (total, item) {
+      final selectedCode = selectedCodes[item.productId];
+      return total + item.calculateShipping(selectedCode);
+    });
+  }
+
   CartEntity updateQuantityAndTotal(String productId, int newQuantity) {
     final updatedItems = items.map((item) {
       if (item.productId == productId) {
