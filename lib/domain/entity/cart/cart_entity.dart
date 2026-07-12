@@ -20,6 +20,10 @@ class CartEntity extends Equatable {
     });
   }
 
+  double calculateGrandTotal(Map<String, String?> selectedCodes) {
+    return cartTotal + calculateTotalShipping(selectedCodes);
+  }
+
   CartEntity updateQuantityAndTotal(String productId, int newQuantity) {
     final updatedItems = items.map((item) {
       if (item.productId == productId) {

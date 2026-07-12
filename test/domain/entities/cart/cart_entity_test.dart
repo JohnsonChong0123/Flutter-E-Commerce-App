@@ -82,6 +82,71 @@ void main() {
     expect(result, 20);
   });
 
+  test('should calculate grand total from cart total and shipping', () {
+    const cart = CartEntity(
+      id: 'cart-3',
+      cartTotal: 250,
+      items: [
+        CartItemEntity(
+          productId: 'product-1',
+          name: 'Item 1',
+          price: 100,
+          quantity: 1,
+          imageUrl: 'https://example.com/item-1.png',
+          shippingOptions: [
+            ShippingOptionEntity(
+              shippingServiceCode: 'express',
+              type: 'Express',
+              shippingCost: MoneyEntity(currency: 'USD', value: 10),
+              additionalShippingCostPerUnit: MoneyEntity(
+                currency: 'USD',
+                value: 2,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+
+    final result = cart.calculateGrandTotal({'product-1': 'express'});
+
+    expect(result, 260);
+  });
+
+  test(
+    'should calculate grand total using the first shipping option when no code is selected',
+    () {
+      const cart = CartEntity(
+        id: 'cart-4',
+        cartTotal: 150,
+        items: [
+          CartItemEntity(
+            productId: 'product-1',
+            name: 'Item 1',
+            price: 100,
+            quantity: 1,
+            imageUrl: 'https://example.com/item-1.png',
+            shippingOptions: [
+              ShippingOptionEntity(
+                shippingServiceCode: 'standard',
+                type: 'Standard',
+                shippingCost: MoneyEntity(currency: 'USD', value: 7),
+                additionalShippingCostPerUnit: MoneyEntity(
+                  currency: 'USD',
+                  value: 3,
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+
+      final result = cart.calculateGrandTotal({});
+
+      expect(result, 157);
+    },
+  );
+
   test(
     'should fall back to the first shipping option when no code is selected',
     () {
