@@ -40,13 +40,13 @@ void main() {
 
       // assert
       expect(result, tProductDetailsEntity);
-
-      expect(result.id, tProductDetailsModel.id);
-      expect(result.name, tProductDetailsModel.name);
-      expect(result.finalPrice, tProductDetailsModel.finalPrice);
-      expect(result.description, tProductDetailsModel.description);
-      expect(result.imageUrl, tProductDetailsModel.imageUrl);
-      expect(result.additionalImages, tProductDetailsModel.additionalImages);
+  
+      expect(result.id, tProductDetailsEntity.id);
+      expect(result.name, tProductDetailsEntity.name);
+      expect(result.finalPrice, tProductDetailsEntity.finalPrice);
+      expect(result.description, tProductDetailsEntity.description);
+      expect(result.imageUrl, tProductDetailsEntity.imageUrl);
+      expect(result.additionalImages, tProductDetailsEntity.additionalImages);
     });
   });
 }
