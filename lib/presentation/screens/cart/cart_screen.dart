@@ -6,6 +6,7 @@ import '../../../core/common/widgets/app_button.dart';
 import '../../../core/extensions/currency_extension.dart';
 import '../../../core/extensions/theme_extensions.dart';
 import '../../../core/routes/app_router.dart';
+import '../../../domain/entity/shipping/shipping_option_entity.dart';
 import '../../blocs/cart/cart_bloc.dart';
 
 class CartScreen extends StatefulWidget {
@@ -95,7 +96,8 @@ class _CartScreenState extends State<CartScreen> {
                   } else if (state is CartLoaded) {
                     final cartItems = state.carts.items;
                     final cartTotal = state.carts.cartTotal;
-                    final bool isCalculating = state.isCalculating; 
+                    final bool isCalculating = state.isCalculating;
+                    final selectedShippingCodes = state.selectedShippingCodes;
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -121,6 +123,8 @@ class _CartScreenState extends State<CartScreen> {
                                 item.imageUrl,
                                 item.productId,
                                 item.quantity,
+                                item.shippingOptions,
+                                selectedShippingCodes,
                                 null,
                               ),
                             );
@@ -154,96 +158,95 @@ class _CartScreenState extends State<CartScreen> {
                                 'Subtotal',
                                 isCalculating ? 'Calculating...' : '\$${cartTotal.toStringAsFixed(2)}',
                               ),
-
                               const SizedBox(height: 16),
                               _buildSummaryRow(
                                 context.theme.textTheme,
                                 context.theme.colorScheme,
                                 'Shipping',
-                                '\$45.00',
+                                '\$${state.totalShippingCost.toStringAsFixed(2)}',
                               ),
                               const SizedBox(height: 16),
-                              _buildSummaryRow(
-                                context.theme.textTheme,
-                                context.theme.colorScheme,
-                                'Estimated Tax',
-                                '\$168.00',
-                              ),
+                              // _buildSummaryRow(
+                              //   context.theme.textTheme,
+                              //   context.theme.colorScheme,
+                              //   'Estimated Tax',
+                              //   '\$168.00',
+                              // ),
 
-                              const SizedBox(height: 24),
-                              const Divider(),
-                              const SizedBox(height: 16),
+                              // const SizedBox(height: 24),
+                              // const Divider(),
+                              // const SizedBox(height: 16),
 
-                              Text(
-                                'PROMO CODE',
-                                style: context.theme.textTheme.labelSmall
-                                    ?.copyWith(
-                                      color: context.theme.colorScheme.outline,
-                                      letterSpacing: 1.5,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      height: 48,
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: context
-                                            .theme
-                                            .colorScheme
-                                            .surfaceContainerLowest,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: TextField(
-                                        decoration: InputDecoration(
-                                          border: InputBorder.none,
-                                          hintText: 'ENTER CODE',
-                                          hintStyle: context
-                                              .theme
-                                              .textTheme
-                                              .bodySmall
-                                              ?.copyWith(
-                                                color: context
-                                                    .theme
-                                                    .colorScheme
-                                                    .outlineVariant,
-                                                fontWeight: FontWeight.bold,
-                                                letterSpacing: 1.0,
-                                              ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          context.theme.colorScheme.onSurface,
-                                      foregroundColor:
-                                          context.theme.colorScheme.surface,
-                                      minimumSize: const Size(80, 48),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
-                                    onPressed: () {},
-                                    child: const Text(
-                                      'APPLY',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                        letterSpacing: 1.0,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              // Text(
+                              //   'PROMO CODE',
+                              //   style: context.theme.textTheme.labelSmall
+                              //       ?.copyWith(
+                              //         color: context.theme.colorScheme.outline,
+                              //         letterSpacing: 1.5,
+                              //         fontSize: 10,
+                              //         fontWeight: FontWeight.bold,
+                              //       ),
+                              // ),
+                              // const SizedBox(height: 8),
+                              // Row(
+                              //   children: [
+                              //     Expanded(
+                              //       child: Container(
+                              //         height: 48,
+                              //         padding: const EdgeInsets.symmetric(
+                              //           horizontal: 16,
+                              //         ),
+                              //         decoration: BoxDecoration(
+                              //           color: context
+                              //               .theme
+                              //               .colorScheme
+                              //               .surfaceContainerLowest,
+                              //           borderRadius: BorderRadius.circular(8),
+                              //         ),
+                              //         child: TextField(
+                              //           decoration: InputDecoration(
+                              //             border: InputBorder.none,
+                              //             hintText: 'ENTER CODE',
+                              //             hintStyle: context
+                              //                 .theme
+                              //                 .textTheme
+                              //                 .bodySmall
+                              //                 ?.copyWith(
+                              //                   color: context
+                              //                       .theme
+                              //                       .colorScheme
+                              //                       .outlineVariant,
+                              //                   fontWeight: FontWeight.bold,
+                              //                   letterSpacing: 1.0,
+                              //                 ),
+                              //           ),
+                              //         ),
+                              //       ),
+                              //     ),
+                              //     const SizedBox(width: 8),
+                              //     ElevatedButton(
+                              //       style: ElevatedButton.styleFrom(
+                              //         backgroundColor:
+                              //             context.theme.colorScheme.onSurface,
+                              //         foregroundColor:
+                              //             context.theme.colorScheme.surface,
+                              //         minimumSize: const Size(80, 48),
+                              //         shape: RoundedRectangleBorder(
+                              //           borderRadius: BorderRadius.circular(8),
+                              //         ),
+                              //       ),
+                              //       onPressed: () {},
+                              //       child: const Text(
+                              //         'APPLY',
+                              //         style: TextStyle(
+                              //           fontWeight: FontWeight.bold,
+                              //           fontSize: 12,
+                              //           letterSpacing: 1.0,
+                              //         ),
+                              //       ),
+                              //     ),
+                              //   ],
+                              // ),
                             ],
                           ),
                         ),
@@ -265,7 +268,7 @@ class _CartScreenState extends State<CartScreen> {
                                   ),
                             ),
                             Text(
-                              '\$${cartTotal.toStringAsFixed(2)}',
+                              isCalculating ? 'Calculating...' : '\$${state.grandTotal.toStringAsFixed(2)}',
                               style: context.theme.textTheme.headlineLarge
                                   ?.copyWith(
                                     fontWeight: FontWeight.w800,
@@ -277,8 +280,8 @@ class _CartScreenState extends State<CartScreen> {
 
                         const SizedBox(height: 32),
 
-                        AppButton (
-                          onPressed: () {}, 
+                        AppButton(
+                          onPressed: () {},
                           title: 'PROCEED TO CHECKOUT',
                         ),
 
@@ -353,6 +356,8 @@ class _CartScreenState extends State<CartScreen> {
     String imgUrl,
     String productId,
     int quantity,
+    List<ShippingOptionEntity> shippingOptions,
+    Map<String, String?>? selectedShippingCodes,
     String? tag,
   ) {
     return GestureDetector(
@@ -535,6 +540,62 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 16),
+            Column(
+              children: shippingOptions.map((option) {
+                final isSelected =
+                    selectedShippingCodes?[productId] ==
+                    option.shippingServiceCode;
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: InkWell(
+                    onTap: () {
+                      context.read<CartBloc>().add(
+                        UpdateShippingSelectionEvent(
+                          productId: productId,
+                          shippingCode: option.shippingServiceCode,
+                        ),
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 18,
+                          height: 18,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isSelected
+                                  ? context.theme.colorScheme.primary
+                                  : context.theme.colorScheme.outline,
+                              width: 2,
+                            ),
+                          ),
+                          child: isSelected
+                              ? Center(
+                                  child: Container(
+                                    width: 8,
+                                    height: 8,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: context.theme.colorScheme.primary,
+                                    ),
+                                  ),
+                                )
+                              : null,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(child: Text(option.type)),
+                        Text(
+                          option.formatShippingPrice(quantity),
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
           ],
         ),
