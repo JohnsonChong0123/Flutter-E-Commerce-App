@@ -53,3 +53,13 @@ class UpdateCartEvent extends CartEvent {
   @override
   List<Object?> get props => [productId, quantity];
 }
+
+class UpdateShippingSelectionEvent extends CartEvent {
+  final String productId;
+  final String shippingCode;
+
+  const UpdateShippingSelectionEvent({required this.productId, required this.shippingCode});
+
+  @override
+  List<Object?> get props => [productId, shippingCode];
+}

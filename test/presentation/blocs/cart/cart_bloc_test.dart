@@ -33,15 +33,17 @@ void main() {
 
   const tQuantity = 3;
 
-  const tParams = AddToCartParams(
-    productId: tProductId,
-    quantity: tQuantity,
-  );
+  const tParams = AddToCartParams(productId: tProductId, quantity: tQuantity);
 
   const tUpdateParams = UpdateCartParams(
     productId: tProductId,
     quantity: tQuantity,
   );
+
+  const tDefaultSelectedShippingCodes = {
+    'v1|377049276589|645539111213': 'Standard Shipping',
+    'v1|386936766515|654209735321': 'Standard Shipping',
+  };
 
   setUp(() {
     mockAddToCart = MockAddToCart();
@@ -73,7 +75,14 @@ void main() {
       act: (bloc) => bloc.add(
         const AddToCartEvent(productId: tProductId, quantity: tQuantity),
       ),
-      expect: () => [CartLoading(), CartLoaded(carts: tCartEntity, isActionSuccess: true)],
+      expect: () => [
+        CartLoading(),
+        CartLoaded(
+          carts: tCartEntity,
+          isActionSuccess: true,
+          selectedShippingCodes: tDefaultSelectedShippingCodes,
+        ),
+      ],
       verify: (_) {
         verify(() => mockAddToCart(tParams)).called(1);
       },
@@ -111,7 +120,43 @@ void main() {
         return cartBloc;
       },
       act: (bloc) => bloc.add(const GetCartEvent()),
-      expect: () => [CartLoading(), CartLoaded(carts: tCartEntity)],
+      expect: () => [
+        CartLoading(),
+        CartLoaded(
+          carts: tCartEntity,
+          selectedShippingCodes: tDefaultSelectedShippingCodes,
+        ),
+      ],
+      verify: (_) {
+        verify(() => mockGetCart(NoParams())).called(1);
+      },
+    );
+
+    blocTest<CartBloc, CartState>(
+      'should preserve existing selected shipping codes when get cart succeeds',
+      build: () {
+        when(
+          () => mockGetCart(NoParams()),
+        ).thenAnswer((_) async => const Right(tCartEntity));
+        return cartBloc;
+      },
+      seed: () => const CartLoaded(
+        carts: tCartEntity,
+        selectedShippingCodes: {
+          'v1|377049276589|645539111213': 'Express Shipping',
+        },
+      ),
+      act: (bloc) => bloc.add(const GetCartEvent()),
+      expect: () => [
+        CartLoading(),
+        const CartLoaded(
+          carts: tCartEntity,
+          selectedShippingCodes: {
+            'v1|377049276589|645539111213': 'Express Shipping',
+            'v1|386936766515|654209735321': 'Standard Shipping',
+          },
+        ),
+      ],
       verify: (_) {
         verify(() => mockGetCart(NoParams())).called(1);
       },
@@ -150,7 +195,13 @@ void main() {
         return cartBloc;
       },
       act: (bloc) => bloc.add(const RemoveCartItemEvent(tProductId)),
-      expect: () => [CartLoading(), CartLoaded(carts: tCartEntity)],
+      expect: () => [
+        CartLoading(),
+        CartLoaded(
+          carts: tCartEntity,
+          selectedShippingCodes: tDefaultSelectedShippingCodes,
+        ),
+      ],
       verify: (_) {
         verify(
           () => mockRemoveCartItem(RemoveCartItemParams(productId: tProductId)),
@@ -198,7 +249,13 @@ void main() {
         return cartBloc;
       },
       act: (bloc) => bloc.add(const ClearCartEvent()),
-      expect: () => [CartLoading(), CartLoaded(carts: tCartEntity)],
+      expect: () => [
+        CartLoading(),
+        CartLoaded(
+          carts: tCartEntity,
+          selectedShippingCodes: tDefaultSelectedShippingCodes,
+        ),
+      ],
       verify: (_) {
         verify(() => mockClearCart(NoParams())).called(1);
         verify(() => mockGetCart(NoParams())).called(1);
@@ -222,6 +279,35 @@ void main() {
         verify(() => mockClearCart(NoParams())).called(1);
         verifyNever(() => mockGetCart(NoParams()));
       },
+    );
+  });
+
+  group('CartBloc UpdateShippingSelection', () {
+    blocTest<CartBloc, CartState>(
+      'should update selected shipping code for the matching product',
+      build: () => cartBloc,
+      seed: () => const CartLoaded(
+        carts: tCartEntity,
+        selectedShippingCodes: {
+          'v1|377049276589|645539111213': 'Standard Shipping',
+          'v1|386936766515|654209735321': 'Standard Shipping',
+        },
+      ),
+      act: (bloc) => bloc.add(
+        const UpdateShippingSelectionEvent(
+          productId: 'v1|377049276589|645539111213',
+          shippingCode: 'Express Shipping',
+        ),
+      ),
+      expect: () => [
+        const CartLoaded(
+          carts: tCartEntity,
+          selectedShippingCodes: {
+            'v1|377049276589|645539111213': 'Express Shipping',
+            'v1|386936766515|654209735321': 'Standard Shipping',
+          },
+        ),
+      ],
     );
   });
 

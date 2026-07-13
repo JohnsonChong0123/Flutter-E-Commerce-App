@@ -47,12 +47,14 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       transformer: debounce(const Duration(milliseconds: 500)),
     );
     on<UpdateCartQuantityLocalEvent>(_onUpdateCartQuantityLocal);
+    on<UpdateShippingSelectionEvent>(_onUpdateShippingSelection);
   }
 
   Future<void> _onAddToCart(
     AddToCartEvent event,
     Emitter<CartState> emit,
   ) async {
+    final previousState = state;
     emit(CartLoading());
     final result = await _addToCart(
       AddToCartParams(productId: event.productId, quantity: event.quantity),
@@ -60,29 +62,22 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     await result.fold(
       (failure) async => emit(CartFailure(message: failure.message)),
       (_) async {
-        final cartResult = await _getCart(NoParams());
-
-        cartResult.fold(
-          (failure) => emit(CartFailure(message: failure.message)),
-          (carts) => emit(CartLoaded(carts: carts, isActionSuccess: true)),
-        );
+        await _fetchAndEmitCart(emit, previousState: previousState, isActionSuccess: true);
       },
     );
   }
 
   Future<void> _onGetCart(GetCartEvent event, Emitter<CartState> emit) async {
+    final previousState = state;
     emit(CartLoading());
-    final result = await _getCart(NoParams());
-    result.fold(
-      (failure) => emit(CartFailure(message: failure.message)),
-      (carts) => emit(CartLoaded(carts: carts)),
-    );
+    await _fetchAndEmitCart(emit, previousState: previousState);
   }
 
   Future<void> _onRemoveCartItem(
     RemoveCartItemEvent event,
     Emitter<CartState> emit,
   ) async {
+    final previousState = state;
     emit(CartLoading());
     final result = await _removeCartItem(
       RemoveCartItemParams(productId: event.productId),
@@ -90,11 +85,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     await result.fold(
       (failure) async => emit(CartFailure(message: failure.message)),
       (_) async {
-        final cartResult = await _getCart(NoParams());
-        cartResult.fold(
-          (failure) => emit(CartFailure(message: failure.message)),
-          (carts) => emit(CartLoaded(carts: carts)),
-        );
+        await _fetchAndEmitCart(emit, previousState: previousState);
       },
     );
   }
@@ -103,16 +94,13 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     ClearCartEvent event,
     Emitter<CartState> emit,
   ) async {
+    final previousState = state;
     emit(CartLoading());
     final result = await _clearCart(NoParams());
     await result.fold(
       (failure) async => emit(CartFailure(message: failure.message)),
       (_) async {
-        final cartResult = await _getCart(NoParams());
-        cartResult.fold(
-          (failure) => emit(CartFailure(message: failure.message)),
-          (carts) => emit(CartLoaded(carts: carts)),
-        );
+        await _fetchAndEmitCart(emit, previousState: previousState);
       },
     );
   }
@@ -137,7 +125,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
           event.quantity,
         );
 
-        emit(CartLoaded(carts: updatedCart, isCalculating: false));
+        emit(currentState.copyWith(carts: updatedCart, isCalculating: false));
       });
     }
   }
@@ -155,7 +143,64 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         event.newQuantity,
       );
 
-      emit(CartLoaded(carts: updatedCart, isCalculating: true));
+      emit(currentState.copyWith(carts: updatedCart, isCalculating: true));
     }
+  }
+
+  Future<void> _onUpdateShippingSelection(
+    UpdateShippingSelectionEvent event,
+    Emitter<CartState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is CartLoaded) {
+      final newSelections = Map<String, String?>.from(
+        currentState.selectedShippingCodes,
+      );
+      newSelections[event.productId] = event.shippingCode;
+
+      emit(currentState.copyWith(selectedShippingCodes: newSelections));
+    }
+  }
+
+  Future<void> _fetchAndEmitCart(
+    Emitter<CartState> emit, {
+    required CartState previousState,
+    bool isActionSuccess = false,
+  }) async {
+    final cartResult = await _getCart(NoParams());
+
+    cartResult.fold(
+      (failure) => emit(CartFailure(message: failure.message)),
+      (carts) {
+        final defaultSelections = _getDefaultShippingSelections(carts);
+        final Map<String, String?> finalSelections = {};
+
+        if (previousState is CartLoaded && previousState.selectedShippingCodes.isNotEmpty) {
+          for (final item in carts.items) {
+            finalSelections[item.productId] = 
+                previousState.selectedShippingCodes[item.productId] ?? defaultSelections[item.productId];
+          }
+        } else {
+          finalSelections.addAll(defaultSelections);
+        }
+
+        emit(CartLoaded(
+          carts: carts,
+          selectedShippingCodes: finalSelections,
+          isActionSuccess: isActionSuccess,
+        ));
+      },
+    );
+  }
+
+  Map<String, String?> _getDefaultShippingSelections(CartEntity cart) {
+    final Map<String, String?> selections = {};
+    for (final item in cart.items) {
+      if (item.shippingOptions.isNotEmpty) {
+        selections[item.productId] =
+            item.shippingOptions.first.shippingServiceCode;
+      }
+    }
+    return selections;
   }
 }

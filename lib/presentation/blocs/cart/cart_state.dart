@@ -24,10 +24,35 @@ final class CartLoaded extends CartState {
   final bool isCalculating;
   final bool isActionSuccess;
 
-  const CartLoaded({required this.carts, this.isCalculating = false, this.isActionSuccess = false});
+  final Map<String, String?> selectedShippingCodes;
+
+  const CartLoaded({
+    required this.carts,
+    this.isCalculating = false,
+    this.isActionSuccess = false,
+    this.selectedShippingCodes = const {},
+  });
+
+  double get totalShippingCost => carts.calculateTotalShipping(selectedShippingCodes);
+  
+  double get grandTotal => carts.calculateGrandTotal(selectedShippingCodes);
+
+  CartLoaded copyWith({
+    CartEntity? carts,
+    bool? isCalculating,
+    bool? isActionSuccess,
+    Map<String, String?>? selectedShippingCodes,
+  }) {
+    return CartLoaded(
+      carts: carts ?? this.carts,
+      isCalculating: isCalculating ?? this.isCalculating,
+      isActionSuccess: isActionSuccess ?? this.isActionSuccess,
+      selectedShippingCodes: selectedShippingCodes ?? this.selectedShippingCodes,
+    );
+  }
 
   @override
-  List<Object> get props => [carts, isCalculating, isActionSuccess];
+  List<Object> get props => [carts, isCalculating, isActionSuccess, selectedShippingCodes];
 }
 
 final class CartFailure extends CartState {
