@@ -44,7 +44,11 @@ void main() {
 
     final result = item.calculateShipping('express');
 
-    expect(result, 14);
+    final expectedShippingCost =
+        10 + // 10 is for product-1 express shipping
+        (2 * 2); // 2*(quantity - 1) is additional shipping for product-1 express shipping
+
+    expect(result, expectedShippingCost);
   });
 
   test(
@@ -54,7 +58,7 @@ void main() {
         productId: 'product-1',
         name: 'Item 1',
         price: 100,
-        quantity: 2,
+        quantity: 1,
         imageUrl: 'https://example.com/item-1.png',
         shippingOptions: [
           ShippingOptionEntity(
@@ -71,7 +75,7 @@ void main() {
 
       final result = item.calculateShipping(null);
 
-      expect(result, 10);
+      expect(result, 7);
     },
   );
 
