@@ -98,37 +98,38 @@ class _CartScreenState extends State<CartScreen> {
                     final cartTotal = state.carts.cartTotal;
                     final bool isCalculating = state.isCalculating;
                     final selectedShippingCodes = state.selectedShippingCodes;
+                    if (cartItems.isEmpty) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 60.0),
+                          child: Text("Your bag is empty"),
+                        ),
+                      );
+                    }
+
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        if (cartItems.isEmpty)
-                          const Center(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 60.0),
-                              child: Text("Your bag is empty"),
-                            ),
-                          )
-                        else
-                          ...cartItems.asMap().entries.map((entry) {
-                            final item = entry.value;
+                        ...cartItems.asMap().entries.map((entry) {
+                          final item = entry.value;
 
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 24.0),
-                              child: _buildCartItem(
-                                context.theme.colorScheme,
-                                context.theme.textTheme,
-                                item.name,
-                                'Quantity: ${item.quantity}',
-                                item.price.formatCurrency('USD'),
-                                item.imageUrl,
-                                item.productId,
-                                item.quantity,
-                                item.shippingOptions,
-                                selectedShippingCodes,
-                                null,
-                              ),
-                            );
-                          }),
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 24.0),
+                            child: _buildCartItem(
+                              context.theme.colorScheme,
+                              context.theme.textTheme,
+                              item.name,
+                              'Quantity: ${item.quantity}',
+                              item.price.formatCurrency('USD'),
+                              item.imageUrl,
+                              item.productId,
+                              item.quantity,
+                              item.shippingOptions,
+                              selectedShippingCodes,
+                              null,
+                            ),
+                          );
+                        }),
 
                         const SizedBox(height: 48),
 
@@ -156,7 +157,9 @@ class _CartScreenState extends State<CartScreen> {
                                 context.theme.textTheme,
                                 context.theme.colorScheme,
                                 'Subtotal',
-                                isCalculating ? 'Calculating...' : '\$${cartTotal.toStringAsFixed(2)}',
+                                isCalculating
+                                    ? 'Calculating...'
+                                    : '\$${cartTotal.toStringAsFixed(2)}',
                               ),
                               const SizedBox(height: 16),
                               _buildSummaryRow(
@@ -268,7 +271,9 @@ class _CartScreenState extends State<CartScreen> {
                                   ),
                             ),
                             Text(
-                              isCalculating ? 'Calculating...' : '\$${state.grandTotal.toStringAsFixed(2)}',
+                              isCalculating
+                                  ? 'Calculating...'
+                                  : '\$${state.grandTotal.toStringAsFixed(2)}',
                               style: context.theme.textTheme.headlineLarge
                                   ?.copyWith(
                                     fontWeight: FontWeight.w800,
@@ -588,9 +593,7 @@ class _CartScreenState extends State<CartScreen> {
                         ),
                         const SizedBox(width: 12),
                         Expanded(child: Text(option.type)),
-                        Text(
-                          option.formatShippingPrice(quantity),
-                          ),
+                        Text(option.formatShippingPrice(quantity)),
                       ],
                     ),
                   ),
