@@ -216,7 +216,7 @@ class _ProductHeader extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            product.finalPrice.formatCurrency(product.currency),
+            product.finalPrice!.value.formatCurrency(product.finalPrice!.currency),
             style: context.textTheme.headlineMedium?.copyWith(
               color: context.colorScheme.secondary,
             ),
@@ -243,7 +243,7 @@ class _ProductHeader extends StatelessWidget {
       builder: (context) => BlocProvider.value(
         value: cartCubit,
         child: ChangeNotifierProvider(
-          create: (_) => ProductDetailsNotifier(price: product.finalPrice),
+          create: (_) => ProductDetailsNotifier(price: product.finalPrice!.value),
           child: CartDialog(product: product),
         ),
       ),

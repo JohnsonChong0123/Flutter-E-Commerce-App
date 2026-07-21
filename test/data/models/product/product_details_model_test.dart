@@ -22,6 +22,7 @@ void main() {
 
       expect(result.id, tProductDetailsModel.id);
       expect(result.name, tProductDetailsModel.name);
+      expect(result.initialPrice, tProductDetailsModel.initialPrice);
       expect(result.finalPrice, tProductDetailsModel.finalPrice);
       expect(result.description, tProductDetailsModel.description);
       expect(result.imageUrl, tProductDetailsModel.imageUrl);

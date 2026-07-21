@@ -57,8 +57,8 @@ final tProductDetailsModel = ProductDetailsModel(
       "NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked",
   description:
       "🔥 NEW SEALED SAMSUNG GALAXY S23 ULTRA 5G FACTORY UNLOCKED GSM CDMA ALL MEMORY🔥 🎁【US IN STOCK🚚 Fast Delivery】 ✅Factory Unlocked 👍 ALL COLOR & MEMORY & CARRIER 🚚Free & Fast Shipping: 3-5 DAYS 💯Brand-New in Sealed Box 🤩Free Exchange in 60 days 🤝 2 Years Warranty.",
-  finalPrice: 481.99,
-  currency: "USD",
+  initialPrice: MoneyModel(value: 614.99, currency: "USD"),
+  finalPrice: MoneyModel(value: 481.99, currency: "USD"),
   imageUrl: "https://i.ebayimg.com/images/g/i20AAOSwvxpna86j/s-l1600.jpg",
   additionalImages: [
     "https://i.ebayimg.com/images/g/7CwAAOSwu2Zna86k/s-l1600.jpg",
@@ -74,8 +74,8 @@ final tProductDetailsEntity = ProductDetailsEntity(
       "NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked",
   description:
       "🔥 NEW SEALED SAMSUNG GALAXY S23 ULTRA 5G FACTORY UNLOCKED GSM CDMA ALL MEMORY🔥 🎁【US IN STOCK🚚 Fast Delivery】 ✅Factory Unlocked 👍 ALL COLOR & MEMORY & CARRIER 🚚Free & Fast Shipping: 3-5 DAYS 💯Brand-New in Sealed Box 🤩Free Exchange in 60 days 🤝 2 Years Warranty.",
-  finalPrice: 481.99,
-  currency: "USD",
+  initialPrice: MoneyEntity(value: 614.99, currency: "USD"),
+  finalPrice: MoneyEntity(value: 481.99, currency: "USD"),
   imageUrl: "https://i.ebayimg.com/images/g/i20AAOSwvxpna86j/s-l1600.jpg",
   additionalImages: [
     "https://i.ebayimg.com/images/g/7CwAAOSwu2Zna86k/s-l1600.jpg",

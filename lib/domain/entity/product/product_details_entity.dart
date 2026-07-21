@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../shipping/money_entity.dart';
 import 'localized_aspect_entity.dart';
 import '../shipping/shipping_option_entity.dart';
 
@@ -7,8 +8,8 @@ class ProductDetailsEntity extends Equatable {
   final String id;
   final String name;
   final String description;
-  final double finalPrice;
-  final String currency;
+  final MoneyEntity? initialPrice;
+  final MoneyEntity? finalPrice;
   final String imageUrl;
   final List<String> additionalImages;
   final List<LocalizedAspectEntity> localizedAspects;
@@ -18,8 +19,8 @@ class ProductDetailsEntity extends Equatable {
     required this.id,
     required this.name,
     required this.description,
+    required this.initialPrice,
     required this.finalPrice,
-    required this.currency,
     required this.imageUrl,
     required this.additionalImages,
     required this.localizedAspects,
@@ -30,8 +31,8 @@ class ProductDetailsEntity extends Equatable {
     String? id,
     String? name,
     String? description,
-    double? finalPrice,
-    String? currency,
+    MoneyEntity? initialPrice,
+    MoneyEntity? finalPrice,
     String? imageUrl,
     List<String>? additionalImages,
     List<LocalizedAspectEntity>? localizedAspects,
@@ -41,8 +42,8 @@ class ProductDetailsEntity extends Equatable {
       id: id ?? this.id,
       name: name ?? this.name,
       description: description ?? this.description,
+      initialPrice: initialPrice ?? this.initialPrice,
       finalPrice: finalPrice ?? this.finalPrice,
-      currency: currency ?? this.currency,
       imageUrl: imageUrl ?? this.imageUrl,
       additionalImages: additionalImages ?? this.additionalImages,
       localizedAspects: localizedAspects ?? this.localizedAspects,
@@ -55,8 +56,8 @@ class ProductDetailsEntity extends Equatable {
     id,
     name,
     description,
+    initialPrice,
     finalPrice,
-    currency,
     imageUrl,
     additionalImages,
     localizedAspects,
