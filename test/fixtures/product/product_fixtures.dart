@@ -1,9 +1,11 @@
 import 'package:e_commerce_client/data/models/product/localized_aspect_model.dart';
 import 'package:e_commerce_client/data/models/product/product_details_model.dart';
 import 'package:e_commerce_client/data/models/product/product_summary_model.dart';
+import 'package:e_commerce_client/data/models/shipping/money_model.dart';
 import 'package:e_commerce_client/domain/entity/product/localized_aspect_entity.dart';
 import 'package:e_commerce_client/domain/entity/product/product_details_entity.dart';
 import 'package:e_commerce_client/domain/entity/product/product_summary_entity.dart';
+import 'package:e_commerce_client/domain/entity/shipping/money_entity.dart';
 import '../shipping/shipping_fixtures.dart';
 
 // Product Summary
@@ -12,16 +14,16 @@ const tProductSummaryModelList = [
     id: 'v1|377049276589|645539111213',
     name:
         'NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked',
-    initialPrice: 614.99,
-    finalPrice: 481.99,
+    initialPrice: MoneyModel(value: 614.99, currency: 'USD'),
+    finalPrice: MoneyModel(value: 481.99, currency: 'USD'),
     imageUrl: 'https://i.ebayimg.com/images/g/ZAIAAOSws5Nna86X/s-l225.jpg',
   ),
   ProductSummaryModel(
     id: 'v1|386936766515|654209735321',
     name:
         'Apple iPhone 12 64/128GB - Fully Unlocked AT&T T-Mobile Verizon - All colors',
-    initialPrice: 0,
-    finalPrice: 219.0,
+    initialPrice: null,
+    finalPrice: MoneyModel(value: 219.0, currency: 'USD'),
     imageUrl: 'https://i.ebayimg.com/images/g/fe4AAOSwVkRmIHzv/s-l225.jpg',
   ),
 ];
@@ -34,8 +36,8 @@ const tProductSummaryModel = ProductSummaryModel(
   id: 'v1|377049276589|645539111213',
   name:
       'NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked',
-  initialPrice: 614.99,
-  finalPrice: 481.99,
+  initialPrice: MoneyModel(value: 614.99, currency: 'USD'),
+  finalPrice: MoneyModel(value: 481.99, currency: 'USD'),
   imageUrl: 'https://i.ebayimg.com/images/g/ZAIAAOSws5Nna86X/s-l225.jpg',
 );
 
@@ -43,8 +45,8 @@ final tProductSummaryEntity = ProductSummaryEntity(
   id: 'v1|377049276589|645539111213',
   name:
       'NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked',
-  initialPrice: 614.99,
-  finalPrice: 481.99,
+  initialPrice: MoneyEntity(value: 614.99, currency: 'USD'),
+  finalPrice: MoneyEntity(value: 481.99, currency: 'USD'),
   imageUrl: 'https://i.ebayimg.com/images/g/ZAIAAOSws5Nna86X/s-l225.jpg',
 );
 

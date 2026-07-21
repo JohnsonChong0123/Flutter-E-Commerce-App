@@ -116,10 +116,10 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
         if (event.onSale == true && !product.hasDiscount) return false;
 
-        if (event.minPrice != null && product.finalPrice < event.minPrice!) {
+        if (event.minPrice != null && product.finalPrice!.value < event.minPrice!) {
           return false;
         }
-        if (event.maxPrice != null && product.finalPrice > event.maxPrice!) {
+        if (event.maxPrice != null && product.finalPrice!.value > event.maxPrice!) {
           return false;
         }
 
@@ -147,10 +147,10 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
       switch (event.option) {
         case SortOption.priceAsc:
-          baseList.sort((a, b) => a.finalPrice.compareTo(b.finalPrice));
+          baseList.sort((a, b) => a.finalPrice!.value.compareTo(b.finalPrice!.value));
           break;
         case SortOption.priceDesc:
-          baseList.sort((a, b) => b.finalPrice.compareTo(a.finalPrice));
+          baseList.sort((a, b) => b.finalPrice!.value.compareTo(a.finalPrice!.value));
           break;
         case SortOption.nameAsc:
           baseList.sort(

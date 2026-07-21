@@ -1,12 +1,13 @@
 import 'package:equatable/equatable.dart';
 
 import '../../../domain/entity/product/product_summary_entity.dart';
+import '../shipping/money_model.dart';
 
 class ProductSummaryModel extends Equatable {
   final String id;
   final String name;
-  final double initialPrice;
-  final double finalPrice;
+  final MoneyModel? initialPrice;
+  final MoneyModel? finalPrice;
   final String imageUrl;
   
   const ProductSummaryModel({
@@ -21,8 +22,8 @@ class ProductSummaryModel extends Equatable {
     return ProductSummaryModel(
       id: json['id'] ?? '',
       name: json['title'] ?? '',
-      initialPrice: json['original_price'] ?? 0.0,
-      finalPrice: json['price'] ?? 0.0,
+      initialPrice: json['original_price'] is Map ? MoneyModel.fromJson(json['original_price']) : null,
+      finalPrice: json['price'] is Map ? MoneyModel.fromJson(json['price']) : null,
       imageUrl: json['image_url'] ?? '',
     );
   }
@@ -31,8 +32,8 @@ class ProductSummaryModel extends Equatable {
     return ProductSummaryEntity(
       id: id,
       name: name,
-      initialPrice: initialPrice,
-      finalPrice: finalPrice,
+      initialPrice: initialPrice?.toEntity(),
+      finalPrice: finalPrice?.toEntity(),
       imageUrl: imageUrl,
     );
   }

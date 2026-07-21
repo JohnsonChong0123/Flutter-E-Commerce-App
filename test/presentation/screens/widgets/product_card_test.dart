@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce_client/core/routes/app_router.dart';
+import 'package:e_commerce_client/domain/entity/shipping/money_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -41,8 +42,8 @@ void main() {
           id: 'prod_123',
           name: 'Minimalist T-Shirt',
           imageUrl: 'https://example.com/image.jpg',
-          initialPrice: 29.99,
-          finalPrice: 29.99,
+          initialPrice: MoneyEntity(value: 29.99, currency: 'USD'),
+          finalPrice: MoneyEntity(value: 29.99, currency: 'USD'),
         );
 
         await tester.pumpWidget(
@@ -63,8 +64,8 @@ void main() {
           id: 'prod_456',
           name: 'Premium Jacket',
           imageUrl: 'https://example.com/jacket.jpg',
-          initialPrice: 150.00,
-          finalPrice: 99.99,
+          initialPrice: MoneyEntity(value: 150.00, currency: 'USD'),
+          finalPrice: MoneyEntity(value: 99.99, currency: 'USD'),
         );
 
         await tester.pumpWidget(
@@ -86,8 +87,8 @@ void main() {
           id: 'prod_789',
           name: 'Socks',
           imageUrl: '', 
-          initialPrice: 9.99,
-          finalPrice: 9.99,
+          initialPrice: MoneyEntity(value: 9.99, currency: 'USD'),
+          finalPrice: MoneyEntity(value: 9.99, currency: 'USD'),
         );
 
         await tester.pumpWidget(
@@ -107,8 +108,8 @@ void main() {
           id: 'target_id_007',
           name: 'Caps',
           imageUrl: 'https://example.com/cap.jpg',
-          initialPrice: 19.99,
-          finalPrice: 19.99,
+          initialPrice: MoneyEntity(value: 19.99, currency: 'USD'),
+          finalPrice: MoneyEntity(value: 19.99, currency: 'USD'),
         );
 
       
@@ -148,8 +149,8 @@ void main() {
         id: 'target_id_007',
         name: 'Caps Collection Edition',
         imageUrl: 'https://example.com/cap.jpg',
-        initialPrice: 29.99,
-        finalPrice: 19.99,
+        initialPrice: MoneyEntity(value: 29.99, currency: 'USD'),
+        finalPrice: MoneyEntity(value: 19.99, currency: 'USD'),
       );
 
       

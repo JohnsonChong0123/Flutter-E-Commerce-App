@@ -35,8 +35,8 @@ void main() {
 
       expect(result.id, tProductSummaryModel.id);
       expect(result.name, tProductSummaryModel.name);
-      expect(result.initialPrice, tProductSummaryModel.initialPrice);
-      expect(result.finalPrice, tProductSummaryModel.finalPrice);
+      expect(result.initialPrice!.value, tProductSummaryModel.initialPrice!.value);
+      expect(result.finalPrice!.value, tProductSummaryModel.finalPrice!.value);
       expect(result.imageUrl, tProductSummaryModel.imageUrl);
     });
   });

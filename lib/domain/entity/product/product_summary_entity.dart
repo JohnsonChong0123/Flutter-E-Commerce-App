@@ -1,10 +1,12 @@
 import 'package:equatable/equatable.dart';
 
+import '../shipping/money_entity.dart';
+
 class ProductSummaryEntity extends Equatable {
   final String id;
   final String name;
-  final double initialPrice;
-  final double finalPrice;
+  final MoneyEntity? initialPrice;
+  final MoneyEntity? finalPrice;
   final String imageUrl;
 
   const ProductSummaryEntity({
@@ -15,7 +17,7 @@ class ProductSummaryEntity extends Equatable {
     required this.imageUrl,
   });
 
-  bool get hasDiscount => finalPrice < initialPrice;
+  bool get hasDiscount => finalPrice != null && initialPrice != null && finalPrice!.value < initialPrice!.value;
 
   @override
   List<Object?> get props => [

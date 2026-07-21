@@ -1,5 +1,6 @@
 import 'dart:math' show min;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:e_commerce_client/core/extensions/currency_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -346,7 +347,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
-                                        "\$${item.finalPrice.toStringAsFixed(2)}",
+                                        item.finalPrice!.value.formatCurrency(
+                                          item.finalPrice!.currency,
+                                        ),
                                         style: context.textTheme.bodyMedium
                                             ?.copyWith(
                                               color:

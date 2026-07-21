@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:e_commerce_client/core/extensions/currency_extension.dart';
 import 'package:e_commerce_client/core/extensions/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -104,7 +105,9 @@ class ProductCard extends StatelessWidget {
                 children: [
                   if (product.hasDiscount) ...[
                     Text(
-                      "\$${product.initialPrice.toStringAsFixed(2)}",
+                      product.initialPrice!.value.formatCurrency(
+                        product.initialPrice!.currency,
+                      ),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: context.colorScheme.primary,
                         fontWeight: FontWeight.bold,
@@ -115,7 +118,9 @@ class ProductCard extends StatelessWidget {
                     const SizedBox(width: 10),
                   ],
                   Text(
-                    "\$${product.finalPrice.toStringAsFixed(2)}",
+                    product.finalPrice!.value.formatCurrency(
+                      product.finalPrice!.currency,
+                    ),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: context.colorScheme.primary,
                       fontWeight: FontWeight.bold,
