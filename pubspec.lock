@@ -887,6 +887,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.2"
+  shelf_cors_headers:
+    dependency: transitive
+    description:
+      name: shelf_cors_headers
+      sha256: a127c80f99bbef3474293db67a7608e3a0f1f0fcdb171dad77fa9bd2cd123ae4
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   shelf_packages_handler:
     dependency: transitive
     description:
@@ -988,6 +996,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.2"
+  sqflite_dev:
+    dependency: "direct dev"
+    description:
+      name: sqflite_dev
+      sha256: "4c49b07a073e37c46e7ccaf9cbe5208110ad57cc8f6902d26ef9fb34e9a747b8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.1"
   sqflite_platform_interface:
     dependency: transitive
     description:

@@ -76,6 +76,7 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   sqflite_common_ffi: ^2.4.0+2
+  sqflite_dev: ^2.3.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
