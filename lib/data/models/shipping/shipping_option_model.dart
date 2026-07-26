@@ -38,6 +38,16 @@ class ShippingOptionModel extends Equatable {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'shippingServiceCode': shippingServiceCode,
+      'type': type,
+      'shippingCost': shippingCost?.toJson(),
+      'additionalShippingCostPerUnit': additionalShippingCostPerUnit?.toJson(),
+      'shippingCostType': shippingCostType,
+    };
+  }
+
   @override
   List<Object?> get props => [
         shippingServiceCode,

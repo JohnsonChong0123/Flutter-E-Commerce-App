@@ -29,6 +29,15 @@ class LocalizedAspectModel extends Equatable {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type,
+      'name': name,
+      'value': value,
+    };
+  }
+
+
   @override
   List<Object?> get props => [type, name, value];
 }

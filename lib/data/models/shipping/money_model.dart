@@ -20,6 +20,13 @@ class MoneyModel extends Equatable {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'currency': currency,
+      'value': value,
+    };
+  }
+
   @override
   List<Object?> get props => [currency, value];
 }
