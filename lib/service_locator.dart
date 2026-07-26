@@ -1,3 +1,4 @@
+import 'package:e_commerce_client/core/database/app_database.dart';
 import 'package:e_commerce_client/domain/usecases/cart/remove_cart_item.dart';
 import 'package:e_commerce_client/domain/usecases/wishlist/add_wishlist.dart';
 import 'package:e_commerce_client/presentation/cubits/wishlist/wishlist_cubit.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sqflite/sqflite.dart';
 
 import 'core/external/facebook/facebook_auth_service.dart';
 import 'core/external/google/google_auth_service.dart';
@@ -14,6 +16,7 @@ import 'data/repositories/auth_repository_impl.dart';
 import 'data/repositories/cart_repository_impl.dart';
 import 'data/repositories/product_repository_impl.dart';
 import 'data/repositories/wishlist_repository_impl.dart';
+import 'data/sources/local/product_local_data.dart';
 import 'data/sources/local/user_local_data.dart';
 import 'data/sources/remote/auth_remote_data.dart';
 import 'data/sources/remote/cart_remote_data.dart';
@@ -81,6 +84,10 @@ Future<void> initServiceLocator() async {
   // Registers all dependencies related to the user feature.
   _initUser();
 
+  // Initialize AppDatabase as a singleton
+  final database = await AppDatabase.database;
+  sl.registerSingleton<Database>(database);
+
   // Registers all dependencies related to the product feature.
   _initProduct();
 
@@ -147,9 +154,15 @@ void _initProduct() {
     ..registerLazySingleton<ProductRemoteData>(
       () => ProductRemoteDataImpl(dio: sl()),
     )
+    ..registerLazySingleton<ProductLocalData>(
+      () => ProductLocalDataImpl(database: sl()),
+    )
     // Data layer: Repository implementation
     ..registerLazySingleton<ProductRepository>(
-      () => ProductRepositoryImpl(productRemoteData: sl()),
+      () => ProductRepositoryImpl(
+        productRemoteData: sl(),
+        productLocalData: sl(),
+      ),
     )
     // Domain layer: Use case
     ..registerLazySingleton(() => GetProducts(sl()))
