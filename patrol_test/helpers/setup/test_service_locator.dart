@@ -2,6 +2,7 @@ import 'package:e_commerce_client/core/network/dio_client.dart';
 import 'package:e_commerce_client/data/repositories/auth_repository_impl.dart';
 import 'package:e_commerce_client/data/repositories/cart_repository_impl.dart';
 import 'package:e_commerce_client/data/repositories/product_repository_impl.dart';
+import 'package:e_commerce_client/data/sources/local/product_local_data.dart';
 import 'package:e_commerce_client/data/sources/local/user_local_data.dart';
 import 'package:e_commerce_client/data/sources/remote/auth_remote_data.dart';
 import 'package:e_commerce_client/data/sources/remote/cart_remote_data.dart';
@@ -28,11 +29,13 @@ import 'package:e_commerce_client/service_locator.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../mocks/mock_auth_remote_data.dart';
 import '../mocks/mock_local_user_data.dart';
+import '../mocks/mock_product_local_data.dart';
 import '../mocks/mock_product_remote_data.dart';
 
 Future<void> initTestServiceLocator({
   AuthRemoteData? authRemoteData,
   ProductRemoteData? productRemoteData,
+  ProductLocalData? productLocalData,
 }) async {
   sl.allowReassignment = true;
   await sl.reset();
@@ -71,8 +74,14 @@ Future<void> initTestServiceLocator({
     ..registerLazySingleton<ProductRemoteData>(
       () => productRemoteData ?? MockProductRemoteData(),
     )
+    ..registerLazySingleton<ProductLocalData>(
+      () => productLocalData ?? MockProductLocalData(),
+    )
     ..registerLazySingleton<ProductRepository>(
-      () => ProductRepositoryImpl(productRemoteData: sl()),
+      () => ProductRepositoryImpl(
+        productRemoteData: sl(),
+        productLocalData: sl(),
+      ),
     )
     ..registerLazySingleton(() => GetProducts(sl()))
     ..registerLazySingleton(() => GetProductById(sl()))
