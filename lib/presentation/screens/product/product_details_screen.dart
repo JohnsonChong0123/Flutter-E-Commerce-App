@@ -76,7 +76,7 @@ class ProductDetailScreen extends StatelessWidget {
               icon: const Icon(Icons.shopping_bag_outlined),
               color: Colors.grey.shade600,
               onPressed: () {
-                  context.goNamed(AppRouter.cartName);
+                context.goNamed(AppRouter.cartName);
               },
             ),
             const SizedBox(width: 8),
@@ -216,7 +216,9 @@ class _ProductHeader extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            product.finalPrice!.value.formatCurrency(product.finalPrice!.currency),
+            product.finalPrice!.value.formatCurrency(
+              product.finalPrice!.currency,
+            ),
             style: context.textTheme.headlineMedium?.copyWith(
               color: context.colorScheme.secondary,
             ),
@@ -236,6 +238,8 @@ class _ProductHeader extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
@@ -243,7 +247,8 @@ class _ProductHeader extends StatelessWidget {
       builder: (context) => BlocProvider.value(
         value: cartCubit,
         child: ChangeNotifierProvider(
-          create: (_) => ProductDetailsNotifier(price: product.finalPrice!.value),
+          create: (_) =>
+              ProductDetailsNotifier(price: product.finalPrice!.value),
           child: CartDialog(product: product),
         ),
       ),
@@ -456,111 +461,132 @@ class CartDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: context.colorScheme.onSurface.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(product.name, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 10),
-            Consumer<ProductDetailsNotifier>(
-              builder: (context, notifier, _) {
-                return Text(
-                  "\$${notifier.price.toStringAsFixed(2)}",
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: context.colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                );
-              },
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return BlocBuilder<CartBloc, CartState>(
+      builder: (context, state) {
+        final isLoading = state is CartLoading;
+
+        return PopScope(
+          canPop: !isLoading,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Quantity',
-                  style: TextStyle(
-                    color: context.colorScheme.onSurface.withValues(alpha: 0.5),
-                    fontSize: 15,
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconButton(
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                            Navigator.of(context).pop();
+                          },
+                    icon: const Icon(Icons.close),
+                    color: context.colorScheme.onSurfaceVariant,
+                    tooltip: 'Close',
                   ),
                 ),
+                const SizedBox(height: 10),
+                Text(
+                  product.name,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 10),
                 Consumer<ProductDetailsNotifier>(
                   builder: (context, notifier, _) {
-                    return Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            notifier.minusQuantity();
-                          },
-                          icon: Icon(
-                            Icons.remove,
-                            color: context.colorScheme.primary,
+                    return Text(
+                      "\$${notifier.price.toStringAsFixed(2)}",
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: context.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Quantity',
+                      style: TextStyle(
+                        color: context.colorScheme.onSurface.withValues(
+                          alpha: 0.5,
+                        ),
+                        fontSize: 15,
+                      ),
+                    ),
+                    Consumer<ProductDetailsNotifier>(
+                      builder: (context, notifier, _) {
+                        return Row(
+                          children: [
+                            IconButton(
+                              onPressed: isLoading
+                                  ? null
+                                  : () {
+                                      notifier.minusQuantity();
+                                    },
+                              icon: Icon(
+                                Icons.remove,
+                                color: context.colorScheme.primary,
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              '${notifier.quantity}',
+                              style: const TextStyle(fontSize: 15),
+                            ),
+                            const SizedBox(width: 5),
+                            IconButton(
+                              onPressed: isLoading
+                                  ? null
+                                  : () {
+                                      notifier.addQuantity();
+                                    },
+                              icon: Icon(
+                                Icons.add,
+                                color: context.colorScheme.primary,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                BlocConsumer<CartBloc, CartState>(
+                  listener: (context, state) {
+                    if (state is CartLoaded && state.isActionSuccess) {
+                      Navigator.of(context).pop();
+                      showSnackBar(context, "Added to cart");
+                    } else if (state is CartFailure) {
+                      showSnackBar(context, "Failed to add: ${state.message}");
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is CartLoading) {
+                      return const Center(child: Loader());
+                    }
+                    return AppButton(
+                      onPressed: () {
+                        final notifier = context.read<ProductDetailsNotifier>();
+                        context.read<CartBloc>().add(
+                          AddToCartEvent(
+                            productId: product.id,
+                            quantity: notifier.quantity,
                           ),
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          '${notifier.quantity}',
-                          style: const TextStyle(fontSize: 15),
-                        ),
-                        const SizedBox(width: 5),
-                        IconButton(
-                          onPressed: () {
-                            notifier.addQuantity();
-                          },
-                          icon: Icon(
-                            Icons.add,
-                            color: context.colorScheme.primary,
-                          ),
-                        ),
-                      ],
+                        );
+                      },
+                      title: 'Add to cart',
                     );
                   },
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            BlocConsumer<CartBloc, CartState>(
-              listener: (context, state) {
-                if (state is CartLoaded && state.isActionSuccess) {
-                  Navigator.of(context).pop();
-                  showSnackBar(context, "Added to cart");
-                } else if (state is CartFailure) {
-                  showSnackBar(context, "Failed to add: ${state.message}");
-                } 
-              },
-              builder: (context, state) {
-                if (state is CartLoading) {
-                  return const Center(child: Loader());
-                }
-                return AppButton(
-                  onPressed: () {
-                    final notifier = context.read<ProductDetailsNotifier>();
-                    context.read<CartBloc>().add(
-                      AddToCartEvent(
-                        productId: product.id,
-                        quantity: notifier.quantity,
-                      ),
-                    );
-                  },
-                  title: 'Add to cart',
-                );
-              },
-            ),
-          ],
-        ),
-      );
+          ),
+        );
+      },
+    );
   }
 }
 
