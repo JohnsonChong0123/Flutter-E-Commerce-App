@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import '../../../domain/entity/product/product_summary_entity.dart';
-import '../shipping/money_model.dart';
+import '../money/money_model.dart';
 
 class ProductSummaryModel extends Equatable {
   final String id;

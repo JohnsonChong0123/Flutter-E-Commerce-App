@@ -1,4 +1,4 @@
-import 'package:e_commerce_client/data/models/shipping/money_model.dart';
+import 'package:e_commerce_client/data/models/money/money_model.dart';
 import 'package:e_commerce_client/data/models/shipping/shipping_option_model.dart';
 import 'package:e_commerce_client/domain/entity/shipping/money_entity.dart';
 import 'package:e_commerce_client/domain/entity/shipping/shipping_option_entity.dart';

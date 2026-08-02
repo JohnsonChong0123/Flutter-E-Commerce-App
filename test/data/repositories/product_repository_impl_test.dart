@@ -2,7 +2,7 @@ import 'package:e_commerce_client/core/errors/exception.dart';
 import 'package:e_commerce_client/core/errors/failure.dart';
 import 'package:e_commerce_client/data/models/product/product_details_cache_model.dart';
 import 'package:e_commerce_client/data/models/product/product_summary_cache_model.dart';
-import 'package:e_commerce_client/data/models/shipping/money_model.dart';
+import 'package:e_commerce_client/data/models/money/money_model.dart';
 import 'package:e_commerce_client/data/repositories/product_repository_impl.dart';
 import 'package:e_commerce_client/data/sources/local/product_local_data.dart';
 import 'package:e_commerce_client/data/sources/remote/product_remote_data.dart';

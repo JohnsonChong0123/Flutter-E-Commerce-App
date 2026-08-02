@@ -4,7 +4,7 @@ import 'package:e_commerce_client/data/models/product/product_details_model.dart
 import 'package:e_commerce_client/domain/entity/product/product_details_entity.dart';
 import 'package:equatable/equatable.dart';
 
-import '../shipping/money_model.dart';
+import '../money/money_model.dart';
 import '../shipping/shipping_option_model.dart';
 import 'localized_aspect_model.dart';
 

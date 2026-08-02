@@ -1,7 +1,7 @@
 import 'package:e_commerce_client/data/models/shipping/shipping_option_model.dart';
 import 'package:equatable/equatable.dart';
 import '../../../domain/entity/product/product_details_entity.dart';
-import '../shipping/money_model.dart';
+import '../money/money_model.dart';
 import 'localized_aspect_model.dart';
 
 class ProductDetailsModel extends Equatable {

@@ -1,7 +1,7 @@
 import 'package:e_commerce_client/data/models/product/localized_aspect_model.dart';
 import 'package:e_commerce_client/data/models/product/product_details_model.dart';
 import 'package:e_commerce_client/data/models/product/product_summary_model.dart';
-import 'package:e_commerce_client/data/models/shipping/money_model.dart';
+import 'package:e_commerce_client/data/models/money/money_model.dart';
 import 'package:e_commerce_client/domain/entity/product/localized_aspect_entity.dart';
 import 'package:e_commerce_client/domain/entity/product/product_details_entity.dart';
 import 'package:e_commerce_client/domain/entity/product/product_summary_entity.dart';
