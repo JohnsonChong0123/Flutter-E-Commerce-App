@@ -5,7 +5,7 @@ import 'package:e_commerce_client/data/models/money/money_model.dart';
 import 'package:e_commerce_client/domain/entity/product/localized_aspect_entity.dart';
 import 'package:e_commerce_client/domain/entity/product/product_details_entity.dart';
 import 'package:e_commerce_client/domain/entity/product/product_summary_entity.dart';
-import 'package:e_commerce_client/domain/entity/shipping/money_entity.dart';
+import 'package:e_commerce_client/domain/entity/money/money_entity.dart';
 import '../shipping/shipping_fixtures.dart';
 
 // Product Summary

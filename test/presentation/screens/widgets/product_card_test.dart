@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce_client/core/routes/app_router.dart';
-import 'package:e_commerce_client/domain/entity/shipping/money_entity.dart';
+import 'package:e_commerce_client/domain/entity/money/money_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

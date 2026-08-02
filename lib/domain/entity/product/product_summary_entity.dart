@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../shipping/money_entity.dart';
+import '../money/money_entity.dart';
 
 class ProductSummaryEntity extends Equatable {
   final String id;

@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../shipping/money_entity.dart';
+import '../money/money_entity.dart';
 import 'localized_aspect_entity.dart';
 import '../shipping/shipping_option_entity.dart';
 

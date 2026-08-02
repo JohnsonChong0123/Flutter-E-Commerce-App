@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:e_commerce_client/domain/entity/cart/cart_entity.dart';
 import 'package:e_commerce_client/domain/entity/cart/cart_item_entity.dart';
-import 'package:e_commerce_client/domain/entity/shipping/money_entity.dart';
+import 'package:e_commerce_client/domain/entity/money/money_entity.dart';
 import 'package:e_commerce_client/domain/entity/shipping/shipping_option_entity.dart';
 
 /// 1. When to Use Global Fixtures? (The Big Picture)

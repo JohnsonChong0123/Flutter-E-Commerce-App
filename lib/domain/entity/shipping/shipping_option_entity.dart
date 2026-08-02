@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import '../../../core/extensions/currency_extension.dart';
-import 'money_entity.dart';
+import '../money/money_entity.dart';
 
 class ShippingOptionEntity extends Equatable {
   final String shippingServiceCode;
