@@ -5,7 +5,7 @@ import 'package:sqflite_dev/sqflite_dev.dart';
 
 class AppDatabase {
   static Database? _db;
-  static const _version = 2;
+  static const _version = 3;
   static const _dbName = 'app_cache.db';
 
   static Future<Database> get database async {
@@ -47,6 +47,10 @@ class AppDatabase {
       await db.execute(_createProductSummaryTable);
       await db.execute(_createProductDetailsTable);
     }
+
+    if (oldVersion < 3) {
+      await db.execute(_createCartCacheTable);
+    }
   }
 
   static const _createProductSummaryTable = '''
@@ -75,9 +79,18 @@ class AppDatabase {
     )
   ''';
 
+  static const _createCartCacheTable = '''
+    CREATE TABLE cart_cache (
+      id TEXT PRIMARY KEY,
+      cart_json TEXT NOT NULL,
+      cached_at INTEGER NOT NULL
+    )
+  ''';
+
   static Future<void> _onCreate(Database db, int version) async {
     await db.execute(_createProductSummaryTable);
     await db.execute(_createProductDetailsTable);
+    await db.execute(_createCartCacheTable);
   }
 
   @visibleForTesting

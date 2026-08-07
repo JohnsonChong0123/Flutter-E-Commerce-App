@@ -4,6 +4,8 @@ import 'package:e_commerce_client/core/database/app_database.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
+import '../../fixtures/cart/cart_fixtures.dart';
+
 Map<String, Object?> buildSummaryRow({
   String id = 'v1|377049276589|645539111213',
   Object? title =
@@ -72,6 +74,18 @@ Map<String, Object?> buildDetailsRow({
           'additionalShippingCostPerUnit': {'value': 0.00, 'currency': 'USD'},
           'shippingCostType': "FIXED",
         }),
+    'cached_at': cachedAt ?? DateTime.now().millisecondsSinceEpoch,
+  };
+}
+
+Map<String, Object?> buildCartRow({
+  String id = '1d3ed0a0-b460-4137-81b6-7e4befc3b63b',
+  String? cartJson,
+  int? cachedAt,
+}) {
+  return {
+    'id': id,
+    'cart_json': cartJson ?? jsonEncode(tCartModel.toJson()),
     'cached_at': cachedAt ?? DateTime.now().millisecondsSinceEpoch,
   };
 }
@@ -238,6 +252,23 @@ void main() {
       final info = await db.rawQuery('PRAGMA table_info(product_details)');
       final cachedAt = info.firstWhere((e) => e['name'] == 'cached_at');
       expect(cachedAt['type'], equals('INTEGER'));
+    });
+  });
+
+  group('Table structure - cart_cache', () {
+    test('should contain cart_cache table', () async {
+      final db = await AppDatabase.database;
+      final tables = await db.rawQuery(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='cart_cache'",
+      );
+      expect(tables, isNotEmpty);
+    });
+
+    test('should contain all required columns', () async {
+      final db = await AppDatabase.database;
+      final info = await db.rawQuery('PRAGMA table_info(cart_cache)');
+      final columns = info.map((e) => e['name'] as String).toSet();
+      expect(columns, containsAll(['id', 'cart_json', 'cached_at']));
     });
   });
 
@@ -445,6 +476,44 @@ void main() {
         where: 'id = ?',
         whereArgs: ['v1|377049276589|645539111213'],
       );
+      expect(rows, isEmpty);
+    });
+  });
+
+  group('CRUD - cart_cache', () {
+    test('should insert and query a cached cart', () async {
+      final db = await AppDatabase.database;
+
+      await db.insert('cart_cache', buildCartRow());
+
+      final rows = await db.query(
+        'cart_cache',
+        where: 'id = ?',
+        whereArgs: ['1d3ed0a0-b460-4137-81b6-7e4befc3b63b'],
+      );
+
+      expect(rows.length, equals(1));
+      final cart =
+          jsonDecode(rows.first['cart_json'] as String) as Map<String, dynamic>;
+      expect(cart['id'], equals(tCartModel.id));
+    });
+
+    test('should delete cached cart rows', () async {
+      final db = await AppDatabase.database;
+      await db.insert('cart_cache', buildCartRow());
+
+      await db.delete(
+        'cart_cache',
+        where: 'id = ?',
+        whereArgs: ['1d3ed0a0-b460-4137-81b6-7e4befc3b63b'],
+      );
+
+      final rows = await db.query(
+        'cart_cache',
+        where: 'id = ?',
+        whereArgs: ['1d3ed0a0-b460-4137-81b6-7e4befc3b63b'],
+      );
+
       expect(rows, isEmpty);
     });
   });

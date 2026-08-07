@@ -32,4 +32,17 @@ void main() {
     expect(result.quantity, tCartItemModel.quantity);
     expect(result.imageUrl, tCartItemModel.imageUrl);
   });
+
+  test('CartItemModel.toJson should serialize correctly', () {
+    // act
+    final result = tCartItemModel.toJson();
+
+    // assert
+    expect(result['product_id'], equals(tCartItemModel.productId));
+    expect(result['name'], equals(tCartItemModel.name));
+    expect(result['price'], equals(tCartItemModel.price));
+    expect(result['quantity'], equals(tCartItemModel.quantity));
+    expect(result['image_url'], equals(tCartItemModel.imageUrl));
+    expect(result['shipping_options'], isA<List<dynamic>>());
+  });
 }

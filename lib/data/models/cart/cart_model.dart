@@ -13,13 +13,28 @@ class CartModel extends Equatable {
   });
 
   factory CartModel.fromJson(Map<String, dynamic> json) {
+    final rawItems = json['items'];
+
     return CartModel(
-      id: json['id'],
-      items: (json['items'] as List)
-          .map((e) => CartItemModel.fromJson(e))
-          .toList(),
-      cartTotal: (json['cart_total'] as num).toDouble(),
+      id: json['id']?.toString() ?? '',
+      items: rawItems is List
+          ? rawItems
+                .whereType<Map>()
+                .map(
+                  (e) => CartItemModel.fromJson(Map<String, dynamic>.from(e)),
+                )
+                .toList()
+          : [],
+      cartTotal: (json['cart_total'] as num?)?.toDouble() ?? 0.0,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'items': items.map((model) => model.toJson()).toList(),
+      'cart_total': cartTotal,
+    };
   }
 
   CartEntity toEntity() {
@@ -29,7 +44,7 @@ class CartModel extends Equatable {
       cartTotal: cartTotal,
     );
   }
-  
+
   @override
   List<Object?> get props => [id, items, cartTotal];
 }

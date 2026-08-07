@@ -24,7 +24,7 @@ void main() {
     final result = tCartModel.toEntity();
 
     // assert
-    expect (result, tCartEntity);
+    expect(result, tCartEntity);
 
     expect(result.id, tCartModel.id);
     expect(result.cartTotal, tCartModel.cartTotal);
@@ -36,5 +36,15 @@ void main() {
     expect(result.items.first.price, tCartModel.items.first.price);
     expect(result.items.first.quantity, tCartModel.items.first.quantity);
     expect(result.items.first.imageUrl, tCartModel.items.first.imageUrl);
+  });
+
+  test('CartModel.toJson should serialize correctly', () {
+    // act
+    final result = tCartModel.toJson();
+
+    // assert
+    expect(result['id'], equals(tCartModel.id));
+    expect(result['cart_total'], equals(tCartModel.cartTotal));
+    expect(result['items'], isA<List<dynamic>>());
   });
 }

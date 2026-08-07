@@ -1,6 +1,7 @@
 import 'package:e_commerce_client/core/errors/exception.dart';
 import 'package:e_commerce_client/core/errors/failure.dart';
 import 'package:e_commerce_client/data/repositories/cart_repository_impl.dart';
+import 'package:e_commerce_client/data/sources/local/cart_local_data.dart';
 import 'package:e_commerce_client/data/sources/remote/cart_remote_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
@@ -10,15 +11,22 @@ import '../../fixtures/product/product_fixtures.dart';
 
 class MockCartRemoteData extends Mock implements CartRemoteData {}
 
+class MockCartLocalData extends Mock implements CartLocalData {}
+
 void main() {
   late MockCartRemoteData mockCartRemoteData;
+  late MockCartLocalData mockCartLocalData;
   late CartRepositoryImpl cartRepository;
 
   const tQuantity = 2;
 
   setUp(() {
     mockCartRemoteData = MockCartRemoteData();
-    cartRepository = CartRepositoryImpl(cartRemoteData: mockCartRemoteData);
+    mockCartLocalData = MockCartLocalData();
+    cartRepository = CartRepositoryImpl(
+      cartRemoteData: mockCartRemoteData,
+      cartLocalData: mockCartLocalData,
+    );
   });
 
   group('addToCart', () {
@@ -32,6 +40,12 @@ void main() {
             quantity: tQuantity,
           ),
         ).thenAnswer((_) async => {});
+        when(
+          () => mockCartRemoteData.getCart(),
+        ).thenAnswer((_) async => tCartModel);
+        when(
+          () => mockCartLocalData.cacheCart(tCartModel),
+        ).thenAnswer((_) async {});
 
         // act
         final result = await cartRepository.addToCart(
@@ -47,7 +61,10 @@ void main() {
             quantity: tQuantity,
           ),
         ).called(1);
+        verify(() => mockCartRemoteData.getCart()).called(1);
+        verify(() => mockCartLocalData.cacheCart(tCartModel)).called(1);
         verifyNoMoreInteractions(mockCartRemoteData);
+        verifyNoMoreInteractions(mockCartLocalData);
       },
     );
 
@@ -75,6 +92,7 @@ void main() {
         ),
       ).called(1);
       verifyNoMoreInteractions(mockCartRemoteData);
+      verifyNoMoreInteractions(mockCartLocalData);
     });
   });
 
@@ -86,6 +104,9 @@ void main() {
         when(
           () => mockCartRemoteData.getCart(),
         ).thenAnswer((_) async => tCartModel);
+        when(
+          () => mockCartLocalData.cacheCart(tCartModel),
+        ).thenAnswer((_) async {});
 
         // act
         final result = await cartRepository.getCart();
@@ -93,24 +114,34 @@ void main() {
         // assert
         expect(result, equals(right(tCartEntity)));
         verify(() => mockCartRemoteData.getCart()).called(1);
+        verify(() => mockCartLocalData.cacheCart(tCartModel)).called(1);
         verifyNoMoreInteractions(mockCartRemoteData);
+        verifyNoMoreInteractions(mockCartLocalData);
       },
     );
 
-    test('should return Left(Failure) when getting cart fails', () async {
-      // arrange
-      when(
-        () => mockCartRemoteData.getCart(),
-      ).thenThrow(ServerException('Failed to get cart'));
+    test(
+      'should return cached cart when getting cart fails remotely',
+      () async {
+        // arrange
+        when(
+          () => mockCartRemoteData.getCart(),
+        ).thenThrow(ServerException('Failed to get cart'));
+        when(
+          () => mockCartLocalData.getLastCart(),
+        ).thenAnswer((_) async => tCartModel);
 
-      // act
-      final result = await cartRepository.getCart();
+        // act
+        final result = await cartRepository.getCart();
 
-      // assert
-      expect(result, equals(left(const Failure('Failed to get cart'))));
-      verify(() => mockCartRemoteData.getCart()).called(1);
-      verifyNoMoreInteractions(mockCartRemoteData);
-    });
+        // assert
+        expect(result, equals(right(tCartEntity)));
+        verify(() => mockCartRemoteData.getCart()).called(1);
+        verify(() => mockCartLocalData.getLastCart()).called(1);
+        verifyNoMoreInteractions(mockCartRemoteData);
+        verifyNoMoreInteractions(mockCartLocalData);
+      },
+    );
   });
 
   group('removeCartItem', () {
@@ -121,6 +152,12 @@ void main() {
         when(
           () => mockCartRemoteData.removeCartItem(tProductId),
         ).thenAnswer((_) async => {});
+        when(
+          () => mockCartRemoteData.getCart(),
+        ).thenAnswer((_) async => tCartModel);
+        when(
+          () => mockCartLocalData.cacheCart(tCartModel),
+        ).thenAnswer((_) async {});
 
         // act
         final result = await cartRepository.removeCartItem(tProductId);
@@ -128,7 +165,10 @@ void main() {
         // assert
         expect(result, equals(right(unit)));
         verify(() => mockCartRemoteData.removeCartItem(tProductId)).called(1);
+        verify(() => mockCartRemoteData.getCart()).called(1);
+        verify(() => mockCartLocalData.cacheCart(tCartModel)).called(1);
         verifyNoMoreInteractions(mockCartRemoteData);
+        verifyNoMoreInteractions(mockCartLocalData);
       },
     );
 
@@ -145,6 +185,7 @@ void main() {
       expect(result, equals(left(const Failure('Failed to remove item'))));
       verify(() => mockCartRemoteData.removeCartItem(tProductId)).called(1);
       verifyNoMoreInteractions(mockCartRemoteData);
+      verifyNoMoreInteractions(mockCartLocalData);
     });
   });
 
@@ -154,6 +195,7 @@ void main() {
       () async {
         // arrange
         when(() => mockCartRemoteData.clearCart()).thenAnswer((_) async => {});
+        when(() => mockCartLocalData.clearCartCache()).thenAnswer((_) async {});
 
         // act
         final result = await cartRepository.clearCart();
@@ -161,7 +203,9 @@ void main() {
         // assert
         expect(result, equals(right(unit)));
         verify(() => mockCartRemoteData.clearCart()).called(1);
+        verify(() => mockCartLocalData.clearCartCache()).called(1);
         verifyNoMoreInteractions(mockCartRemoteData);
+        verifyNoMoreInteractions(mockCartLocalData);
       },
     );
 
@@ -178,6 +222,7 @@ void main() {
       expect(result, equals(left(const Failure('Failed to clear cart'))));
       verify(() => mockCartRemoteData.clearCart()).called(1);
       verifyNoMoreInteractions(mockCartRemoteData);
+      verifyNoMoreInteractions(mockCartLocalData);
     });
   });
 
@@ -192,6 +237,12 @@ void main() {
             quantity: tQuantity,
           ),
         ).thenAnswer((_) async => {});
+        when(
+          () => mockCartRemoteData.getCart(),
+        ).thenAnswer((_) async => tCartModel);
+        when(
+          () => mockCartLocalData.cacheCart(tCartModel),
+        ).thenAnswer((_) async {});
 
         // act
         final result = await cartRepository.updateCart(
@@ -207,7 +258,10 @@ void main() {
             quantity: tQuantity,
           ),
         ).called(1);
+        verify(() => mockCartRemoteData.getCart()).called(1);
+        verify(() => mockCartLocalData.cacheCart(tCartModel)).called(1);
         verifyNoMoreInteractions(mockCartRemoteData);
+        verifyNoMoreInteractions(mockCartLocalData);
       },
     );
 
@@ -235,6 +289,7 @@ void main() {
         ),
       ).called(1);
       verifyNoMoreInteractions(mockCartRemoteData);
+      verifyNoMoreInteractions(mockCartLocalData);
     });
   });
 }

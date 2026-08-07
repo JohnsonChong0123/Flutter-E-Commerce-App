@@ -16,6 +16,7 @@ import 'data/repositories/auth_repository_impl.dart';
 import 'data/repositories/cart_repository_impl.dart';
 import 'data/repositories/product_repository_impl.dart';
 import 'data/repositories/wishlist_repository_impl.dart';
+import 'data/sources/local/cart_local_data.dart';
 import 'data/sources/local/product_local_data.dart';
 import 'data/sources/local/user_local_data.dart';
 import 'data/sources/remote/auth_remote_data.dart';
@@ -177,9 +178,12 @@ void _initCart() {
   sl
     // Data layer: Remote data source
     ..registerLazySingleton<CartRemoteData>(() => CartRemoteDataImpl(dio: sl()))
+    ..registerLazySingleton<CartLocalData>(
+      () => CartLocalDataImpl(database: sl()),
+    )
     // Data layer: Repository implementation
     ..registerLazySingleton<CartRepository>(
-      () => CartRepositoryImpl(cartRemoteData: sl()),
+      () => CartRepositoryImpl(cartRemoteData: sl(), cartLocalData: sl()),
     )
     // Domain layer: Use case
     ..registerLazySingleton(() => AddToCart(sl()))
