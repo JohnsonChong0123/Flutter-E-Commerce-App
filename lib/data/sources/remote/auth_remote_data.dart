@@ -141,7 +141,10 @@ class AuthRemoteDataImpl implements AuthRemoteData {
     try {
       final response = await dio.post(
         '/auth/refresh',
-        options: Options(headers: {'Content-Type': 'application/json'}),
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+          extra: {'requiredAuth': false},
+        ),
         data: {"refresh_token": refreshToken},
       );
 
