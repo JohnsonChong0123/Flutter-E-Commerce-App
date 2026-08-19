@@ -59,9 +59,14 @@ android {
             if (project.hasProperty("FACEBOOK_CLIENT_TOKEN")) project.property("FACEBOOK_CLIENT_TOKEN") as String
             else ""
 
+        val googleMapsApiKey: String =
+            if (project.hasProperty("GOOGLE_MAPS_API_KEY")) project.property("GOOGLE_MAPS_API_KEY") as String
+            else ""
+
         resValue("string", "facebook_app_id", facebookAppId)
         resValue("string", "facebook_client_token", facebookClientToken)
         resValue("string", "fb_login_protocol_scheme", "fb$facebookAppId")
+        resValue("string", "google_maps_api_key", googleMapsApiKey)
 
         testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
@@ -88,5 +93,6 @@ flutter {
 }
 
 dependencies {
+    implementation("com.google.android.gms:play-services-maps:19.1.0")
     androidTestUtil("androidx.test:orchestrator:1.5.1")
 }
