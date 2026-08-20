@@ -59,6 +59,8 @@ dependencies:
   firebase_core: ^4.9.0
   firebase_crashlytics: ^5.2.2
   firebase_analytics: ^12.4.1
+  geocoding: ^4.0.0
+  geolocator: ^14.0.2
 
 dev_dependencies:
   flutter_test:
@@ -77,6 +79,7 @@ dev_dependencies:
     sdk: flutter
   sqflite_common_ffi: ^2.4.0+2
   sqflite_dev: ^2.3.1
+  pigeon: ^26.3.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
