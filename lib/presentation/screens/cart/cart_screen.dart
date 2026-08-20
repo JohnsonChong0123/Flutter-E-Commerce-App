@@ -8,6 +8,7 @@ import '../../../core/extensions/theme_extensions.dart';
 import '../../../core/routes/app_router.dart';
 import '../../../domain/entity/shipping/shipping_option_entity.dart';
 import '../../blocs/cart/cart_bloc.dart';
+import '../../models/checkout_data.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -169,87 +170,6 @@ class _CartScreenState extends State<CartScreen> {
                                 '\$${state.totalShippingCost.toStringAsFixed(2)}',
                               ),
                               const SizedBox(height: 16),
-                              // _buildSummaryRow(
-                              //   context.theme.textTheme,
-                              //   context.theme.colorScheme,
-                              //   'Estimated Tax',
-                              //   '\$168.00',
-                              // ),
-
-                              // const SizedBox(height: 24),
-                              // const Divider(),
-                              // const SizedBox(height: 16),
-
-                              // Text(
-                              //   'PROMO CODE',
-                              //   style: context.theme.textTheme.labelSmall
-                              //       ?.copyWith(
-                              //         color: context.theme.colorScheme.outline,
-                              //         letterSpacing: 1.5,
-                              //         fontSize: 10,
-                              //         fontWeight: FontWeight.bold,
-                              //       ),
-                              // ),
-                              // const SizedBox(height: 8),
-                              // Row(
-                              //   children: [
-                              //     Expanded(
-                              //       child: Container(
-                              //         height: 48,
-                              //         padding: const EdgeInsets.symmetric(
-                              //           horizontal: 16,
-                              //         ),
-                              //         decoration: BoxDecoration(
-                              //           color: context
-                              //               .theme
-                              //               .colorScheme
-                              //               .surfaceContainerLowest,
-                              //           borderRadius: BorderRadius.circular(8),
-                              //         ),
-                              //         child: TextField(
-                              //           decoration: InputDecoration(
-                              //             border: InputBorder.none,
-                              //             hintText: 'ENTER CODE',
-                              //             hintStyle: context
-                              //                 .theme
-                              //                 .textTheme
-                              //                 .bodySmall
-                              //                 ?.copyWith(
-                              //                   color: context
-                              //                       .theme
-                              //                       .colorScheme
-                              //                       .outlineVariant,
-                              //                   fontWeight: FontWeight.bold,
-                              //                   letterSpacing: 1.0,
-                              //                 ),
-                              //           ),
-                              //         ),
-                              //       ),
-                              //     ),
-                              //     const SizedBox(width: 8),
-                              //     ElevatedButton(
-                              //       style: ElevatedButton.styleFrom(
-                              //         backgroundColor:
-                              //             context.theme.colorScheme.onSurface,
-                              //         foregroundColor:
-                              //             context.theme.colorScheme.surface,
-                              //         minimumSize: const Size(80, 48),
-                              //         shape: RoundedRectangleBorder(
-                              //           borderRadius: BorderRadius.circular(8),
-                              //         ),
-                              //       ),
-                              //       onPressed: () {},
-                              //       child: const Text(
-                              //         'APPLY',
-                              //         style: TextStyle(
-                              //           fontWeight: FontWeight.bold,
-                              //           fontSize: 12,
-                              //           letterSpacing: 1.0,
-                              //         ),
-                              //       ),
-                              //     ),
-                              //   ],
-                              // ),
                             ],
                           ),
                         ),
@@ -286,7 +206,20 @@ class _CartScreenState extends State<CartScreen> {
                         const SizedBox(height: 32),
 
                         AppButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            final state = context.read<CartBloc>().state;
+                            if (state is CartLoaded) {
+                              final checkoutData = CheckoutData(
+                                subtotal: state.carts.cartTotal,
+                                shipping: state.totalShippingCost,
+                                total: state.grandTotal,
+                              );
+                              context.pushNamed(
+                                AppRouter.checkoutName,
+                                extra: checkoutData,
+                              );
+                            }
+                          },
                           title: 'PROCEED TO CHECKOUT',
                         ),
 
