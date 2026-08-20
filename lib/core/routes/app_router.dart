@@ -2,13 +2,19 @@ import 'package:e_commerce_client/presentation/screens/splash_screen.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../domain/entity/address/address_entity.dart';
+import '../../presentation/blocs/address/address_bloc.dart';
 import '../../presentation/blocs/auth/auth_bloc.dart';
 import '../../presentation/cubits/category/category_cubit.dart';
 import '../../presentation/blocs/product/product_bloc.dart';
+import '../../presentation/blocs/checkout/checkout_bloc.dart';
+import '../../presentation/models/checkout_data.dart';
 import '../../presentation/screens/account_screen.dart';
+import '../../presentation/screens/address/pick_address_screen.dart';
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/sign_up_screen.dart';
 import '../../presentation/screens/cart/cart_screen.dart';
+import '../../presentation/screens/checkout/checkout_screen.dart';
 import '../../presentation/screens/home_screen.dart';
 import '../../presentation/screens/product/product_search_screen.dart';
 import '../../presentation/screens/navbar_screen.dart';
@@ -28,6 +34,9 @@ class AppRouter {
   static const wishlist = '/wishlist';
   static const account = '/account';
   static const productSearch = '/productSearch';
+  static const checkout = '/checkout';
+  static const pickAddress = '/pickAddress';
+  static const addressesList = '/addressesList';
 
   // ---------------- Names ----------------
   static const splashName = 'splash';
@@ -39,6 +48,9 @@ class AppRouter {
   static const wishlistName = 'wishlist';
   static const accountName = 'account';
   static const productSearchName = 'productSearch';
+  static const checkoutName = 'checkout';
+  static const pickAddressName = 'pickAddress';
+  static const addressesListName = 'addressesList';
 
   static final GlobalKey<NavigatorState> _rootNavigatorKey =
       GlobalKey<NavigatorState>();
@@ -88,6 +100,34 @@ class AppRouter {
                 ),
               ],
               child: ProductDetailScreen(productId: id),
+            );
+          },
+        ),
+        GoRoute(
+          path: checkout,
+          name: checkoutName,
+          parentNavigatorKey: _rootNavigatorKey,
+          builder: (context, state) {
+            final checkoutData = state.extra as CheckoutData?;
+
+            return BlocProvider(
+              create: (_) => sl<CheckoutBloc>(),
+              child: CheckoutScreen(checkoutData: checkoutData),
+            );
+          },
+        ),
+        GoRoute(
+          path: pickAddress,
+          name: pickAddressName,
+          parentNavigatorKey: _rootNavigatorKey,
+          builder: (context, state) {
+            final initialAddress = state.extra is AddressEntity
+                ? state.extra as AddressEntity
+                : null;
+
+            return BlocProvider(
+              create: (_) => sl<AddressPickerBloc>(),
+              child: AddressPickerPage(initialAddress: initialAddress),
             );
           },
         ),
