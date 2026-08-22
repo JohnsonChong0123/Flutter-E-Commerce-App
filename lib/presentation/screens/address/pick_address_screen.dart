@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data/models/map/map_coord_update.dart';
 import '../../../data/sources/remote/map_remote_data.dart';
 import '../../../domain/entity/address/address_entity.dart';
 import '../../blocs/address/address_bloc.dart';

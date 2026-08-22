@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:e_commerce_client/core/errors/exception.dart';
+import 'package:e_commerce_client/data/models/map/map_coord_update.dart';
 import 'package:e_commerce_client/data/sources/remote/generated/google_map_api.g.dart';
 import 'package:e_commerce_client/data/sources/remote/map_remote_data.dart';
 import 'package:flutter_test/flutter_test.dart';

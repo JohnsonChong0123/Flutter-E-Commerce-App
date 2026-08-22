@@ -3,17 +3,7 @@ import 'dart:async';
 import 'package:e_commerce_client/core/errors/exception.dart';
 import 'package:e_commerce_client/data/sources/remote/generated/google_map_api.g.dart';
 
-class MapCoordinateUpdate {
-  final int viewId;
-  final double latitude;
-  final double longitude;
-
-  const MapCoordinateUpdate({
-    required this.viewId,
-    required this.latitude,
-    required this.longitude,
-  });
-}
+import '../../models/map/map_coord_update.dart';
 
 abstract interface class MapRemoteData {
   Stream<MapCoordinateUpdate> get coordinateUpdates;
