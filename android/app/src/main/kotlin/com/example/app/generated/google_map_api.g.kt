@@ -269,7 +269,6 @@ private open class google_map_apiPigeonCodec : StandardMessageCodec() {
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface GoogleMapHostApi {
   fun initializeMap(viewId: Long)
-  fun updateStoreMarkers(viewId: Long, markers: List<MarkerDto>)
   fun moveCamera(viewId: Long, latitude: Double, longitude: Double, zoom: Double)
 
   companion object {
@@ -289,25 +288,6 @@ interface GoogleMapHostApi {
             val viewIdArg = args[0] as Long
             val wrapped: List<Any?> = try {
               api.initializeMap(viewIdArg)
-              listOf(null)
-            } catch (exception: Throwable) {
-              GoogleMapApiPigeonUtils.wrapError(exception)
-            }
-            reply.reply(wrapped)
-          }
-        } else {
-          channel.setMessageHandler(null)
-        }
-      }
-      run {
-        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.e_commerce_client.GoogleMapHostApi.updateStoreMarkers$separatedMessageChannelSuffix", codec)
-        if (api != null) {
-          channel.setMessageHandler { message, reply ->
-            val args = message as List<Any?>
-            val viewIdArg = args[0] as Long
-            val markersArg = args[1] as List<MarkerDto>
-            val wrapped: List<Any?> = try {
-              api.updateStoreMarkers(viewIdArg, markersArg)
               listOf(null)
             } catch (exception: Throwable) {
               GoogleMapApiPigeonUtils.wrapError(exception)

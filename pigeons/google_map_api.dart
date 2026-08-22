@@ -28,9 +28,7 @@ class MarkerDto {
 @HostApi()
 abstract class GoogleMapHostApi {
   void initializeMap(int viewId);
-
-  void updateStoreMarkers(int viewId, List<MarkerDto> markers);
-
+  
   void moveCamera(int viewId, double latitude, double longitude, double zoom);
 }
 

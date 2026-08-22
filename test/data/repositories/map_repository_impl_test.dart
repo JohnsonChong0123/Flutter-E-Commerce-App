@@ -24,14 +24,7 @@ void main() {
     formattedAddress: '123 Test St, San Francisco, CA',
     placeId: 'place_1',
   );
-
-  final tFallbackAddress = AddressEntity(
-    latitude: 3.1579,
-    longitude: 101.7115,
-    formattedAddress: 'Kuala Lumpur City Centre, Malaysia',
-    placeId: 'fallback_klcc',
-  );
-
+  
   setUp(() {
     mockMapRemoteData = MockMapRemoteData();
     repository = MapRepositoryImpl(mapRemoteData: mockMapRemoteData);
@@ -71,11 +64,8 @@ void main() {
   });
 
   group('updateSelectedAddressOnMap', () {
-    test('should call mapRemoteData.updateSelectedAddressMarker and moveCamera when moveCamera is true', () async {
+    test('should call mapRemoteData.moveCamera when moveCamera is true', () async {
       // arrange
-      when(
-        () => mockMapRemoteData.updateSelectedAddressMarker(tMapViewId, tAddressEntity),
-      ).thenAnswer((_) async {});
       when(
         () => mockMapRemoteData.moveCamera(tMapViewId, tLatitude, tLongitude, tZoom),
       ).thenAnswer((_) async {});
@@ -91,20 +81,12 @@ void main() {
       // assert
       expect(result, equals(right(unit)));
       verify(
-        () => mockMapRemoteData.updateSelectedAddressMarker(tMapViewId, tAddressEntity),
-      ).called(1);
-      verify(
         () => mockMapRemoteData.moveCamera(tMapViewId, tLatitude, tLongitude, tZoom),
       ).called(1);
       verifyNoMoreInteractions(mockMapRemoteData);
     });
 
-    test('should call mapRemoteData.updateSelectedAddressMarker but not moveCamera when moveCamera is false', () async {
-      // arrange
-      when(
-        () => mockMapRemoteData.updateSelectedAddressMarker(tMapViewId, tAddressEntity),
-      ).thenAnswer((_) async {});
-
+    test('should not call mapRemoteData.moveCamera when moveCamera is false', () async {
       // act
       final result = await repository.updateSelectedAddressOnMap(
         mapViewId: tMapViewId,
@@ -115,34 +97,6 @@ void main() {
 
       // assert
       expect(result, equals(right(unit)));
-      verify(
-        () => mockMapRemoteData.updateSelectedAddressMarker(tMapViewId, tAddressEntity),
-      ).called(1);
-      verifyNever(
-        () => mockMapRemoteData.moveCamera(tMapViewId, tLatitude, tLongitude, tZoom),
-      );
-      verifyNoMoreInteractions(mockMapRemoteData);
-    });
-
-    test('should return Left(Failure) when updateSelectedAddressMarker throws ServerException', () async {
-      // arrange
-      when(
-        () => mockMapRemoteData.updateSelectedAddressMarker(tMapViewId, tAddressEntity),
-      ).thenThrow(const ServerException('Map update failed'));
-
-      // act
-      final result = await repository.updateSelectedAddressOnMap(
-        mapViewId: tMapViewId,
-        address: tAddressEntity,
-        moveCamera: true,
-        zoom: tZoom,
-      );
-
-      // assert
-      expect(result, equals(left(const Failure('Map update failed'))));
-      verify(
-        () => mockMapRemoteData.updateSelectedAddressMarker(tMapViewId, tAddressEntity),
-      ).called(1);
       verifyNever(
         () => mockMapRemoteData.moveCamera(tMapViewId, tLatitude, tLongitude, tZoom),
       );
@@ -151,9 +105,6 @@ void main() {
 
     test('should return Left(Failure) when moveCamera throws ServerException', () async {
       // arrange
-      when(
-        () => mockMapRemoteData.updateSelectedAddressMarker(tMapViewId, tAddressEntity),
-      ).thenAnswer((_) async {});
       when(
         () => mockMapRemoteData.moveCamera(tMapViewId, tLatitude, tLongitude, tZoom),
       ).thenThrow(const ServerException('Camera move failed'));
@@ -169,18 +120,15 @@ void main() {
       // assert
       expect(result, equals(left(const Failure('Camera move failed'))));
       verify(
-        () => mockMapRemoteData.updateSelectedAddressMarker(tMapViewId, tAddressEntity),
-      ).called(1);
-      verify(
         () => mockMapRemoteData.moveCamera(tMapViewId, tLatitude, tLongitude, tZoom),
       ).called(1);
       verifyNoMoreInteractions(mockMapRemoteData);
     });
 
-    test('should return Left(Failure) when updateSelectedAddressMarker throws unknown exception', () async {
+    test('should return Left(Failure) when moveCamera throws unknown exception', () async {
       // arrange
       when(
-        () => mockMapRemoteData.updateSelectedAddressMarker(tMapViewId, tAddressEntity),
+        () => mockMapRemoteData.moveCamera(tMapViewId, tLatitude, tLongitude, tZoom),
       ).thenThrow(Exception('Unknown error'));
 
       // act
@@ -194,16 +142,13 @@ void main() {
       // assert
       expect(result, equals(left(const Failure('Unable to update selected address on map: Exception: Unknown error'))));
       verify(
-        () => mockMapRemoteData.updateSelectedAddressMarker(tMapViewId, tAddressEntity),
+        () => mockMapRemoteData.moveCamera(tMapViewId, tLatitude, tLongitude, tZoom),
       ).called(1);
       verifyNoMoreInteractions(mockMapRemoteData);
     });
 
     test('should use default zoom when not provided', () async {
       // arrange
-      when(
-        () => mockMapRemoteData.updateSelectedAddressMarker(tMapViewId, tAddressEntity),
-      ).thenAnswer((_) async {});
       when(
         () => mockMapRemoteData.moveCamera(tMapViewId, tLatitude, tLongitude, 16.0),
       ).thenAnswer((_) async {});

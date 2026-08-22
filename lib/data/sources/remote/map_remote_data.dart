@@ -3,9 +3,6 @@ import 'dart:async';
 import 'package:e_commerce_client/core/errors/exception.dart';
 import 'package:e_commerce_client/data/sources/remote/generated/google_map_api.g.dart';
 
-import '../../../domain/entity/address/address_entity.dart';
-import '../../../domain/entity/address/store_location.dart';
-
 class MapCoordinateUpdate {
   final int viewId;
   final double latitude;
@@ -23,18 +20,11 @@ abstract interface class MapRemoteData {
 
   Future<void> initializeMap(int mapViewId);
 
-  Future<void> updateStoreMarkers(int mapViewId, List<StoreLocation> stores);
-
   Future<void> moveCamera(
     int mapViewId,
     double latitude,
     double longitude,
     double zoom,
-  );
-
-  Future<void> updateSelectedAddressMarker(
-    int mapViewId,
-    AddressEntity address,
   );
 }
 
@@ -74,30 +64,6 @@ class MapRemoteDataImpl implements MapRemoteData {
   }
 
   @override
-  Future<void> updateStoreMarkers(
-    int mapViewId,
-    List<StoreLocation> stores,
-  ) async {
-    try {
-      await initializeMap(mapViewId);
-      final markers = stores
-          .map(
-            (store) => MarkerDto(
-              id: store.id,
-              title: store.title,
-              latitude: store.latitude,
-              longitude: store.longitude,
-              address: store.address,
-            ),
-          )
-          .toList(growable: false);
-      await _hostApi.updateStoreMarkers(mapViewId, markers);
-    } catch (e) {
-      throw ServerException('Failed to update map markers: $e');
-    }
-  }
-
-  @override
   Future<void> moveCamera(
     int mapViewId,
     double latitude,
@@ -110,30 +76,6 @@ class MapRemoteDataImpl implements MapRemoteData {
     } catch (e) {
       throw ServerException('Failed to move map camera: $e');
     }
-  }
-
-  @override
-  Future<void> updateSelectedAddressMarker(
-    int mapViewId,
-    AddressEntity address,
-  ) async {
-    final marker = MarkerDto(
-      id: address.placeId,
-      title: 'Selected Address',
-      latitude: address.latitude,
-      longitude: address.longitude,
-      address: address.formattedAddress,
-    );
-
-    await updateStoreMarkers(mapViewId, [
-      StoreLocation(
-        id: marker.id,
-        title: marker.title,
-        latitude: marker.latitude,
-        longitude: marker.longitude,
-        address: marker.address,
-      ),
-    ]);
   }
 }
 

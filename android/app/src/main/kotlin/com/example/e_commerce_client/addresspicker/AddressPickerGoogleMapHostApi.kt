@@ -16,21 +16,6 @@ class AddressPickerGoogleMapHostApi(
         mapRegistry.withMap(viewId) { _ -> }
     }
 
-    override fun updateStoreMarkers(viewId: Long, markers: List<MarkerDto>) {
-        mapRegistry.withMap(viewId) { googleMap ->
-            googleMap.clear()
-            for (marker in markers) {
-                val markerLatLng = LatLng(marker.latitude, marker.longitude)
-                googleMap.addMarker(
-                    MarkerOptions()
-                        .position(markerLatLng)
-                        .title(marker.title)
-                        .snippet(marker.address)
-                )
-            }
-        }
-    }
-
     override fun moveCamera(viewId: Long, latitude: Double, longitude: Double, zoom: Double) {
         mapRegistry.withMap(viewId) { googleMap ->
             val position = LatLng(latitude, longitude)

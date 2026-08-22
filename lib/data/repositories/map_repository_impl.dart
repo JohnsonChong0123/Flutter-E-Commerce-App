@@ -101,10 +101,6 @@ class MapRepositoryImpl implements MapRepository {
     double zoom = 16,
   }) async {
     try {
-      await mapRemoteData.updateSelectedAddressMarker(
-        mapViewId,
-        address,
-      );
       if (moveCamera) {
         await mapRemoteData.moveCamera(
           mapViewId,
