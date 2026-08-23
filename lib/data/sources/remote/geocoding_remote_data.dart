@@ -35,16 +35,17 @@ class GeocodingRemoteDataImpl implements GeocodingRemoteData {
 
   @override
   Future<LocationPermission> checkAndRequestPermission() async {
-    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return LocationPermission.denied;
-    }
-
     LocationPermission permission = await Geolocator.checkPermission();
+
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
     }
 
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return permission;
+    }
+    
     return permission;
   }
 }
