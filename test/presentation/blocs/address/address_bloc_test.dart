@@ -41,7 +41,7 @@ void main() {
   const tReverseGeocodeParams = ReverseGeocodeParams(
     latitude: 40.7128,
     longitude: -74.0060,
-    fallbackPlaceId: 'selected_coordinate',
+    fallbackPlaceId: 'place_id_123',
   );
 
   setUpAll(() {
@@ -75,22 +75,13 @@ void main() {
       addressPickerBloc.close();
     });
 
-    test('initial state should be AddressState with initial values', () {
-      expect(
-        addressPickerBloc.state,
-        const AddressState(
-          status: MapStatus.initial,
-          selectedAddress: null,
-          mapViewId: null,
-          isResolvingAddress: false,
-          errorMessage: null,
-        ),
-      );
+    test('initial state should be AddressInitial', () {
+      expect(addressPickerBloc.state, const AddressInitial());
     });
 
     group('MapViewCreated', () {
       blocTest<AddressPickerBloc, AddressState>(
-        'should emit [loading, loaded] when map view created and initial address resolves successfully',
+        'should emit [AddressLoading, AddressLoaded] when map view created and initial address resolves successfully',
         build: () {
           when(
             () => mockMapRepository.resolveInitialAddress(
@@ -116,19 +107,14 @@ void main() {
           ),
         ),
         expect: () => [
-          AddressState(
-            status: MapStatus.loading,
+          AddressLoading(
             mapViewId: tMapViewId,
-            selectedAddress: null,
             isResolvingAddress: true,
-            errorMessage: null,
           ),
-          AddressState(
-            status: MapStatus.loaded,
+          AddressLoaded(
             selectedAddress: tResolvedAddress,
             mapViewId: tMapViewId,
             isResolvingAddress: false,
-            errorMessage: null,
           ),
         ],
         verify: (_) {
@@ -149,7 +135,7 @@ void main() {
       );
 
       blocTest<AddressPickerBloc, AddressState>(
-        'should emit [loading, error] when resolveInitialAddress fails',
+        'should emit [AddressLoading, AddressError] when resolveInitialAddress fails',
         build: () {
           when(
             () => mockMapRepository.resolveInitialAddress(
@@ -168,19 +154,14 @@ void main() {
           ),
         ),
         expect: () => [
-          AddressState(
-            status: MapStatus.loading,
+          AddressLoading(
             mapViewId: tMapViewId,
-            selectedAddress: null,
             isResolvingAddress: true,
-            errorMessage: null,
           ),
-          AddressState(
-            status: MapStatus.error,
+          AddressError(
+            message: 'Failed to resolve address',
             mapViewId: tMapViewId,
-            selectedAddress: null,
-            isResolvingAddress: false,
-            errorMessage: 'Failed to resolve address',
+            lastKnownAddress: null,
           ),
         ],
         verify: (_) {
@@ -201,7 +182,7 @@ void main() {
       );
 
       blocTest<AddressPickerBloc, AddressState>(
-        'should emit [loading, error] when updateSelectedAddressOnMap fails',
+        'should emit [AddressLoading, AddressError] when updateSelectedAddressOnMap fails',
         build: () {
           when(
             () => mockMapRepository.resolveInitialAddress(
@@ -229,19 +210,14 @@ void main() {
           ),
         ),
         expect: () => [
-          AddressState(
-            status: MapStatus.loading,
+          AddressLoading(
             mapViewId: tMapViewId,
-            selectedAddress: null,
             isResolvingAddress: true,
-            errorMessage: null,
           ),
-          AddressState(
-            status: MapStatus.error,
+          AddressError(
+            message: 'Failed to update map',
             mapViewId: tMapViewId,
-            selectedAddress: null,
-            isResolvingAddress: false,
-            errorMessage: 'Failed to update map',
+            lastKnownAddress: tResolvedAddress,
           ),
         ],
         verify: (_) {
@@ -283,19 +259,14 @@ void main() {
           const MapViewCreated(mapViewId: tMapViewId, initialAddress: null),
         ),
         expect: () => [
-          AddressState(
-            status: MapStatus.loading,
+          AddressLoading(
             mapViewId: tMapViewId,
-            selectedAddress: null,
             isResolvingAddress: true,
-            errorMessage: null,
           ),
-          AddressState(
-            status: MapStatus.loaded,
+          AddressLoaded(
             selectedAddress: tResolvedAddress,
             mapViewId: tMapViewId,
             isResolvingAddress: false,
-            errorMessage: null,
           ),
         ],
         verify: (_) {
@@ -308,7 +279,7 @@ void main() {
 
     group('MapCoordinateUpdated', () {
       blocTest<AddressPickerBloc, AddressState>(
-        'should emit [loaded with optimistic update, loaded with resolved address] when coordinate updated successfully',
+        'should emit [AddressResolving, AddressLoaded] when coordinate updated successfully',
         build: () {
           when(
             () => mockReverseGeocodeUseCase(any()),
@@ -328,8 +299,7 @@ void main() {
             reverseGeocodeUseCase: mockReverseGeocodeUseCase,
           );
         },
-        seed: () => AddressState(
-          status: MapStatus.loaded,
+        seed: () => AddressLoaded(
           selectedAddress: tInitialAddress,
           mapViewId: tMapViewId,
           isResolvingAddress: false,
@@ -338,9 +308,8 @@ void main() {
           const MapCoordinateUpdated(latitude: 40.7128, longitude: -74.0060),
         ),
         expect: () => [
-          // Optimistic update
-          AddressState(
-            status: MapStatus.loaded,
+          // Optimistic update - AddressResolving
+          AddressResolving(
             selectedAddress: AddressEntity(
               latitude: 40.7128,
               longitude: -74.0060,
@@ -348,16 +317,12 @@ void main() {
               placeId: 'place_id_123',
             ),
             mapViewId: tMapViewId,
-            isResolvingAddress: true,
-            errorMessage: null,
           ),
-          // Resolved address
-          AddressState(
-            status: MapStatus.loaded,
+          // Resolved address - AddressLoaded
+          AddressLoaded(
             selectedAddress: tUpdatedAddress,
             mapViewId: tMapViewId,
             isResolvingAddress: false,
-            errorMessage: null,
           ),
         ],
         verify: (_) {
@@ -374,7 +339,7 @@ void main() {
       );
 
       blocTest<AddressPickerBloc, AddressState>(
-        'should emit [loaded with optimistic update, error] when reverse geocode fails',
+        'should emit [AddressResolving, AddressError] when reverse geocode fails',
         build: () {
           when(() => mockReverseGeocodeUseCase(any())).thenAnswer(
             (_) async => const Left(Failure('Failed to reverse geocode')),
@@ -385,8 +350,7 @@ void main() {
             reverseGeocodeUseCase: mockReverseGeocodeUseCase,
           );
         },
-        seed: () => AddressState(
-          status: MapStatus.loaded,
+        seed: () => AddressLoaded(
           selectedAddress: tInitialAddress,
           mapViewId: tMapViewId,
           isResolvingAddress: false,
@@ -395,9 +359,8 @@ void main() {
           const MapCoordinateUpdated(latitude: 40.7128, longitude: -74.0060),
         ),
         expect: () => [
-          // Optimistic update
-          AddressState(
-            status: MapStatus.loaded,
+          // Optimistic update - AddressResolving
+          AddressResolving(
             selectedAddress: AddressEntity(
               latitude: 40.7128,
               longitude: -74.0060,
@@ -405,21 +368,12 @@ void main() {
               placeId: 'place_id_123',
             ),
             mapViewId: tMapViewId,
-            isResolvingAddress: true,
-            errorMessage: null,
           ),
-          // Error
-          AddressState(
-            status: MapStatus.error,
-            selectedAddress: AddressEntity(
-              latitude: 40.7128,
-              longitude: -74.0060,
-              formattedAddress: 'San Francisco, CA, USA',
-              placeId: 'place_id_123',
-            ),
+          // Error - AddressError (lastKnownAddress is the original address from state)
+          AddressError(
+            message: 'Failed to reverse geocode',
             mapViewId: tMapViewId,
-            isResolvingAddress: false,
-            errorMessage: 'Failed to reverse geocode',
+            lastKnownAddress: tInitialAddress,
           ),
         ],
         verify: (_) {
@@ -436,17 +390,12 @@ void main() {
       );
 
       blocTest<AddressPickerBloc, AddressState>(
-        'should do nothing when mapViewId is null',
+        'should do nothing when state is not AddressLoaded or AddressResolving',
         build: () => AddressPickerBloc(
           mapRepository: mockMapRepository,
           reverseGeocodeUseCase: mockReverseGeocodeUseCase,
         ),
-        seed: () => const AddressState(
-          status: MapStatus.loaded,
-          selectedAddress: tInitialAddress,
-          mapViewId: null,
-          isResolvingAddress: false,
-        ),
+        seed: () => const AddressInitial(),
         act: (bloc) => bloc.add(
           const MapCoordinateUpdated(latitude: 40.7128, longitude: -74.0060),
         ),
@@ -481,28 +430,21 @@ void main() {
             reverseGeocodeUseCase: mockReverseGeocodeUseCase,
           );
         },
-        seed: () => AddressState(
-          status: MapStatus.error,
-          selectedAddress: tInitialAddress,
+        seed: () => AddressError(
+          message: 'Previous error',
           mapViewId: tMapViewId,
-          isResolvingAddress: false,
-          errorMessage: 'Previous error',
+          lastKnownAddress: tInitialAddress,
         ),
         act: (bloc) => bloc.add(const RetryMapLoad()),
         expect: () => [
-          AddressState(
-            status: MapStatus.loading,
+          AddressLoading(
             mapViewId: tMapViewId,
-            selectedAddress: null,
             isResolvingAddress: true,
-            errorMessage: null,
           ),
-          AddressState(
-            status: MapStatus.loaded,
+          AddressLoaded(
             selectedAddress: tResolvedAddress,
             mapViewId: tMapViewId,
             isResolvingAddress: false,
-            errorMessage: null,
           ),
         ],
         verify: (_) {
@@ -520,12 +462,10 @@ void main() {
           mapRepository: mockMapRepository,
           reverseGeocodeUseCase: mockReverseGeocodeUseCase,
         ),
-        seed: () => const AddressState(
-          status: MapStatus.error,
-          selectedAddress: tInitialAddress,
+        seed: () => AddressError(
+          message: 'Previous error',
           mapViewId: null,
-          isResolvingAddress: false,
-          errorMessage: 'Previous error',
+          lastKnownAddress: tInitialAddress,
         ),
         act: (bloc) => bloc.add(const RetryMapLoad()),
         expect: () => [],

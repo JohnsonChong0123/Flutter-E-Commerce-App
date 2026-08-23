@@ -7,26 +7,32 @@ sealed class AddressEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class MapViewCreated extends AddressEvent {
-  final AddressEntity? initialAddress;
+final class MapViewCreated extends AddressEvent {
   final int mapViewId;
+  final AddressEntity? initialAddress;
 
-  const MapViewCreated({required this.mapViewId, this.initialAddress});
+  const MapViewCreated({
+    required this.mapViewId,
+    this.initialAddress,
+  });
 
   @override
   List<Object?> get props => [mapViewId, initialAddress];
 }
 
-class MapCoordinateUpdated extends AddressEvent {
+final class MapCoordinateUpdated extends AddressEvent {
   final double latitude;
   final double longitude;
 
-  const MapCoordinateUpdated({required this.latitude, required this.longitude});
+  const MapCoordinateUpdated({
+    required this.latitude,
+    required this.longitude,
+  });
 
   @override
-  List<Object?> get props => [latitude, longitude];
+  List<Object> get props => [latitude, longitude];
 }
 
-class RetryMapLoad extends AddressEvent {
+final class RetryMapLoad extends AddressEvent {
   const RetryMapLoad();
 }

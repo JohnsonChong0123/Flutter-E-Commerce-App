@@ -17,7 +17,7 @@ class AddressPickerBloc extends Bloc<AddressEvent, AddressState> {
     required ReverseGeocodeUseCase reverseGeocodeUseCase,
   }) : _mapRepository = mapRepository,
        _reverseGeocodeUseCase = reverseGeocodeUseCase,
-       super(const AddressState()) {
+       super(const AddressInitial()) {
     on<MapViewCreated>(_onMapViewCreated);
     on<MapCoordinateUpdated>(_onMapCoordinateUpdated);
     on<RetryMapLoad>(_onRetryMapLoad);
@@ -27,15 +27,7 @@ class AddressPickerBloc extends Bloc<AddressEvent, AddressState> {
     MapViewCreated event,
     Emitter<AddressState> emit,
   ) async {
-    emit(
-      state.copyWith(
-        status: MapStatus.loading,
-        mapViewId: event.mapViewId,
-        isResolvingAddress: true,
-        clearError: true,
-        clearSelectedAddress: true,
-      ),
-    );
+    emit(AddressLoading(mapViewId: event.mapViewId, isResolvingAddress: true));
 
     final initialAddressResult = await _mapRepository.resolveInitialAddress(
       initialAddress: event.initialAddress,
@@ -44,11 +36,7 @@ class AddressPickerBloc extends Bloc<AddressEvent, AddressState> {
     await initialAddressResult.fold(
       (failure) async {
         emit(
-          state.copyWith(
-            status: MapStatus.error,
-            isResolvingAddress: false,
-            errorMessage: failure.message,
-          ),
+          AddressError(message: failure.message, mapViewId: event.mapViewId),
         );
       },
       (address) async {
@@ -58,22 +46,25 @@ class AddressPickerBloc extends Bloc<AddressEvent, AddressState> {
           moveCamera: true,
         );
 
-        mapUpdateResult.fold(
-          (failure) => emit(
-            state.copyWith(
-              status: MapStatus.error,
-              isResolvingAddress: false,
-              errorMessage: failure.message,
-            ),
-          ),
-          (_) => emit(
-            state.copyWith(
-              status: MapStatus.loaded,
-              selectedAddress: address,
-              isResolvingAddress: false,
-              clearError: true,
-            ),
-          ),
+        await mapUpdateResult.fold(
+          (failure) {
+            emit(
+              AddressError(
+                message: failure.message,
+                mapViewId: event.mapViewId,
+                lastKnownAddress: address,
+              ),
+            );
+          },
+          (_) {
+            emit(
+              AddressLoaded(
+                selectedAddress: address,
+                mapViewId: event.mapViewId,
+                isResolvingAddress: false,
+              ),
+            );
+          },
         );
       },
     );
@@ -83,41 +74,45 @@ class AddressPickerBloc extends Bloc<AddressEvent, AddressState> {
     MapCoordinateUpdated event,
     Emitter<AddressState> emit,
   ) async {
-    final mapViewId = state.mapViewId;
-    if (mapViewId == null) return;
+    final currentState = state;
 
-    final currentPlaceId = state.selectedAddress?.placeId ?? 'selected_coordinate';
+    int mapViewId;
+    AddressEntity? currentAddress;
 
-    emit(
-      state.copyWith(
-        status: MapStatus.loaded,
-        selectedAddress: AddressEntity(
-          latitude: event.latitude,
-          longitude: event.longitude,
-          formattedAddress:
-              state.selectedAddress?.formattedAddress ?? 'Resolving address...',
-          placeId: currentPlaceId,
-        ),
-        isResolvingAddress: true,
-        clearError: true,
-      ),
+    if (currentState is AddressLoaded) {
+      mapViewId = currentState.mapViewId;
+      currentAddress = currentState.selectedAddress;
+    } else if (currentState is AddressResolving) {
+      mapViewId = currentState.mapViewId;
+      currentAddress = currentState.selectedAddress;
+    } else {
+      return;
+    }
+
+    final tempAddress = AddressEntity(
+      latitude: event.latitude,
+      longitude: event.longitude,
+      formattedAddress: currentAddress.formattedAddress,
+      placeId: currentAddress.placeId,
     );
+
+    emit(AddressResolving(selectedAddress: tempAddress, mapViewId: mapViewId));
 
     final reverseGeocodeResult = await _reverseGeocodeUseCase(
       ReverseGeocodeParams(
         latitude: event.latitude,
         longitude: event.longitude,
-        fallbackPlaceId: currentPlaceId,
+        fallbackPlaceId: currentAddress.placeId,
       ),
     );
 
     await reverseGeocodeResult.fold(
       (failure) async {
         emit(
-          state.copyWith(
-            status: MapStatus.error,
-            isResolvingAddress: false,
-            errorMessage: failure.message,
+          AddressError(
+            message: failure.message,
+            mapViewId: mapViewId,
+            lastKnownAddress: currentAddress,
           ),
         );
       },
@@ -127,12 +122,12 @@ class AddressPickerBloc extends Bloc<AddressEvent, AddressState> {
           address: resolvedAddress,
           moveCamera: false,
         );
+
         emit(
-          state.copyWith(
-            status: MapStatus.loaded,
+          AddressLoaded(
             selectedAddress: resolvedAddress,
+            mapViewId: mapViewId,
             isResolvingAddress: false,
-            clearError: true,
           ),
         );
       },
@@ -143,12 +138,16 @@ class AddressPickerBloc extends Bloc<AddressEvent, AddressState> {
     RetryMapLoad event,
     Emitter<AddressState> emit,
   ) async {
-    final mapViewId = state.mapViewId;
+    final currentState = state;
+    if (currentState is! AddressError) return;
+
+    final mapViewId = currentState.mapViewId;
     if (mapViewId == null) return;
+
     add(
       MapViewCreated(
         mapViewId: mapViewId,
-        initialAddress: state.selectedAddress,
+        initialAddress: currentState.lastKnownAddress,
       ),
     );
   }
