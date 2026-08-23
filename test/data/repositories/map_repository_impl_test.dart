@@ -1,6 +1,7 @@
 import 'package:e_commerce_client/core/errors/exception.dart';
 import 'package:e_commerce_client/core/errors/failure.dart';
 import 'package:e_commerce_client/data/repositories/map_repository_impl.dart';
+import 'package:e_commerce_client/data/sources/remote/geocoding_remote_data.dart';
 import 'package:e_commerce_client/data/sources/remote/map_remote_data.dart';
 import 'package:e_commerce_client/domain/entity/address/address_entity.dart';
 import 'package:fpdart/fpdart.dart';
@@ -8,9 +9,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockMapRemoteData extends Mock implements MapRemoteData {}
+class MockGeocodingRemoteData extends Mock implements GeocodingRemoteData {}
 
 void main() {
   late MockMapRemoteData mockMapRemoteData;
+  late MockGeocodingRemoteData mockGeocodingRemoteData;
   late MapRepositoryImpl repository;
 
   const tMapViewId = 1;
@@ -27,7 +30,11 @@ void main() {
   
   setUp(() {
     mockMapRemoteData = MockMapRemoteData();
-    repository = MapRepositoryImpl(mapRemoteData: mockMapRemoteData);
+    mockGeocodingRemoteData = MockGeocodingRemoteData();
+    repository = MapRepositoryImpl(
+      mapRemoteData: mockMapRemoteData,
+      geocodingRemoteData: mockGeocodingRemoteData,
+    );
   });
 
   group('resolveInitialAddress', () {

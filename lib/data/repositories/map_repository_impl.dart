@@ -1,17 +1,16 @@
-import 'package:e_commerce_client/core/errors/exception.dart';
-import 'package:e_commerce_client/core/errors/failure.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:fpdart/fpdart.dart';
-
-import '../../domain/entity/address/address_entity.dart';
-import '../../domain/repositories/map_repository.dart';
+import 'package:geolocator/geolocator.dart';
+import '../../../domain/entity/address/address_entity.dart';
+import '../../../domain/repositories/map_repository.dart';
+import '../../core/errors/exception.dart';
+import '../../core/errors/failure.dart';
+import '../models/map/address_model.dart';
+import '../sources/remote/geocoding_remote_data.dart';
 import '../sources/remote/map_remote_data.dart';
 
 class MapRepositoryImpl implements MapRepository {
   final MapRemoteData mapRemoteData;
-
-  MapRepositoryImpl({required this.mapRemoteData});
+  final GeocodingRemoteData geocodingRemoteData;
 
   static const AddressEntity _fallbackAddress = AddressEntity(
     latitude: 3.1579,
@@ -19,6 +18,11 @@ class MapRepositoryImpl implements MapRepository {
     formattedAddress: 'Kuala Lumpur City Centre, Malaysia',
     placeId: 'fallback_klcc',
   );
+
+  MapRepositoryImpl({
+    required this.mapRemoteData,
+    required this.geocodingRemoteData,
+  });
 
   @override
   Future<Either<Failure, AddressEntity>> resolveInitialAddress({
@@ -29,26 +33,26 @@ class MapRepositoryImpl implements MapRepository {
     }
 
     try {
-      final permission = await _resolvePermission();
+      final permission = await geocodingRemoteData.checkAndRequestPermission();
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
         return right(_fallbackAddress);
       }
 
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+      final position = await geocodingRemoteData.getCurrentPosition();
+      final placemarks = await geocodingRemoteData.getPlacemarksFromCoordinates(
+        position.latitude,
+        position.longitude,
       );
-
-      final geocoded = await reverseGeocode(
+      
+      final addressModel = AddressModel.fromPlacemarks(
         latitude: position.latitude,
         longitude: position.longitude,
+        placemarks: placemarks,
         fallbackPlaceId: 'current_location',
       );
 
-      return geocoded.fold(
-        (_) => right(_fallbackAddress),
-        (address) => right(address),
-      );
+      return right(addressModel.toEntity());
     } catch (_) {
       return right(_fallbackAddress);
     }
@@ -61,33 +65,19 @@ class MapRepositoryImpl implements MapRepository {
     String fallbackPlaceId = 'unknown_place',
   }) async {
     try {
-      final placemarks = await placemarkFromCoordinates(latitude, longitude);
-      final place = placemarks.isNotEmpty ? placemarks.first : null;
-      final line1 = [
-        place?.name,
-        place?.subLocality,
-        place?.thoroughfare,
-      ].where((value) => value != null && value.trim().isNotEmpty).join(', ');
-      final line2 = [
-        place?.locality,
-        place?.administrativeArea,
-        place?.country,
-      ].where((value) => value != null && value.trim().isNotEmpty).join(', ');
-      final formatted = [
-        line1,
-        line2,
-      ].where((value) => value.trim().isNotEmpty).join('\n');
-
-      return right(
-        AddressEntity(
-          latitude: latitude,
-          longitude: longitude,
-          formattedAddress: formatted.isEmpty
-              ? 'Lat: ${latitude.toStringAsFixed(6)}, Lng: ${longitude.toStringAsFixed(6)}'
-              : formatted,
-          placeId: fallbackPlaceId,
-        ),
+      final placemarks = await geocodingRemoteData.getPlacemarksFromCoordinates(
+        latitude,
+        longitude,
       );
+
+      final addressModel = AddressModel.fromPlacemarks(
+        latitude: latitude,
+        longitude: longitude,
+        placemarks: placemarks,
+        fallbackPlaceId: fallbackPlaceId,
+      );
+
+      return right(addressModel.toEntity());
     } catch (e) {
       return left(Failure('Failed to reverse geocode coordinates: $e'));
     }
@@ -115,19 +105,5 @@ class MapRepositoryImpl implements MapRepository {
     } catch (e) {
       return left(Failure('Unable to update selected address on map: $e'));
     }
-  }
-
-  Future<LocationPermission> _resolvePermission() async {
-    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return LocationPermission.denied;
-    }
-
-    var permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
-
-    return permission;
   }
 }

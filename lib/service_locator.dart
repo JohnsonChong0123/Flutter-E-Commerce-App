@@ -23,6 +23,7 @@ import 'data/sources/local/product_local_data.dart';
 import 'data/sources/local/user_local_data.dart';
 import 'data/sources/remote/auth_remote_data.dart';
 import 'data/sources/remote/cart_remote_data.dart';
+import 'data/sources/remote/geocoding_remote_data.dart';
 import 'data/sources/remote/map_remote_data.dart';
 import 'data/sources/remote/wishlist_remote_data.dart';
 import 'domain/repositories/auth_repository.dart';
@@ -105,7 +106,7 @@ Future<void> initServiceLocator() async {
   _initWishlist();
 
   // Registers all dependencies related to the store locator feature.
-  _initStoreLocator();
+  _initMap();
 
   _initCheckout();
 
@@ -240,11 +241,14 @@ void _initWishlist() {
     );
 }
 
-void _initStoreLocator() {
+void _initMap() {
   sl
     ..registerLazySingleton<MapRemoteData>(() => MapRemoteDataImpl())
+    ..registerLazySingleton<GeocodingRemoteData>(
+      () => GeocodingRemoteDataImpl(),
+    )
     ..registerLazySingleton<MapRepository>(
-      () => MapRepositoryImpl(mapRemoteData: sl()),
+      () => MapRepositoryImpl(mapRemoteData: sl(), geocodingRemoteData: sl()),
     )
     ..registerLazySingleton(() => ReverseGeocodeUseCase(sl()))
     ..registerFactory(
