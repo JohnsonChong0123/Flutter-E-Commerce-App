@@ -14,9 +14,10 @@ class AddressPickerMapPlatformView (
     private val viewId: Long,
     private val mapRegistry: AddressPickerMapRegistry,
     private val flutterApi: GoogleMapFlutterApi,
+    mapView: MapView = MapView(context),
 ) : PlatformView, OnMapReadyCallback {
 
-    private val mapView: MapView = MapView(context)
+    private val mapView: MapView = mapView
 
     init {
         mapView.onCreate(null)

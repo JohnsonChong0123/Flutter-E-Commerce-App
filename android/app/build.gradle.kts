@@ -95,4 +95,8 @@ flutter {
 dependencies {
     implementation("com.google.android.gms:play-services-maps:19.1.0")
     androidTestUtil("androidx.test:orchestrator:1.5.1")
+    
+    // Test dependencies
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("io.mockk:mockk:1.13.13")
 }

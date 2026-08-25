@@ -39,9 +39,29 @@ jobs:
       - name: Run Tests
         run: flutter test
 
+  android_test:
+    name: Android Tests
+    needs: unit_test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.38.9
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Run Android JVM Unit Tests
+        working-directory: android
+        run: ./gradlew testDebugUnitTest
+
   release_build:
     name: Release Build
-    needs: unit_test
+    needs: android_test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
