@@ -57,7 +57,9 @@ jobs:
 
       - name: Run Android JVM Unit Tests
         working-directory: android
-        run: ./gradlew testDebugUnitTest
+        run: |
+          chmod +x gradlew
+          ./gradlew testDebugUnitTest
 
   release_build:
     name: Release Build
