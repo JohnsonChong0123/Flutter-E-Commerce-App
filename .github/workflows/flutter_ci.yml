@@ -52,6 +52,11 @@ jobs:
         with:
           flutter-version: 3.38.9
 
+      - name: Create .env file for tests
+        run: |
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
+          echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
+
       - name: Install Dependencies
         run: flutter pub get
 
