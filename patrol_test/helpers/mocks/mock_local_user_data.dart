@@ -1,17 +1,17 @@
 import 'package:e_commerce_client/data/sources/local/user_local_data.dart';
 
-class MockUserLocalData implements UserLocalData {
+class MockAuthLocalData implements AuthLocalData {
   String? _accessToken;
   String? _refreshToken;
   String? _provider;
-  
-  MockUserLocalData({
+
+  MockAuthLocalData({
     String? accessToken,
     String? refreshToken,
     String? provider,
-  })  : _accessToken = accessToken,
-        _refreshToken = refreshToken,
-        _provider = provider;
+  }) : _accessToken = accessToken,
+       _refreshToken = refreshToken,
+       _provider = provider;
 
   @override
   Future<void> saveAuth({

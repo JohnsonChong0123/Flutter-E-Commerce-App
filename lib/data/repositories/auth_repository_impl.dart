@@ -9,7 +9,7 @@ import '../sources/remote/auth_remote_data.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteData authRemoteData;
-  final UserLocalData userLocalData;
+  final AuthLocalData userLocalData;
 
   AuthRepositoryImpl({
     required this.authRemoteData,

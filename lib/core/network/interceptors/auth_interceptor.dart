@@ -5,7 +5,7 @@ import '../../../data/sources/remote/auth_remote_data.dart';
 
 class AuthInterceptor extends Interceptor {
   final Dio dio;
-  final UserLocalData userLocalData;
+  final AuthLocalData userLocalData;
   final AuthRemoteData Function() getAuthRemoteData;
 
   AuthInterceptor({
@@ -37,7 +37,7 @@ class AuthInterceptor extends Interceptor {
     ErrorInterceptorHandler handler,
   ) async {
     final requiredAuth = err.requestOptions.extra['requiredAuth'] ?? true;
-    // if the error is 401 and the request requires authentication, 
+    // if the error is 401 and the request requires authentication,
     // try to refresh the token
     if (err.response?.statusCode == 401 && requiredAuth) {
       try {
@@ -58,8 +58,8 @@ class AuthInterceptor extends Interceptor {
         return handler.reject(err);
       }
     }
-    // if the error is not 401 or 
-    // the request does not require 
+    // if the error is not 401 or
+    // the request does not require
     // authentication, move to the next interceptor
     handler.next(err);
   }

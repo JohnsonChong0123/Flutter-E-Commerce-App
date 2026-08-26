@@ -8,7 +8,7 @@ class MockFlutterSecureStorage extends Mock implements FlutterSecureStorage {}
 
 void main() {
   late MockFlutterSecureStorage mockFlutterSecureStorage;
-  late UserLocalDataImpl userLocalData;
+  late AuthLocalDataImpl userLocalData;
 
   const tAccessToken = 'access_token';
   const tRefreshToken = 'refresh_token';
@@ -16,7 +16,7 @@ void main() {
 
   setUp(() {
     mockFlutterSecureStorage = MockFlutterSecureStorage();
-    userLocalData = UserLocalDataImpl(
+    userLocalData = AuthLocalDataImpl(
       flutterSecureStorage: mockFlutterSecureStorage,
     );
   });

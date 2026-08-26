@@ -9,7 +9,7 @@ class DioClient {
   late final Dio dio;
 
   DioClient({
-    required UserLocalData userLocalData,
+    required AuthLocalData userLocalData,
     required AuthRemoteData Function() getAuthRemoteData,
   }) {
     dio = Dio(
@@ -31,11 +31,7 @@ class DioClient {
         getAuthRemoteData: getAuthRemoteData,
       ),
       ErrorInterceptor(),
-      LogInterceptor(
-        requestBody: true,
-        responseBody: true,
-        error: true,
-      ),
+      LogInterceptor(requestBody: true, responseBody: true, error: true),
     ]);
   }
 }

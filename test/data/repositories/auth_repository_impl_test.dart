@@ -12,11 +12,11 @@ import 'package:mocktail/mocktail.dart';
 
 class MockAuthRemoteData extends Mock implements AuthRemoteData {}
 
-class MockUserLocalData extends Mock implements UserLocalData {}
+class MockAuthLocalData extends Mock implements AuthLocalData {}
 
 void main() {
   late MockAuthRemoteData mockAuthRemoteData;
-  late MockUserLocalData mockUserLocalData;
+  late MockAuthLocalData mockAuthLocalData;
   late AuthRepositoryImpl repository;
 
   const tFirstName = 'Test';
@@ -73,10 +73,10 @@ void main() {
 
   setUp(() {
     mockAuthRemoteData = MockAuthRemoteData();
-    mockUserLocalData = MockUserLocalData();
+    mockAuthLocalData = MockAuthLocalData();
     repository = AuthRepositoryImpl(
       authRemoteData: mockAuthRemoteData,
-      userLocalData: mockUserLocalData,
+      userLocalData: mockAuthLocalData,
     );
   });
 
@@ -164,7 +164,7 @@ void main() {
       ).thenAnswer((_) async => tAuthResponse);
 
       when(
-        () => mockUserLocalData.saveAuth(
+        () => mockAuthLocalData.saveAuth(
           accessToken: tAuthResponse.accessToken,
           refreshToken: tAuthResponse.refreshToken,
           provider: tAuthResponse.provider,
@@ -187,7 +187,7 @@ void main() {
       ).called(1);
 
       verify(
-        () => mockUserLocalData.saveAuth(
+        () => mockAuthLocalData.saveAuth(
           accessToken: tAuthResponse.accessToken,
           refreshToken: tAuthResponse.refreshToken,
           provider: tAuthResponse.provider,
@@ -195,7 +195,7 @@ void main() {
       ).called(1);
 
       verifyNoMoreInteractions(mockAuthRemoteData);
-      verifyNoMoreInteractions(mockUserLocalData);
+      verifyNoMoreInteractions(mockAuthLocalData);
     });
 
     test(
@@ -225,7 +225,7 @@ void main() {
         ).called(1);
 
         verifyNever(
-          () => mockUserLocalData.saveAuth(
+          () => mockAuthLocalData.saveAuth(
             accessToken: tAuthResponse.accessToken,
             refreshToken: tAuthResponse.refreshToken,
             provider: tAuthResponse.provider,
@@ -246,7 +246,7 @@ void main() {
         ).thenAnswer((_) async => tAuthResponse);
 
         when(
-          () => mockUserLocalData.saveAuth(
+          () => mockAuthLocalData.saveAuth(
             accessToken: tAuthResponse.accessToken,
             refreshToken: tAuthResponse.refreshToken,
             provider: tAuthResponse.provider,
@@ -266,14 +266,14 @@ void main() {
             email: tEmail,
             password: tPassword,
           ),
-          () => mockUserLocalData.saveAuth(
+          () => mockAuthLocalData.saveAuth(
             accessToken: tAuthResponse.accessToken,
             refreshToken: tAuthResponse.refreshToken,
             provider: tAuthResponse.provider,
           ),
         ]);
         verifyNoMoreInteractions(mockAuthRemoteData);
-        verifyNoMoreInteractions(mockUserLocalData);
+        verifyNoMoreInteractions(mockAuthLocalData);
       },
     );
   });
@@ -288,7 +288,7 @@ void main() {
         ).thenAnswer((_) async => tAuthResponse);
 
         when(
-          () => mockUserLocalData.saveAuth(
+          () => mockAuthLocalData.saveAuth(
             accessToken: tAuthResponse.accessToken,
             refreshToken: tAuthResponse.refreshToken,
             provider: tAuthResponse.provider,
@@ -302,14 +302,14 @@ void main() {
         expect(result, equals(right(tUserEntity)));
         verifyInOrder([
           () => mockAuthRemoteData.loginWithGoogle(),
-          () => mockUserLocalData.saveAuth(
+          () => mockAuthLocalData.saveAuth(
             accessToken: tAuthResponse.accessToken,
             refreshToken: tAuthResponse.refreshToken,
             provider: tAuthResponse.provider,
           ),
         ]);
         verifyNoMoreInteractions(mockAuthRemoteData);
-        verifyNoMoreInteractions(mockUserLocalData);
+        verifyNoMoreInteractions(mockAuthLocalData);
       },
     );
   });
@@ -329,14 +329,14 @@ void main() {
       expect(result, equals(left(const Failure('Invalid credentials'))));
       verify(() => mockAuthRemoteData.loginWithGoogle()).called(1);
       verifyNever(
-        () => mockUserLocalData.saveAuth(
+        () => mockAuthLocalData.saveAuth(
           accessToken: tAuthResponse.accessToken,
           refreshToken: tAuthResponse.refreshToken,
           provider: tAuthResponse.provider,
         ),
       );
       verifyNoMoreInteractions(mockAuthRemoteData);
-      verifyNoMoreInteractions(mockUserLocalData);
+      verifyNoMoreInteractions(mockAuthLocalData);
     },
   );
 
@@ -349,7 +349,7 @@ void main() {
       ).thenAnswer((_) async => tAuthResponse);
 
       when(
-        () => mockUserLocalData.saveAuth(
+        () => mockAuthLocalData.saveAuth(
           accessToken: tAuthResponse.accessToken,
           refreshToken: tAuthResponse.refreshToken,
           provider: tAuthResponse.provider,
@@ -363,14 +363,14 @@ void main() {
       expect(result, equals(left(const Failure('Storage error'))));
       verifyInOrder([
         () => mockAuthRemoteData.loginWithGoogle(),
-        () => mockUserLocalData.saveAuth(
+        () => mockAuthLocalData.saveAuth(
           accessToken: tAuthResponse.accessToken,
           refreshToken: tAuthResponse.refreshToken,
           provider: tAuthResponse.provider,
         ),
       ]);
       verifyNoMoreInteractions(mockAuthRemoteData);
-      verifyNoMoreInteractions(mockUserLocalData);
+      verifyNoMoreInteractions(mockAuthLocalData);
     },
   );
 
@@ -384,7 +384,7 @@ void main() {
         ).thenAnswer((_) async => tAuthResponse);
 
         when(
-          () => mockUserLocalData.saveAuth(
+          () => mockAuthLocalData.saveAuth(
             accessToken: tAuthResponse.accessToken,
             refreshToken: tAuthResponse.refreshToken,
             provider: tAuthResponse.provider,
@@ -398,14 +398,14 @@ void main() {
         expect(result, equals(right(tUserEntity)));
         verifyInOrder([
           () => mockAuthRemoteData.loginWithFacebook(),
-          () => mockUserLocalData.saveAuth(
+          () => mockAuthLocalData.saveAuth(
             accessToken: tAuthResponse.accessToken,
             refreshToken: tAuthResponse.refreshToken,
             provider: tAuthResponse.provider,
           ),
         ]);
         verifyNoMoreInteractions(mockAuthRemoteData);
-        verifyNoMoreInteractions(mockUserLocalData);
+        verifyNoMoreInteractions(mockAuthLocalData);
       },
     );
   });
@@ -425,14 +425,14 @@ void main() {
       expect(result, equals(left(const Failure('Invalid credentials'))));
       verify(() => mockAuthRemoteData.loginWithFacebook()).called(1);
       verifyNever(
-        () => mockUserLocalData.saveAuth(
+        () => mockAuthLocalData.saveAuth(
           accessToken: tAuthResponse.accessToken,
           refreshToken: tAuthResponse.refreshToken,
           provider: tAuthResponse.provider,
         ),
       );
       verifyNoMoreInteractions(mockAuthRemoteData);
-      verifyNoMoreInteractions(mockUserLocalData);
+      verifyNoMoreInteractions(mockAuthLocalData);
     },
   );
 
@@ -445,7 +445,7 @@ void main() {
       ).thenAnswer((_) async => tAuthResponse);
 
       when(
-        () => mockUserLocalData.saveAuth(
+        () => mockAuthLocalData.saveAuth(
           accessToken: tAuthResponse.accessToken,
           refreshToken: tAuthResponse.refreshToken,
           provider: tAuthResponse.provider,
@@ -459,14 +459,14 @@ void main() {
       expect(result, equals(left(const Failure('Storage error'))));
       verifyInOrder([
         () => mockAuthRemoteData.loginWithFacebook(),
-        () => mockUserLocalData.saveAuth(
+        () => mockAuthLocalData.saveAuth(
           accessToken: tAuthResponse.accessToken,
           refreshToken: tAuthResponse.refreshToken,
           provider: tAuthResponse.provider,
         ),
       ]);
       verifyNoMoreInteractions(mockAuthRemoteData);
-      verifyNoMoreInteractions(mockUserLocalData);
+      verifyNoMoreInteractions(mockAuthLocalData);
     },
   );
 
@@ -489,19 +489,22 @@ void main() {
       },
     );
 
-    test('should return Left(Failure) when get current user throws ServerException', () async {
-      // arrange
-      when(
-        () => mockAuthRemoteData.getCurrentUser(),
-      ).thenThrow(const ServerException('No user logged in'));
+    test(
+      'should return Left(Failure) when get current user throws ServerException',
+      () async {
+        // arrange
+        when(
+          () => mockAuthRemoteData.getCurrentUser(),
+        ).thenThrow(const ServerException('No user logged in'));
 
-      // act
-      final result = await repository.getCurrentUser();
+        // act
+        final result = await repository.getCurrentUser();
 
-      // assert
-      expect(result, equals(left(const Failure('No user logged in'))));
-      verify(() => mockAuthRemoteData.getCurrentUser()).called(1);
-      verifyNoMoreInteractions(mockAuthRemoteData);
-    });
+        // assert
+        expect(result, equals(left(const Failure('No user logged in'))));
+        verify(() => mockAuthRemoteData.getCurrentUser()).called(1);
+        verifyNoMoreInteractions(mockAuthRemoteData);
+      },
+    );
   });
 }

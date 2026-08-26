@@ -67,7 +67,7 @@ Future<void> initTestServiceLocator({
       ),
     );
 
-  sl.registerLazySingleton<UserLocalData>(() => MockUserLocalData());
+  sl.registerLazySingleton<AuthLocalData>(() => MockAuthLocalData());
 
   // Product
   sl

@@ -2,7 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../../core/errors/exception.dart';
 
-abstract interface class UserLocalData {
+abstract interface class AuthLocalData {
   Future<void> saveAuth({
     required String accessToken,
     required String refreshToken,
@@ -16,9 +16,9 @@ abstract interface class UserLocalData {
   Future<void> setAccessToken(String accessToken);
 }
 
-class UserLocalDataImpl implements UserLocalData {
+class AuthLocalDataImpl implements AuthLocalData {
   final FlutterSecureStorage flutterSecureStorage;
-  UserLocalDataImpl({required this.flutterSecureStorage});
+  AuthLocalDataImpl({required this.flutterSecureStorage});
 
   @override
   Future<void> saveAuth({

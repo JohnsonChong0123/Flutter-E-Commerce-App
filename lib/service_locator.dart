@@ -156,8 +156,8 @@ void _initUser() {
     // External dependency: FlutterSecureStorage
     ..registerLazySingleton<FlutterSecureStorage>(() => FlutterSecureStorage())
     // Data layer: Local data source
-    ..registerLazySingleton<UserLocalData>(
-      () => UserLocalDataImpl(flutterSecureStorage: sl()),
+    ..registerLazySingleton<AuthLocalData>(
+      () => AuthLocalDataImpl(flutterSecureStorage: sl()),
     );
 }
 

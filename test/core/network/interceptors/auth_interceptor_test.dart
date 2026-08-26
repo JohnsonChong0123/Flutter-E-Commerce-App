@@ -7,7 +7,7 @@ import 'package:mocktail/mocktail.dart';
 
 class MockDio extends Mock implements Dio {}
 
-class MockUserLocalData extends Mock implements UserLocalData {}
+class MockAuthLocalData extends Mock implements AuthLocalData {}
 
 class MockAuthRemoteData extends Mock implements AuthRemoteData {}
 
@@ -19,7 +19,7 @@ class MockErrorInterceptorHandler extends Mock
 
 void main() {
   late MockDio mockDio;
-  late MockUserLocalData mockUserLocalData;
+  late MockAuthLocalData mockAuthLocalData;
   late MockAuthRemoteData mockAuthRemoteData;
   late MockRequestInterceptorHandler mockRequestHandler;
   late MockErrorInterceptorHandler mockErrorHandler;
@@ -31,14 +31,14 @@ void main() {
 
   setUp(() {
     mockDio = MockDio();
-    mockUserLocalData = MockUserLocalData();
+    mockAuthLocalData = MockAuthLocalData();
     mockAuthRemoteData = MockAuthRemoteData();
     mockRequestHandler = MockRequestInterceptorHandler();
     mockErrorHandler = MockErrorInterceptorHandler();
 
     interceptor = AuthInterceptor(
       dio: mockDio,
-      userLocalData: mockUserLocalData,
+      userLocalData: mockAuthLocalData,
       getAuthRemoteData: () => mockAuthRemoteData,
     );
   });
@@ -67,7 +67,7 @@ void main() {
       final options = makeOptions();
       // arrange
       when(
-        () => mockUserLocalData.getAccessToken(),
+        () => mockAuthLocalData.getAccessToken(),
       ).thenAnswer((_) async => tAccessToken);
 
       // act
@@ -75,7 +75,7 @@ void main() {
 
       // assert
       expect(options.headers['Authorization'], 'Bearer $tAccessToken');
-      verify(() => mockUserLocalData.getAccessToken()).called(1);
+      verify(() => mockAuthLocalData.getAccessToken()).called(1);
       verify(() => mockRequestHandler.next(options)).called(1);
     });
 
@@ -83,7 +83,7 @@ void main() {
       final options = makeOptions();
       // arrange
       when(
-        () => mockUserLocalData.getAccessToken(),
+        () => mockAuthLocalData.getAccessToken(),
       ).thenAnswer((_) async => null);
 
       // act
@@ -91,7 +91,7 @@ void main() {
 
       // assert
       expect(options.headers['Authorization'], isNull);
-      verify(() => mockUserLocalData.getAccessToken()).called(1);
+      verify(() => mockAuthLocalData.getAccessToken()).called(1);
       verify(() => mockRequestHandler.next(options)).called(1);
     });
   });
@@ -117,13 +117,13 @@ void main() {
 
         // arrange
         when(
-          () => mockUserLocalData.getRefreshToken(),
+          () => mockAuthLocalData.getRefreshToken(),
         ).thenAnswer((_) async => tRefreshToken);
         when(
           () => mockAuthRemoteData.refreshToken(tRefreshToken),
         ).thenAnswer((_) async => tNewAccessToken);
         when(
-          () => mockUserLocalData.setAccessToken(tNewAccessToken),
+          () => mockAuthLocalData.setAccessToken(tNewAccessToken),
         ).thenAnswer((_) async => {});
         when(() => mockDio.fetch(any())).thenAnswer(
           (_) async => Response(requestOptions: options, statusCode: 200),
@@ -134,7 +134,7 @@ void main() {
 
         // assert
         verify(
-          () => mockUserLocalData.setAccessToken(tNewAccessToken),
+          () => mockAuthLocalData.setAccessToken(tNewAccessToken),
         ).called(1);
 
         // Capture the request options passed to dio.fetch
@@ -156,7 +156,7 @@ void main() {
         final err = makeDioException(options: options, statusCode: 401);
         // arrange
         when(
-          () => mockUserLocalData.getRefreshToken(),
+          () => mockAuthLocalData.getRefreshToken(),
         ).thenAnswer((_) async => null);
 
         // act
@@ -176,7 +176,7 @@ void main() {
 
         // arrange
         when(
-          () => mockUserLocalData.getRefreshToken(),
+          () => mockAuthLocalData.getRefreshToken(),
         ).thenAnswer((_) async => tRefreshToken);
         when(
           () => mockAuthRemoteData.refreshToken(tRefreshToken),
@@ -198,13 +198,13 @@ void main() {
         final err = makeDioException(options: options, statusCode: 401);
 
         when(
-          () => mockUserLocalData.getRefreshToken(),
+          () => mockAuthLocalData.getRefreshToken(),
         ).thenAnswer((_) async => tRefreshToken);
         when(
           () => mockAuthRemoteData.refreshToken(tRefreshToken),
         ).thenAnswer((_) async => tNewAccessToken);
         when(
-          () => mockUserLocalData.setAccessToken(tNewAccessToken),
+          () => mockAuthLocalData.setAccessToken(tNewAccessToken),
         ).thenAnswer((_) async {});
         when(
           () => mockDio.fetch(any()),
@@ -228,7 +228,7 @@ void main() {
 
         // assert
         verify(() => mockErrorHandler.next(err)).called(1);
-        verifyNever(() => mockUserLocalData.getRefreshToken());
+        verifyNever(() => mockAuthLocalData.getRefreshToken());
         verifyNever(() => mockErrorHandler.resolve(any()));
       },
     );
@@ -241,13 +241,13 @@ void main() {
 
         // arrange
         when(
-          () => mockUserLocalData.getRefreshToken(),
+          () => mockAuthLocalData.getRefreshToken(),
         ).thenAnswer((_) async => tRefreshToken);
         when(
           () => mockAuthRemoteData.refreshToken(tRefreshToken),
         ).thenAnswer((_) async => tNewAccessToken);
         when(
-          () => mockUserLocalData.setAccessToken(tNewAccessToken),
+          () => mockAuthLocalData.setAccessToken(tNewAccessToken),
         ).thenAnswer((_) async => {});
         when(() => mockDio.fetch(any())).thenAnswer(
           (_) async => Response(requestOptions: options, statusCode: 200),
@@ -257,7 +257,7 @@ void main() {
         await interceptor.onError(err, mockErrorHandler);
 
         // assert
-        verify(() => mockUserLocalData.getRefreshToken()).called(1);
+        verify(() => mockAuthLocalData.getRefreshToken()).called(1);
         verify(() => mockErrorHandler.resolve(any())).called(1);
       },
     );
