@@ -1,4 +1,4 @@
-import 'package:e_commerce_client/data/sources/local/user_local_data.dart';
+import 'package:e_commerce_client/data/sources/local/auth_local_data.dart';
 
 class MockAuthLocalData implements AuthLocalData {
   String? _accessToken;

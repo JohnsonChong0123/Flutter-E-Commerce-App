@@ -1,5 +1,5 @@
 import 'package:e_commerce_client/core/errors/exception.dart';
-import 'package:e_commerce_client/data/sources/local/user_local_data.dart';
+import 'package:e_commerce_client/data/sources/local/auth_local_data.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

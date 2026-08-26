@@ -3,7 +3,7 @@ import 'package:e_commerce_client/data/repositories/auth_repository_impl.dart';
 import 'package:e_commerce_client/data/repositories/cart_repository_impl.dart';
 import 'package:e_commerce_client/data/repositories/product_repository_impl.dart';
 import 'package:e_commerce_client/data/sources/local/product_local_data.dart';
-import 'package:e_commerce_client/data/sources/local/user_local_data.dart';
+import 'package:e_commerce_client/data/sources/local/auth_local_data.dart';
 import 'package:e_commerce_client/data/sources/remote/auth_remote_data.dart';
 import 'package:e_commerce_client/data/sources/remote/cart_remote_data.dart';
 import 'package:e_commerce_client/data/sources/remote/product_remote_data.dart';

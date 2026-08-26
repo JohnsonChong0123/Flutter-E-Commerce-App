@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../../data/sources/local/user_local_data.dart';
+import '../../data/sources/local/auth_local_data.dart';
 import '../../data/sources/remote/auth_remote_data.dart';
 import '../common/constants/server_constant.dart';
 import 'interceptors/auth_interceptor.dart';

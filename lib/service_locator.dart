@@ -20,7 +20,7 @@ import 'data/repositories/product_repository_impl.dart';
 import 'data/repositories/wishlist_repository_impl.dart';
 import 'data/sources/local/cart_local_data.dart';
 import 'data/sources/local/product_local_data.dart';
-import 'data/sources/local/user_local_data.dart';
+import 'data/sources/local/auth_local_data.dart';
 import 'data/sources/remote/auth_remote_data.dart';
 import 'data/sources/remote/cart_remote_data.dart';
 import 'data/sources/remote/geocoding_remote_data.dart';

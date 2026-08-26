@@ -4,7 +4,7 @@ import 'package:e_commerce_client/core/errors/failure.dart';
 import 'package:e_commerce_client/data/models/auth_response.dart';
 import 'package:e_commerce_client/data/models/user_model.dart';
 import 'package:e_commerce_client/data/repositories/auth_repository_impl.dart';
-import 'package:e_commerce_client/data/sources/local/user_local_data.dart';
+import 'package:e_commerce_client/data/sources/local/auth_local_data.dart';
 import 'package:e_commerce_client/data/sources/remote/auth_remote_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
