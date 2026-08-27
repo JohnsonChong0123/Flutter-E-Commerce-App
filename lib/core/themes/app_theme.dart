@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
@@ -80,65 +79,65 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: const Color(0xFFFCF9F8),
       textTheme: TextTheme(
-        displayLarge: GoogleFonts.manrope(
+        displayLarge: const TextStyle(
           fontWeight: FontWeight.w800,
-          color: const Color(0xFF1C1B1B),
+          color: Color(0xFF1C1B1B),
         ),
-        displayMedium: GoogleFonts.manrope(
+        displayMedium: const TextStyle(
           fontWeight: FontWeight.w800,
-          color: const Color(0xFF1C1B1B),
+          color: Color(0xFF1C1B1B),
         ),
-        displaySmall: GoogleFonts.manrope(
+        displaySmall: const TextStyle(
           fontWeight: FontWeight.w800,
-          color: const Color(0xFF1C1B1B),
+          color: Color(0xFF1C1B1B),
         ),
-        headlineLarge: GoogleFonts.manrope(
+        headlineLarge: const TextStyle(
           fontWeight: FontWeight.w800,
-          color: const Color(0xFF1C1B1B),
+          color: Color(0xFF1C1B1B),
         ),
-        headlineMedium: GoogleFonts.manrope(
+        headlineMedium: const TextStyle(
           fontWeight: FontWeight.w700,
-          color: const Color(0xFF1C1B1B),
+          color: Color(0xFF1C1B1B),
         ),
-        headlineSmall: GoogleFonts.manrope(
+        headlineSmall: const TextStyle(
           fontWeight: FontWeight.w700,
-          color: const Color(0xFF1C1B1B),
+          color: Color(0xFF1C1B1B),
         ),
-        titleLarge: GoogleFonts.manrope(
+        titleLarge: const TextStyle(
           fontWeight: FontWeight.bold,
-          color: const Color(0xFF1C1B1B),
+          color: Color(0xFF1C1B1B),
         ),
-        titleMedium: GoogleFonts.manrope(
+        titleMedium: const TextStyle(
           fontWeight: FontWeight.bold,
-          color: const Color(0xFF1C1B1B),
+          color: Color(0xFF1C1B1B),
         ),
-        titleSmall: GoogleFonts.manrope(
+        titleSmall: const TextStyle(
           fontWeight: FontWeight.bold,
-          color: const Color(0xFF1C1B1B),
+          color: Color(0xFF1C1B1B),
         ),
-        bodyLarge: GoogleFonts.plusJakartaSans(
+        bodyLarge: const TextStyle(
           fontWeight: FontWeight.normal,
-          color: const Color(0xFF1C1B1B),
+          color: Color(0xFF1C1B1B),
         ),
-        bodyMedium: GoogleFonts.plusJakartaSans(
+        bodyMedium: const TextStyle(
           fontWeight: FontWeight.normal,
-          color: const Color(0xFF1C1B1B),
+          color: Color(0xFF1C1B1B),
         ),
-        bodySmall: GoogleFonts.plusJakartaSans(
+        bodySmall: const TextStyle(
           fontWeight: FontWeight.normal,
-          color: const Color(0xFF5F5E5E),
+          color: Color(0xFF5F5E5E),
         ),
-        labelLarge: GoogleFonts.plusJakartaSans(
+        labelLarge: const TextStyle(
           fontWeight: FontWeight.w600,
-          color: const Color(0xFF1C1B1B),
+          color: Color(0xFF1C1B1B),
         ),
-        labelMedium: GoogleFonts.plusJakartaSans(
+        labelMedium: const TextStyle(
           fontWeight: FontWeight.w500,
-          color: const Color(0xFF1C1B1B),
+          color: Color(0xFF1C1B1B),
         ),
-        labelSmall: GoogleFonts.plusJakartaSans(
+        labelSmall: const TextStyle(
           fontWeight: FontWeight.w500,
-          color: const Color(0xFF1C1B1B),
+          color: Color(0xFF1C1B1B),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
