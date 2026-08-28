@@ -2,12 +2,11 @@ import 'package:e_commerce_client/presentation/screens/splash_screen.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../domain/entity/address/address_entity.dart';
 import '../../presentation/blocs/address/address_bloc.dart';
 import '../../presentation/blocs/auth/auth_bloc.dart';
+import '../../presentation/cubits/user/user_cubit.dart';
 import '../../presentation/cubits/category/category_cubit.dart';
 import '../../presentation/blocs/product/product_bloc.dart';
-import '../../presentation/blocs/checkout/checkout_bloc.dart';
 import '../../presentation/models/checkout_data.dart';
 import '../../presentation/screens/account_screen.dart';
 import '../../presentation/screens/address/pick_address_screen.dart';
@@ -111,7 +110,7 @@ class AppRouter {
             final checkoutData = state.extra as CheckoutData?;
 
             return BlocProvider(
-              create: (_) => sl<CheckoutBloc>(),
+              create: (_) => sl<UserCubit>()..getUserLocation(),
               child: CheckoutScreen(checkoutData: checkoutData),
             );
           },
@@ -121,13 +120,18 @@ class AppRouter {
           name: pickAddressName,
           parentNavigatorKey: _rootNavigatorKey,
           builder: (context, state) {
-            final initialAddress = state.extra is AddressEntity
-                ? state.extra as AddressEntity
-                : null;
+            // final initialAddress = state.extra is AddressEntity
+            //     ? state.extra as AddressEntity
+            //     : null;
 
-            return BlocProvider(
-              create: (_) => sl<AddressPickerBloc>(),
-              child: AddressPickerPage(initialAddress: initialAddress),
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => sl<AddressPickerBloc>()),
+                BlocProvider(create: (_) => sl<UserCubit>()),
+              ],
+              child: AddressPickerPage(
+                // initialAddress: initialAddress
+                ),
             );
           },
         ),

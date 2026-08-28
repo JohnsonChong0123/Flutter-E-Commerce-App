@@ -33,6 +33,12 @@ import 'domain/repositories/product_repository.dart';
 import 'domain/repositories/wishlist_repository.dart';
 import 'domain/usecases/address/reverse_geocode.dart';
 import 'domain/usecases/auth/check_auth_status.dart';
+import 'domain/usecases/user/get_user_location.dart';
+import 'domain/usecases/user/update_address.dart';
+import 'domain/repositories/user_repository.dart';
+import 'data/sources/remote/user_remote_data.dart';
+import 'data/repositories/user_repository_impl.dart';
+import 'presentation/cubits/user/user_cubit.dart';
 import 'domain/usecases/auth/facebook_login.dart';
 import 'domain/usecases/auth/google_login.dart';
 import 'domain/usecases/auth/login.dart';
@@ -121,6 +127,8 @@ Future<void> initServiceLocator() async {
 
 void _initAuth() {
   sl
+    // External dependency: FlutterSecureStorage
+    ..registerLazySingleton<FlutterSecureStorage>(() => FlutterSecureStorage())
     // Data layer: Remote data source
     ..registerLazySingleton<AuthRemoteData>(
       () => AuthRemoteDataImpl(
@@ -128,6 +136,10 @@ void _initAuth() {
         googleAuthService: sl(),
         facebookAuthService: sl(),
       ),
+    )
+    // Data layer: Local data source
+    ..registerLazySingleton<AuthLocalData>(
+      () => AuthLocalDataImpl(flutterSecureStorage: sl()),
     )
     // Data layer: Repository implementation
     ..registerLazySingleton<AuthRepository>(
@@ -153,11 +165,18 @@ void _initAuth() {
 
 void _initUser() {
   sl
-    // External dependency: FlutterSecureStorage
-    ..registerLazySingleton<FlutterSecureStorage>(() => FlutterSecureStorage())
-    // Data layer: Local data source
-    ..registerLazySingleton<AuthLocalData>(
-      () => AuthLocalDataImpl(flutterSecureStorage: sl()),
+    // Data layer: Remote data source
+    ..registerLazySingleton<UserRemoteData>(() => UserRemoteDataImpl(dio: sl()))
+    // Data layer: Repository implementation
+    ..registerLazySingleton<UserRepository>(
+      () => UserRepositoryImpl(userRemoteData: sl()),
+    )
+    // Domain layer: Use case
+    ..registerLazySingleton(() => UpdateAddress(sl()))
+    ..registerLazySingleton(() => GetUserLocation(sl()))
+    // Presentation layer: Cubit
+    ..registerFactory(
+      () => UserCubit(updateUserAddress: sl(), getUserLocation: sl()),
     );
 }
 
