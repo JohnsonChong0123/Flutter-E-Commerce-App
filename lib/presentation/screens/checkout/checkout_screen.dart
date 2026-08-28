@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:e_commerce_client/presentation/blocs/checkout/checkout_bloc.dart';
 import '../../../core/extensions/theme_extensions.dart';
 import '../../../core/routes/app_router.dart';
-import '../../../domain/entity/address/address_entity.dart';
+import '../../cubits/user/user_cubit.dart';
 import '../../models/checkout_data.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -41,7 +40,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             Icons.arrow_back,
             color: context.theme.colorScheme.onSurface,
           ),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            context.goNamed(AppRouter.cartName);
+          },
         ),
       ),
       body: SingleChildScrollView(
@@ -52,15 +53,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           children: [
             // Section 1: Shipping Address
             _buildSectionHeader('Shipping'),
-            BlocBuilder<CheckoutBloc, CheckoutState>(
-              builder: (context, state) {
-                return _buildAddressCard(
-                  address: state.selectedAddress,
-                  onSelectMap: () =>
-                      _onSelectAddressOnMap(state.selectedAddress),
-                );
-              },
-            ),
+            _buildAddressCard(),
             const SizedBox(height: 32),
 
             // Section 2: Delivery Method
@@ -405,87 +398,93 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  Future<void> _onSelectAddressOnMap(AddressEntity? currentAddress) async {
-    final result = await context.pushNamed(
-      AppRouter.pickAddressName,
-      extra: currentAddress,
+  Widget _buildAddressCard() {
+    final addressTextStyle = TextStyle(
+      color: context.theme.colorScheme.secondary,
+      fontSize: 13,
+      height: 1.4,
     );
 
-    if (!mounted) {
-      return;
-    }
-
-    if (result is AddressEntity) {
-      context.read<CheckoutBloc>().add(UpdateCheckoutAddressEvent(result));
-    }
-  }
-
-  Widget _buildAddressCard({
-    required AddressEntity? address,
-    required VoidCallback onSelectMap,
-  }) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: context.theme.colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      child: BlocBuilder<UserCubit, UserState>(
+        builder: (context, state) {
+          final String addressText;
+          final String buttonLabel;
+
+          if (state is UserLoading) {
+            addressText = 'Loading...';
+            buttonLabel = 'Loading...';
+          } else if (state is UserFailure) {
+            addressText = state.message;
+            buttonLabel = state.message;
+          } else if (state is UserLocationSuccess) {
+            addressText = state.location.address.isEmpty
+                ? 'No address selected yet. Tap below to select on map.'
+                : state.location.address;
+            buttonLabel = state.location.address.isEmpty
+                ? 'Select on Map'
+                : 'Edit on Map';
+          } else {
+            addressText = 'No address selected yet. Tap below to select on map.';
+            buttonLabel = 'Select on Map';
+          }
+
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: context.theme.colorScheme.surfaceContainerLow,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.location_on,
-                  color: context.theme.colorScheme.onSurfaceVariant,
-                  size: 20,
-                ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: context.theme.colorScheme.surfaceContainerLow,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.location_on,
+                      color: context.theme.colorScheme.onSurfaceVariant,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Delivery Address',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: context.theme.colorScheme.onSurface,
+                            fontSize: 15,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(addressText, style: addressTextStyle),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Delivery Address',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontWeight: FontWeight.bold,
-                        color: context.theme.colorScheme.onSurface,
-                        fontSize: 15,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      address?.formattedAddress ??
-                          'No address selected yet. Tap below to select on map.',
-                      style: GoogleFonts.plusJakartaSans(
-                        color: context.theme.colorScheme.secondary,
-                        fontSize: 13,
-                        height: 1.4,
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () =>
+                      context.pushNamed(AppRouter.pickAddressName),
+                  icon: const Icon(Icons.map_outlined),
+                  label: Text(buttonLabel),
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: onSelectMap,
-              icon: const Icon(Icons.map_outlined),
-              label: Text(address == null ? 'Select on Map' : 'Edit on Map'),
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

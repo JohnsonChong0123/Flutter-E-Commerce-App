@@ -3,18 +3,25 @@ import 'package:e_commerce_client/service_locator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/extensions/theme_extensions.dart';
+import '../../../core/routes/app_router.dart';
 import '../../../data/models/map/map_coord_update.dart';
 import '../../../data/sources/remote/map_remote_data.dart';
 import '../../../domain/entity/address/address_entity.dart';
 import '../../blocs/address/address_bloc.dart';
+import '../../cubits/user/user_cubit.dart';
 
 class AddressPickerPage extends StatefulWidget {
-  final AddressEntity? initialAddress;
+  // final AddressEntity? initialAddress;
   final String? title;
 
-  const AddressPickerPage({super.key, this.initialAddress, this.title});
+  const AddressPickerPage({
+    super.key,
+    // this.initialAddress,
+    this.title,
+  });
 
   @override
   State<AddressPickerPage> createState() => _AddressPickerPageState();
@@ -50,7 +57,10 @@ class _AddressPickerPageState extends State<AddressPickerPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<AddressPickerBloc, AddressState>(
       builder: (context, state) {
-        return Scaffold(appBar: _buildAppBar(state), body: _buildBody(state, context));
+        return Scaffold(
+          appBar: _buildAppBar(state),
+          body: _buildBody(state, context),
+        );
       },
     );
   }
@@ -88,10 +98,7 @@ class _AddressPickerPageState extends State<AddressPickerPage> {
             onMapCreated: (viewId) {
               _activeViewId = viewId;
               context.read<AddressPickerBloc>().add(
-                MapViewCreated(
-                  mapViewId: viewId,
-                  initialAddress: widget.initialAddress,
-                ),
+                MapViewCreated(mapViewId: viewId, initialAddress: null),
               );
             },
           ),
@@ -284,24 +291,41 @@ class _AddressPickerPageState extends State<AddressPickerPage> {
       _ => null,
     };
 
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: canConfirm && addressToReturn != null
-            ? () {
-                Navigator.of(context).pop(addressToReturn);
-              }
-            : null,
-        icon: const Icon(Icons.check_circle),
-        label: switch (state) {
-          AddressLoading() => const Text('Loading...'),
-          AddressError() => const Text('Retry'),
-          _ => const Text('Confirm Address'),
-        },
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-        ),
-      ),
+    return BlocConsumer<UserCubit, UserState>(
+      listener: (context, userState) {
+        if (userState is UserSuccess) {
+          context.pushNamed(AppRouter.checkoutName);
+        }
+      },
+      builder: (context, userState) {
+        final isUpdating = userState is UserLoading;
+
+        return SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: canConfirm && addressToReturn != null && !isUpdating
+                ? () {
+                    context.read<UserCubit>().updateUserAddress(
+                      addressToReturn.formattedAddress,
+                      addressToReturn.latitude,
+                      addressToReturn.longitude,
+                    );
+                  }
+                : null,
+            icon: const Icon(Icons.check_circle),
+            label: switch ((state, userState)) {
+              (AddressLoading(), _) => const Text('Loading...'),
+              (AddressError(), _) => const Text('Address Retry'),
+              (_, UserLoading()) => const Text('Saving...'),
+              (_, UserFailure()) => const Text('User Retry'),
+              _ => const Text('Confirm Address'),
+            },
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+          ),
+        );
+      },
     );
   }
 
