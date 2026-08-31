@@ -92,7 +92,7 @@ jobs:
       - name: Install Patrol CLI
         run: dart pub global activate patrol_cli
 
-      - name: Setup Android Emulator and Run Patrol Tests
+            - name: Setup Android Emulator and Run Patrol Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 30
@@ -100,7 +100,7 @@ jobs:
           arch: x86_64
           profile: pixel_4
           timeout: 600
-          enable-kvm: true
+          enable-kvm: false
           disable-animations: true
 
           script: |
@@ -110,6 +110,8 @@ jobs:
             echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 --decode > android/app/google-services.json
 
             flutter pub get
+
+            adb devices
 
             patrol test --device android
 
@@ -125,7 +127,7 @@ jobs:
     name: Patrol iOS E2E
     needs: android_test
     runs-on: macos-latest
-    
+
     steps:
       - uses: actions/checkout@v4
 
@@ -141,7 +143,8 @@ jobs:
           key: ${{ runner.os }}-patrol-ios-${{ hashFiles('**/pubspec.lock') }}
 
       - name: Install Patrol CLI
-        run: dart pub global activate patrol_cli
+        run: |
+          dart pub global activate patrol_cli
 
       - name: Create .env file
         run: |
@@ -149,28 +152,12 @@ jobs:
           echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
 
       - name: Install Flutter Dependencies
-        run: flutter pub get
+        run: |
+          flutter pub get
 
       - name: Show Available iOS Simulators
         run: |
           xcrun simctl list devices available
-
-      - name: Setup iOS Simulator
-        run: |
-          DEVICE_ID=$(xcrun simctl list devices available | \
-            grep "iPhone 15 Pro" | \
-            head -1 | \
-            sed -E 's/.*\(([A-F0-9-]+)\).*/\1/')
-
-          if [ -z "$DEVICE_ID" ]; then
-            echo "iPhone 15 Pro simulator not found."
-            exit 1
-          fi
-
-          echo "Using simulator: $DEVICE_ID"
-
-          xcrun simctl boot "$DEVICE_ID" || true
-          xcrun simctl bootstatus "$DEVICE_ID" -b
 
       - name: Run Patrol iOS Tests
         run: |
