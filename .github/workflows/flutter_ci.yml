@@ -91,20 +91,21 @@ jobs:
       - name: Setup Android Emulator and Run Patrol Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 33
+          api-level: 30 
           target: google_apis
           arch: x86_64
-          profile: pixel_5
+          profile: pixel_4
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          disable-animations: true
           script: |
             echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
             echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
             echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 --decode > android/app/google-services.json
             
             flutter pub get
-            flutter pub global activate patrol
-            export PATH="$PATH":"$HOME/.pub-cache/bin"
-            flutter pub global run patrol test --device android --target patrol_test
-      
+            flutter pub run patrol test --device android
+        
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -141,9 +142,7 @@ jobs:
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
           echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
           flutter pub get
-          flutter pub global activate patrol
-          export PATH="$PATH":"$HOME/.pub-cache/bin"
-          flutter pub global run patrol test --device ios --target patrol_test
+          flutter pub run patrol test --device ios
       
       - name: Upload test results
         if: always()
