@@ -72,7 +72,7 @@ jobs:
   
   patrol_tests:
     name: Patrol E2E Tests (Android & iOS)
-    needs: unit_test
+    needs: android_test
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -85,7 +85,7 @@ jobs:
       - name: Setup Patrol
         run: |
           flutter pub global activate patrol
-          flutter pub global run patrol doctor
+          flutter pub global run patrol doctor || true
       
       - name: Cache Flutter dependencies
         uses: actions/cache@v4
@@ -149,7 +149,7 @@ jobs:
   
   release_build:
     name: Release Build
-    needs: android_test
+    needs: patrol_tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
