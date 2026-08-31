@@ -82,11 +82,6 @@ jobs:
         with:
           flutter-version: 3.38.9
       
-      - name: Setup Patrol
-        run: |
-          flutter pub global activate patrol
-          flutter pub global run patrol doctor || true
-      
       - name: Cache Flutter dependencies
         uses: actions/cache@v4
         with:
@@ -96,16 +91,22 @@ jobs:
           key: ${{ runner.os }}-patrol-${{ hashFiles('**/pubspec.lock') }}
       
       - name: Setup Android Emulator
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 33
-          target: google_apis
-          arch: x86_64
-          profile: pixel_5
-          script: |
-            echo "Android emulator is ready"
-            # Keep emulator running for Patrol tests
-            adb devices
+        run: |
+          echo "y" | sdkmanager "system-images;android-33;google_apis;x86_64"
+          echo "y" | sdkmanager "platforms;android-33"
+          echo "y" | sdkmanager "platform-tools"
+          echo "y" | sdkmanager "emulator"
+          
+          echo "no" | avdmanager create avd -n patrol_avd -k "system-images;android-33;google_apis;x86_64" --device "pixel_5"
+          
+          emulator -avd patrol_avd -no-audio -no-window -gpu swiftshader_indirect -verbose &
+          
+          echo "Waiting for emulator to start..."
+          adb wait-for-device
+          adb shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done;'
+          sleep 10
+
+          adb devices
       
       - name: Setup iOS Simulator
         run: |
@@ -127,15 +128,16 @@ jobs:
       
       - name: Run Patrol Android Tests
         run: |
+          flutter pub global activate patrol
           flutter pub global run patrol test \
             --device android \
-            --target integration_test
+            --target patrol_test
       
       - name: Run Patrol iOS Tests
         run: |
           flutter pub global run patrol test \
             --device ios \
-            --target integration_test
+            --target patrol_test
       
       - name: Upload Patrol Test Results
         if: always()
@@ -146,6 +148,11 @@ jobs:
             patrol_output/
             build/app/outputs/androidTest/
           retention-days: 7
+      
+      - name: Cleanup Emulator
+        if: always()
+        run: |
+          adb emu kill || true
   
   release_build:
     name: Release Build
