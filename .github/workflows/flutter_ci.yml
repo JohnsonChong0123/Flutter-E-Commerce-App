@@ -95,8 +95,8 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: pixel_4
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          timeout: 600
+          enable-kvm: true
           disable-animations: true
           script: |
             echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
@@ -142,7 +142,7 @@ jobs:
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
           echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
           flutter pub get
-          flutter pub run patrol test --device ios
+          flutter pub run patrol test --device ios --target patrol_test
       
       - name: Upload test results
         if: always()
