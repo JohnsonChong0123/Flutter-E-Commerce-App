@@ -70,8 +70,51 @@ jobs:
           chmod +x gradlew
           ./gradlew testDebugUnitTest
   
-  patrol_tests:
-    name: Patrol E2E Tests (Android & iOS)
+  patrol_android:
+    name: Patrol Android E2E
+    needs: android_test
+    runs-on: ubuntu-latest  
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.38.9
+      
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-patrol-android-${{ hashFiles('**/pubspec.lock') }}
+      
+      - name: Setup Android Emulator and Run Patrol Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: google_apis
+          arch: x86_64
+          profile: pixel_5
+          script: |
+            echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
+            echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
+            echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 --decode > android/app/google-services.json
+            
+            flutter pub get
+            flutter pub global activate patrol
+            export PATH="$PATH":"$HOME/.pub-cache/bin"
+            flutter pub global run patrol test --device android --target patrol_test
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: patrol-android-results
+          path: patrol_output/
+          retention-days: 7
+
+  patrol_ios:
+    name: Patrol iOS E2E
     needs: android_test
     runs-on: macos-latest
     steps:
@@ -85,78 +128,34 @@ jobs:
       - name: Cache Flutter dependencies
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.pub-cache
-            ~/.gradle/caches
-          key: ${{ runner.os }}-patrol-${{ hashFiles('**/pubspec.lock') }}
-      
-      - name: Setup Android Emulator
-        run: |
-          echo "y" | sdkmanager "system-images;android-33;google_apis;x86_64"
-          echo "y" | sdkmanager "platforms;android-33"
-          echo "y" | sdkmanager "platform-tools"
-          echo "y" | sdkmanager "emulator"
-          
-          echo "no" | avdmanager create avd -n patrol_avd -k "system-images;android-33;google_apis;x86_64" --device "pixel_5"
-          
-          emulator -avd patrol_avd -no-audio -no-window -gpu swiftshader_indirect -verbose &
-          
-          echo "Waiting for emulator to start..."
-          adb wait-for-device
-          adb shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do sleep 1; done;'
-          sleep 10
-
-          adb devices
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-patrol-ios-${{ hashFiles('**/pubspec.lock') }}
       
       - name: Setup iOS Simulator
         run: |
           xcrun simctl create "Patrol iPhone" "iPhone 15 Pro"
           xcrun simctl boot "Patrol iPhone"
-          xcrun simctl list devices
-      
-      - name: Create .env file
-        run: |
-          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
-          echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
-      
-      - name: Create google-services.json
-        run: |
-          echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 --decode > android/app/google-services.json
-      
-      - name: Install Dependencies
-        run: flutter pub get
-      
-      - name: Run Patrol Android Tests
-        run: |
-          flutter pub global activate patrol
-          flutter pub global run patrol test \
-            --device android \
-            --target patrol_test
       
       - name: Run Patrol iOS Tests
         run: |
-          flutter pub global run patrol test \
-            --device ios \
-            --target patrol_test
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
+          echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
+          flutter pub get
+          flutter pub global activate patrol
+          export PATH="$PATH":"$HOME/.pub-cache/bin"
+          flutter pub global run patrol test --device ios --target patrol_test
       
-      - name: Upload Patrol Test Results
+      - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: patrol-test-results
-          path: |
-            patrol_output/
-            build/app/outputs/androidTest/
+          name: patrol-ios-results
+          path: patrol_output/
           retention-days: 7
-      
-      - name: Cleanup Emulator
-        if: always()
-        run: |
-          adb emu kill || true
   
   release_build:
     name: Release Build
-    needs: patrol_tests
+    needs: [patrol_android, patrol_ios]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
