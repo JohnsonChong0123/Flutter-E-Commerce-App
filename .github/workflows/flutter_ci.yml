@@ -126,7 +126,7 @@ jobs:
 
       - name: Run Patrol on emulator.wtf
         env:
-          EW_API_TOKEN: ${{ secrets.EW_API_TOKEN }}
+          EW_API_TOKEN: ${{ secrets.EMULATOR_WTF_API_KEY }}
         run: |
           ew-cli \
             --app build/app/outputs/apk/debug/app-debug.apk \
@@ -150,7 +150,8 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Select Xcode
         uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90
@@ -160,19 +161,11 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 3.38.9
+          flutter-version: '3.38.9'
           channel: stable
 
-      - name: Preload Flutter iOS artifacts
+      - name: Preload Flutter artifacts
         run: flutter precache --ios
-
-      - name: Install Patrol CLI
-        run: |
-          dart pub global activate patrol_cli 4.6.1
-
-      - name: Run Patrol iOS Tests
-        run: |
-          patrol test --device ios --target patrol_test
 
       - name: Create .env
         run: |
@@ -182,52 +175,34 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
+      - name: Install Patrol CLI
+        run: |
+          dart pub global activate patrol_cli 4.6.1
+
       - name: Start iOS Simulator
         uses: futureware-tech/simulator-action@v2
         with:
           model: iPhone 17
           os: iOS
-          os_version: 26.2
+          os_version: '26.2'
           erase_before_boot: true
           shutdown_after_job: true
 
+      - name: Verify Simulator
+        run: |
+          xcrun simctl list devices
+          flutter devices
+
       - name: Run Patrol iOS Tests
         run: |
-          xcrun simctl spawn booted log stream \
-            --type log \
-            --color none > all_simulator_logs.txt &
+          patrol test --target patrol_test --verbose --ios 26.2
 
-          logpid="$!"
-
-          sleep 10
-
-          TESTS_EXIT_CODE=0
-
-          patrol test \
-            --verbose \
-            --ios 26.2 \
-            --full-isolation \
-            --record-video \
-            --video-output-dir patrol_videos \
-            || TESTS_EXIT_CODE=$?
-
-          kill -SIGINT "$logpid" 2>/dev/null || true
-
-          sleep 1
-
-          kill -9 "$logpid" 2>/dev/null || true
-
-          exit $TESTS_EXIT_CODE
-
-      - name: Upload Patrol Results
+      - name: Upload Patrol results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: patrol-ios-results
-          path: |
-            patrol_output/
-            patrol_videos/
-            all_simulator_logs.txt
+          path: patrol_output/
           retention-days: 7
   
   release_build:
