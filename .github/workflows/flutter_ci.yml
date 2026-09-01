@@ -109,11 +109,12 @@ jobs:
         run: flutter pub get
 
       - name: Install Patrol CLI
-        run: dart pub global activate patrol_cli
+        run: |
+          dart pub global activate patrol_cli 4.6.1
 
       - name: Build Patrol Android
         run: |
-          patrol build android --verbose
+          patrol build android
 
       - name: Install ew-cli
         run: |
@@ -166,7 +167,12 @@ jobs:
         run: flutter precache --ios
 
       - name: Install Patrol CLI
-        run: dart pub global activate patrol_cli
+        run: |
+          dart pub global activate patrol_cli 4.6.1
+
+      - name: Run Patrol iOS Tests
+        run: |
+          patrol test --device ios --target patrol_test
 
       - name: Create .env
         run: |
