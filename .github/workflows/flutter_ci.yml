@@ -74,101 +74,154 @@ jobs:
     name: Patrol Android E2E
     needs: android_test
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        api-level:
+          - 35
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: 3.38.9
+          channel: stable
 
-      - name: Cache Flutter dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-patrol-android-${{ hashFiles('**/pubspec.lock') }}
+      - name: Precache Android
+        run: flutter precache --android
+
+      - name: Create .env
+        run: |
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
+          echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
+
+      - name: Create google-services.json
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" \
+            | base64 --decode > android/app/google-services.json
+
+      - name: Install Dependencies
+        run: flutter pub get
 
       - name: Install Patrol CLI
         run: dart pub global activate patrol_cli
 
-      - name: Setup Android Emulator and Run Patrol Tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 30
-          target: google_apis
-          arch: x86_64
-          profile: pixel_4
-          timeout: 600
-          enable-kvm: false
-          disable-animations: true
+      - name: Build Patrol Android
+        run: |
+          patrol build android --verbose
 
-          script: |
-            echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
-            echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
+      - name: Install ew-cli
+        run: |
+          mkdir -p "$HOME/bin"
+          curl "https://maven.emulator.wtf/releases/ew-cli" \
+            -o "$HOME/bin/ew-cli"
+          chmod +x "$HOME/bin/ew-cli"
+          echo "$HOME/bin" >> "$GITHUB_PATH"
 
-            echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 --decode > android/app/google-services.json
+      - name: Run Patrol on emulator.wtf
+        env:
+          EW_API_TOKEN: ${{ secrets.EW_API_TOKEN }}
+        run: |
+          ew-cli \
+            --app build/app/outputs/apk/debug/app-debug.apk \
+            --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+            --device model=Pixel7,version=${{ matrix.api-level }}
 
-            flutter pub get
-
-            adb devices
-
-            patrol test --device android
-
-      - name: Upload test results
+      - name: Upload Patrol Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: patrol-android-results
-          path: patrol_output/
+          name: patrol-android-api-${{ matrix.api-level }}
+          path: |
+            patrol_output/
+            build/test-results/
           retention-days: 7
 
   patrol_ios:
     name: Patrol iOS E2E
     needs: android_test
     runs-on: macos-latest
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90
+        with:
+          xcode-version: '26.2'
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: 3.38.9
+          channel: stable
 
-      - name: Cache Flutter dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-patrol-ios-${{ hashFiles('**/pubspec.lock') }}
+      - name: Preload Flutter iOS artifacts
+        run: flutter precache --ios
 
       - name: Install Patrol CLI
-        run: |
-          dart pub global activate patrol_cli
+        run: dart pub global activate patrol_cli
 
-      - name: Create .env file
+      - name: Create .env
         run: |
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
           echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
 
-      - name: Install Flutter Dependencies
-        run: |
-          flutter pub get
+      - name: Install Dependencies
+        run: flutter pub get
 
-      - name: Show Available iOS Simulators
-        run: |
-          xcrun simctl list devices available
+      - name: Start iOS Simulator
+        uses: futureware-tech/simulator-action@v2
+        with:
+          model: iPhone 17
+          os: iOS
+          os_version: 26.2
+          erase_before_boot: true
+          shutdown_after_job: true
 
       - name: Run Patrol iOS Tests
         run: |
-          patrol test --device ios
+          xcrun simctl spawn booted log stream \
+            --type log \
+            --color none > all_simulator_logs.txt &
 
-      - name: Upload test results
+          logpid="$!"
+
+          sleep 10
+
+          TESTS_EXIT_CODE=0
+
+          patrol test \
+            --verbose \
+            --ios 26.2 \
+            --full-isolation \
+            --record-video \
+            --video-output-dir patrol_videos \
+            || TESTS_EXIT_CODE=$?
+
+          kill -SIGINT "$logpid" 2>/dev/null || true
+
+          sleep 1
+
+          kill -9 "$logpid" 2>/dev/null || true
+
+          exit $TESTS_EXIT_CODE
+
+      - name: Upload Patrol Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: patrol-ios-results
-          path: patrol_output/
+          path: |
+            patrol_output/
+            patrol_videos/
+            all_simulator_logs.txt
           retention-days: 7
   
   release_build:
