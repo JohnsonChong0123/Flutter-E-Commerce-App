@@ -172,6 +172,10 @@ jobs:
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
           echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
 
+      - name: Create GoogleService-Info.plist
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}" | base64 --decode > ios/Runner/GoogleService-Info.plist
+
       - name: Install Dependencies
         run: flutter pub get
 

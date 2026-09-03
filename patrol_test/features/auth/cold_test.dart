@@ -16,7 +16,7 @@ void main() {
     app.main();
     await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-    expect(find.byType(LoginScreen), findsOneWidget);
+    expect($(LoginScreen), findsOneWidget);
   });
 
   patrolTest('Cold start → With token → Navigate to Home', ($) async {
@@ -28,6 +28,6 @@ void main() {
     app.main();
     await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-    expect(find.byType(HomeScreen), findsOneWidget);
+    expect($(HomeScreen), findsOneWidget);
   });
 }
