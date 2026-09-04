@@ -20,33 +20,18 @@ void main() {
     app.main();
     await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-    expect(find.byType(HomeScreen), findsOneWidget);
-    expect(
-      find.text(
-        'NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked',
-      ),
-      findsOneWidget,
-    );
+    const productName =
+        'NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked';
 
-    await $.scrollUntilVisible(
-      finder: find.text(
-        'NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked',
-      ),
-    );
+    expect($(HomeScreen), findsOneWidget);
+    expect($(productName), findsOneWidget);
 
-    await $(
-      find.text(
-        'NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked',
-      ),
-    ).tap();
+    await $.scrollUntilVisible(finder: $(productName));
+
+    await $(productName).tap();
     await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-    expect(find.byType(ProductDetailScreen), findsOneWidget);
-    expect(
-      find.text(
-        'NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked',
-      ),
-      findsOneWidget,
-    );
+    expect($(ProductDetailScreen), findsOneWidget);
+    expect($(productName), findsOneWidget);
   });
 }

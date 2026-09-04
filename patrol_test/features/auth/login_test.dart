@@ -1,6 +1,5 @@
 import 'package:e_commerce_client/presentation/screens/auth/login_screen.dart';
 import 'package:e_commerce_client/presentation/screens/home_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:e_commerce_client/main.dart' as app;
@@ -15,18 +14,18 @@ void main() {
     app.main();
     await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-    expect(find.byType(LoginScreen), findsOneWidget);
+    expect($(LoginScreen), findsOneWidget);
 
-    await $(find.byKey(const Key('emailField'))).enterText('test@example.com');
+    await $(#emailField).enterText('test@example.com');
     await $.pump();
 
-    await $(find.byKey(const Key('passwordField'))).enterText('password123');
+    await $(#passwordField).enterText('password123');
     await $.pump();
 
-    await $(find.byKey(const Key('loginButton'))).tap();
+    await $(#loginButton).tap();
     await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-    expect(find.byType(HomeScreen), findsOneWidget);
+    expect($(HomeScreen), findsOneWidget);
   });
 
   patrolTest(
@@ -38,20 +37,20 @@ void main() {
       app.main();
       await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-      expect(find.byType(LoginScreen), findsOneWidget);
+      expect($(LoginScreen), findsOneWidget);
 
-      await $(find.byKey(const Key('emailField'))).enterText('');
+      await $(#emailField).enterText('');
       await $.pump();
 
-      await $(find.byKey(const Key('passwordField'))).enterText('password123');
+      await $(#passwordField).enterText('password123');
       await $.pump();
 
-      await $(find.byKey(const Key('loginButton'))).tap();
+      await $(#loginButton).tap();
       await $.pumpAndSettle();
 
-      expect(find.text('Please enter your email'), findsOneWidget);
+      expect($('Please enter your email'), findsOneWidget);
 
-      expect(find.byType(LoginScreen), findsOneWidget);
+      expect($(LoginScreen), findsOneWidget);
     },
   );
 
@@ -64,22 +63,20 @@ void main() {
       app.main();
       await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-      expect(find.byType(LoginScreen), findsOneWidget);
+      expect($(LoginScreen), findsOneWidget);
 
-      await $(
-        find.byKey(const Key('emailField')),
-      ).enterText('test@example.com');
+      await $(#emailField).enterText('test@example.com');
       await $.pump();
 
-      await $(find.byKey(const Key('passwordField'))).enterText('');
+      await $(#passwordField).enterText('');
       await $.pump();
 
-      await $(find.byKey(const Key('loginButton'))).tap();
+      await $(#loginButton).tap();
       await $('Please enter your password').waitUntilVisible();
 
-      expect(find.text('Please enter your password'), findsOneWidget);
+      expect($('Please enter your password'), findsOneWidget);
 
-      expect(find.byType(LoginScreen), findsOneWidget);
+      expect($(LoginScreen), findsOneWidget);
     },
   );
 
@@ -90,20 +87,20 @@ void main() {
     app.main();
     await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-    expect(find.byType(LoginScreen), findsOneWidget);
+    expect($(LoginScreen), findsOneWidget);
 
-    await $(find.byKey(const Key('emailField'))).enterText('invalid-email');
+    await $(#emailField).enterText('invalid-email');
     await $.pump();
 
-    await $(find.byKey(const Key('passwordField'))).enterText('password123');
+    await $(#passwordField).enterText('password123');
     await $.pump();
 
-    await $(find.byKey(const Key('loginButton'))).tap();
+    await $(#loginButton).tap();
     await $('Please enter a valid email').waitUntilVisible();
 
-    expect(find.text('Please enter a valid email'), findsOneWidget);
+    expect($('Please enter a valid email'), findsOneWidget);
 
-    expect(find.byType(LoginScreen), findsOneWidget);
+    expect($(LoginScreen), findsOneWidget);
   });
 
   patrolTest('Google Login → Navigate to Home', ($) async {
@@ -115,12 +112,12 @@ void main() {
     app.main();
     await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-    expect(find.byType(LoginScreen), findsOneWidget);
+    expect($(LoginScreen), findsOneWidget);
 
-    await $(find.byKey(const Key('googleLoginButton'))).tap();
+    await $(#googleLoginButton).tap();
     await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-    expect(find.byType(HomeScreen), findsOneWidget);
+    expect($(HomeScreen), findsOneWidget);
   });
 
   patrolTest('Facebook Login → Navigate to Home', ($) async {
@@ -132,26 +129,28 @@ void main() {
     app.main();
     await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-    expect(find.byType(LoginScreen), findsOneWidget);
+    expect($(LoginScreen), findsOneWidget);
 
-    await $(find.byKey(const Key('facebookLoginButton'))).tap();
+    await $(#facebookLoginButton).tap();
     await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-    expect(find.byType(HomeScreen), findsOneWidget);
+    expect($(HomeScreen), findsOneWidget);
   });
 
-  patrolTest('Login → Click on Sign Up Text → Navigate to Sign Up Screen', ($) async {
+  patrolTest('Login → Click on Sign Up Text → Navigate to Sign Up Screen', (
+    $,
+  ) async {
     await initTestServiceLocator(authRemoteData: MockAuthRemoteDataLogin());
 
     app.isTestMode = true;
     app.main();
     await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-    expect(find.byType(LoginScreen), findsOneWidget);
+    expect($(LoginScreen), findsOneWidget);
 
-    await $(find.byKey(const Key('signupText'))).tap();
+    await $(#signupText).tap();
     await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-    expect(find.text('Sign Up'), findsOneWidget);
+    expect($('Sign Up'), findsOneWidget);
   });
 }

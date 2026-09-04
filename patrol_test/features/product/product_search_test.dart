@@ -22,26 +22,23 @@ void main() {
       app.main();
       await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-      expect(find.byType(HomeScreen), findsOneWidget);
-      await $.scrollUntilVisible(
-        finder: find.byKey(const Key('exploreNowButton')),
-      );
+      expect($(HomeScreen), findsOneWidget);
+      await $.scrollUntilVisible(finder: $(#exploreNowButton));
 
-      await $(find.byKey(const Key('exploreNowButton'))).tap();
+      await $(#exploreNowButton).tap();
       await $.pumpAndSettle(timeout: const Duration(seconds: 20));
 
-      expect(find.byType(ProductSearchScreen), findsOneWidget);
+      expect($(ProductSearchScreen), findsOneWidget);
 
-      final productFinder = find.text(
-        'NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked',
-      );
+      const samsungProduct =
+          'NEW SEALED Samsung Galaxy S23 Ultra 5G SM-S918U 1T/256GB/512GB Factory Unlocked';
 
-      await $.scrollUntilVisible(finder: productFinder);
+      await $.scrollUntilVisible(finder: $(samsungProduct));
 
-      await $(productFinder).tap();
+      await $(samsungProduct).tap();
       await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-      expect(find.byType(ProductDetailScreen), findsOneWidget);
+      expect($(ProductDetailScreen), findsOneWidget);
     },
   );
 
@@ -57,33 +54,28 @@ void main() {
       app.main();
       await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-      expect(find.byType(HomeScreen), findsOneWidget);
-      await $.scrollUntilVisible(
-        finder: find.byKey(const Key('exploreNowButton')),
-      );
+      expect($(HomeScreen), findsOneWidget);
+      await $.scrollUntilVisible(finder: $(#exploreNowButton));
 
-      await $(find.byKey(const Key('exploreNowButton'))).tap();
+      await $(#exploreNowButton).tap();
       await $.pumpAndSettle(timeout: const Duration(seconds: 20));
 
-      expect(find.byType(ProductSearchScreen), findsOneWidget);
+      expect($(ProductSearchScreen), findsOneWidget);
 
-      final productSearchBarFinder = find.byKey(const Key('productSearchBar'));
-
-      await $(productSearchBarFinder).tap();
-      await $(productSearchBarFinder).enterText('A');
+      await $(#productSearchBar).tap();
+      await $(#productSearchBar).enterText('A');
       FocusManager.instance.primaryFocus?.unfocus();
       await $.pumpAndSettle(timeout: const Duration(seconds: 2));
 
-      final productFinder = find.text(
-        'Apple iPhone 12 64/128GB - Fully Unlocked AT&T T-Mobile Verizon - All colors',
-      );
+      const iphoneProduct =
+          'Apple iPhone 12 64/128GB - Fully Unlocked AT&T T-Mobile Verizon - All colors';
 
-      await $.scrollUntilVisible(finder: productFinder);
+      await $.scrollUntilVisible(finder: $(iphoneProduct));
 
-      await $(productFinder).tap();
+      await $(iphoneProduct).tap();
       await $.pumpAndSettle(timeout: const Duration(seconds: 10));
 
-      expect(find.byType(ProductDetailScreen), findsOneWidget);
+      expect($(ProductDetailScreen), findsOneWidget);
     },
   );
 }

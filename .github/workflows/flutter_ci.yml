@@ -179,6 +179,29 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
+      - name: Install CocoaPods Dependencies
+        working-directory: ios
+        run: |
+          pod deintegrate
+          pod install --repo-update
+
+      - name: Debug iOS Build Environment
+        run: |
+          echo "=== Architecture ==="
+          uname -m
+
+          echo "=== Xcode ==="
+          xcodebuild -version
+
+          echo "=== Swift ==="
+          swift --version
+
+          echo "=== Flutter ==="
+          flutter --version
+
+          echo "=== Simulator Runtimes ==="
+          xcrun simctl list runtimes
+
       - name: Install Patrol CLI
         run: |
           dart pub global activate patrol_cli 4.6.1
