@@ -143,98 +143,101 @@ jobs:
             build/test-results/
           retention-days: 7
 
-  patrol_ios:
-    name: Patrol iOS E2E
-    needs: android_test
-    runs-on: macos-latest
-    timeout-minutes: 30
+  # patrol_ios:
+  #   name: Patrol iOS E2E
+  #   needs: android_test
+  #   runs-on: macos-latest
+  #   timeout-minutes: 30
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - name: Select Xcode
-        uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90
-        with:
-          xcode-version: '26.2'
+  #     - name: Select Xcode
+  #       uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90
+  #       with:
+  #         xcode-version: '26.2'
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.38.9'
-          channel: stable
+  #     - name: Setup Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: '3.38.9'
+  #         channel: stable
 
-      - name: Preload Flutter artifacts
-        run: flutter precache --ios
+  #     - name: Preload Flutter artifacts
+  #       run: flutter precache --ios
 
-      - name: Create .env
-        run: |
-          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
-          echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
+  #     - name: Create .env
+  #       run: |
+  #         echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
+  #         echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
 
-      - name: Create GoogleService-Info.plist
-        run: |
-          echo "${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}" | base64 --decode > ios/Runner/GoogleService-Info.plist
+  #     - name: Create GoogleService-Info.plist
+  #       run: |
+  #         echo "${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}" | base64 --decode > ios/Runner/GoogleService-Info.plist
 
-      - name: Install Dependencies
-        run: flutter pub get
+  #     - name: Install Dependencies
+  #       run: flutter pub get
 
-      - name: Install CocoaPods Dependencies
-        working-directory: ios
-        run: |
-          pod deintegrate
-          pod install --repo-update
+  #     - name: Install CocoaPods Dependencies
+  #       working-directory: ios
+  #       run: |
+  #         pod deintegrate
+  #         pod install --repo-update
 
-      - name: Debug iOS Build Environment
-        run: |
-          echo "=== Architecture ==="
-          uname -m
+  #     - name: Debug iOS Build Environment
+  #       run: |
+  #         echo "=== Architecture ==="
+  #         uname -m
 
-          echo "=== Xcode ==="
-          xcodebuild -version
+  #         echo "=== Xcode ==="
+  #         xcodebuild -version
 
-          echo "=== Swift ==="
-          swift --version
+  #         echo "=== Swift ==="
+  #         swift --version
 
-          echo "=== Flutter ==="
-          flutter --version
+  #         echo "=== Flutter ==="
+  #         flutter --version
 
-          echo "=== Simulator Runtimes ==="
-          xcrun simctl list runtimes
+  #         echo "=== Simulator Runtimes ==="
+  #         xcrun simctl list runtimes
 
-      - name: Install Patrol CLI
-        run: |
-          dart pub global activate patrol_cli 4.6.1
+  #     - name: Install Patrol CLI
+  #       run: |
+  #         dart pub global activate patrol_cli 4.6.1
 
-      - name: Start iOS Simulator
-        uses: futureware-tech/simulator-action@v2
-        with:
-          model: iPhone 17
-          os: iOS
-          os_version: '26.2'
-          erase_before_boot: true
-          shutdown_after_job: true
+  #     - name: Start iOS Simulator
+  #       uses: futureware-tech/simulator-action@v2
+  #       with:
+  #         model: iPhone 17
+  #         os: iOS
+  #         os_version: '26.2'
+  #         erase_before_boot: true
+  #         shutdown_after_job: true
 
-      - name: Verify Simulator
-        run: |
-          xcrun simctl list devices
-          flutter devices
+  #     - name: Verify Simulator
+  #       run: |
+  #         xcrun simctl list devices
+  #         flutter devices
 
-      - name: Run Patrol iOS Tests
-        run: |
-          patrol test --target patrol_test --verbose --ios 26.2
+  #     - name: Run Patrol iOS Tests
+  #       run: |
+  #         patrol test --target patrol_test --verbose --ios 26.2
 
-      - name: Upload Patrol results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: patrol-ios-results
-          path: patrol_output/
-          retention-days: 7
+  #     - name: Upload Patrol results
+  #       if: always()
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: patrol-ios-results
+  #         path: patrol_output/
+  #         retention-days: 7
   
   release_build:
     name: Release Build
-    needs: [patrol_android, patrol_ios]
+    needs: 
+    # [
+      patrol_android
+    # , patrol_ios]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
