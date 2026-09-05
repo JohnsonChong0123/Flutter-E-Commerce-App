@@ -130,6 +130,7 @@ jobs:
         run: |
           ew-cli \
             --app build/app/outputs/apk/debug/app-debug.apk \
+            --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
             --device model=Pixel7,version=${{ matrix.api-level }}
 
       - name: Upload Patrol Results
