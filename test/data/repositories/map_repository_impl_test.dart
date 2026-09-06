@@ -38,16 +38,6 @@ void main() {
   });
 
   group('resolveInitialAddress', () {
-    test('should return initialAddress when provided', () async {
-      // act
-      final result = await repository.resolveInitialAddress(
-        initialAddress: tAddressEntity,
-      );
-
-      // assert
-      expect(result, equals(right(tAddressEntity)));
-    });
-
     test('should return fallback address when initialAddress is null', () async {
       // Note: This test would require mocking Geolocator and geocoding
       // which are static methods. The fallback address is a private constant

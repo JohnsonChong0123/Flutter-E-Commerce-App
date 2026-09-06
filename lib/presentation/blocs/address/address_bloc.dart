@@ -29,9 +29,7 @@ class AddressPickerBloc extends Bloc<AddressEvent, AddressState> {
   ) async {
     emit(AddressLoading(mapViewId: event.mapViewId, isResolvingAddress: true));
 
-    final initialAddressResult = await _mapRepository.resolveInitialAddress(
-      initialAddress: event.initialAddress,
-    );
+    final initialAddressResult = await _mapRepository.resolveInitialAddress();
 
     await initialAddressResult.fold(
       (failure) async {

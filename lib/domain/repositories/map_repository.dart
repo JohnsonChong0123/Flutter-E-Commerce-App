@@ -4,9 +4,7 @@ import 'package:fpdart/fpdart.dart';
 import '../entity/address/address_entity.dart';
 
 abstract interface class MapRepository {
-  Future<Either<Failure, AddressEntity>> resolveInitialAddress({
-    AddressEntity? initialAddress,
-  });
+  Future<Either<Failure, AddressEntity>> resolveInitialAddress();
 
   Future<Either<Failure, AddressEntity>> reverseGeocode({
     required double latitude,

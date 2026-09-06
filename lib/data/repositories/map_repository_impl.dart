@@ -25,13 +25,7 @@ class MapRepositoryImpl implements MapRepository {
   });
 
   @override
-  Future<Either<Failure, AddressEntity>> resolveInitialAddress({
-    AddressEntity? initialAddress,
-  }) async {
-    if (initialAddress != null) {
-      return right(initialAddress);
-    }
-
+  Future<Either<Failure, AddressEntity>> resolveInitialAddress() async {
     try {
       final permission = await geocodingRemoteData.checkAndRequestPermission();
       if (permission == LocationPermission.denied ||

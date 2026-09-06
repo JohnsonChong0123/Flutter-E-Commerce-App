@@ -84,9 +84,7 @@ void main() {
         'should emit [AddressLoading, AddressLoaded] when map view created and initial address resolves successfully',
         build: () {
           when(
-            () => mockMapRepository.resolveInitialAddress(
-              initialAddress: tInitialAddress,
-            ),
+            () => mockMapRepository.resolveInitialAddress(),
           ).thenAnswer((_) async => const Right(tResolvedAddress));
 
           when(
@@ -119,9 +117,7 @@ void main() {
         ],
         verify: (_) {
           verify(
-            () => mockMapRepository.resolveInitialAddress(
-              initialAddress: tInitialAddress,
-            ),
+            () => mockMapRepository.resolveInitialAddress(),
           ).called(1);
           verify(
             () => mockMapRepository.updateSelectedAddressOnMap(
@@ -138,9 +134,7 @@ void main() {
         'should emit [AddressLoading, AddressError] when resolveInitialAddress fails',
         build: () {
           when(
-            () => mockMapRepository.resolveInitialAddress(
-              initialAddress: tInitialAddress,
-            ),
+            () => mockMapRepository.resolveInitialAddress(),
           ).thenAnswer(
             (_) async => const Left(Failure('Failed to resolve address')),
           );
@@ -166,9 +160,7 @@ void main() {
         ],
         verify: (_) {
           verify(
-            () => mockMapRepository.resolveInitialAddress(
-              initialAddress: tInitialAddress,
-            ),
+            () => mockMapRepository.resolveInitialAddress(),
           ).called(1);
           verifyNever(
             () => mockMapRepository.updateSelectedAddressOnMap(
@@ -185,9 +177,7 @@ void main() {
         'should emit [AddressLoading, AddressError] when updateSelectedAddressOnMap fails',
         build: () {
           when(
-            () => mockMapRepository.resolveInitialAddress(
-              initialAddress: tInitialAddress,
-            ),
+            () => mockMapRepository.resolveInitialAddress(),
           ).thenAnswer((_) async => const Right(tResolvedAddress));
 
           when(
@@ -222,9 +212,7 @@ void main() {
         ],
         verify: (_) {
           verify(
-            () => mockMapRepository.resolveInitialAddress(
-              initialAddress: tInitialAddress,
-            ),
+            () => mockMapRepository.resolveInitialAddress(),
           ).called(1);
           verify(
             () => mockMapRepository.updateSelectedAddressOnMap(
@@ -241,7 +229,7 @@ void main() {
         'should work without initial address',
         build: () {
           when(
-            () => mockMapRepository.resolveInitialAddress(initialAddress: null),
+            () => mockMapRepository.resolveInitialAddress(),
           ).thenAnswer((_) async => const Right(tResolvedAddress));
 
           when(
@@ -271,7 +259,7 @@ void main() {
         ],
         verify: (_) {
           verify(
-            () => mockMapRepository.resolveInitialAddress(initialAddress: null),
+            () => mockMapRepository.resolveInitialAddress(),
           ).called(1);
         },
       );
@@ -411,9 +399,7 @@ void main() {
         'should add MapViewCreated event when retry is triggered',
         build: () {
           when(
-            () => mockMapRepository.resolveInitialAddress(
-              initialAddress: tInitialAddress,
-            ),
+            () => mockMapRepository.resolveInitialAddress(),
           ).thenAnswer((_) async => const Right(tResolvedAddress));
 
           when(
@@ -449,9 +435,7 @@ void main() {
         ],
         verify: (_) {
           verify(
-            () => mockMapRepository.resolveInitialAddress(
-              initialAddress: tInitialAddress,
-            ),
+            () => mockMapRepository.resolveInitialAddress(),
           ).called(1);
         },
       );
@@ -471,9 +455,7 @@ void main() {
         expect: () => [],
         verify: (_) {
           verifyNever(
-            () => mockMapRepository.resolveInitialAddress(
-              initialAddress: any(named: 'initialAddress'),
-            ),
+            () => mockMapRepository.resolveInitialAddress(),
           );
         },
       );

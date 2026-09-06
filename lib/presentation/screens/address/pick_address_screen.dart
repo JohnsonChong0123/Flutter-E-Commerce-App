@@ -13,21 +13,14 @@ import '../../../domain/entity/address/address_entity.dart';
 import '../../blocs/address/address_bloc.dart';
 import '../../cubits/user/user_cubit.dart';
 
-class AddressPickerPage extends StatefulWidget {
-  // final AddressEntity? initialAddress;
-  final String? title;
-
-  const AddressPickerPage({
-    super.key,
-    // this.initialAddress,
-    this.title,
-  });
+class AddressPickerScreen extends StatefulWidget {
+  const AddressPickerScreen({super.key});
 
   @override
-  State<AddressPickerPage> createState() => _AddressPickerPageState();
+  State<AddressPickerScreen> createState() => _AddressPickerScreenState();
 }
 
-class _AddressPickerPageState extends State<AddressPickerPage> {
+class _AddressPickerScreenState extends State<AddressPickerScreen> {
   StreamSubscription<MapCoordinateUpdate>? _coordinateSub;
   int? _activeViewId;
 
@@ -67,7 +60,7 @@ class _AddressPickerPageState extends State<AddressPickerPage> {
 
   PreferredSizeWidget _buildAppBar(AddressState state) {
     return AppBar(
-      title: Text(widget.title ?? 'Select Delivery Address'),
+      title: Text('Select Delivery Address'),
       actions: [
         IconButton(
           icon: const Icon(Icons.my_location),
@@ -75,12 +68,7 @@ class _AddressPickerPageState extends State<AddressPickerPage> {
             final bloc = context.read<AddressPickerBloc>();
             final viewId = _getMapViewId(state);
             if (viewId != null) {
-              bloc.add(
-                MapViewCreated(
-                  mapViewId: viewId,
-                  initialAddress: _getCurrentAddress(state),
-                ),
-              );
+              bloc.add(MapViewCreated(mapViewId: viewId));
             }
           },
           tooltip: 'Use my current location',
@@ -98,7 +86,7 @@ class _AddressPickerPageState extends State<AddressPickerPage> {
             onMapCreated: (viewId) {
               _activeViewId = viewId;
               context.read<AddressPickerBloc>().add(
-                MapViewCreated(mapViewId: viewId, initialAddress: null),
+                MapViewCreated(mapViewId: viewId),
               );
             },
           ),
@@ -336,15 +324,6 @@ class _AddressPickerPageState extends State<AddressPickerPage> {
       AddressResolving() => state.mapViewId,
       AddressLoading() => state.mapViewId,
       AddressError() => state.mapViewId,
-      _ => null,
-    };
-  }
-
-  AddressEntity? _getCurrentAddress(AddressState state) {
-    return switch (state) {
-      AddressLoaded() => state.selectedAddress,
-      AddressResolving() => state.selectedAddress,
-      AddressError() => state.lastKnownAddress,
       _ => null,
     };
   }

@@ -129,7 +129,7 @@ class AppRouter {
                 BlocProvider(create: (_) => sl<AddressPickerBloc>()),
                 BlocProvider(create: (_) => sl<UserCubit>()),
               ],
-              child: AddressPickerPage(
+              child: AddressPickerScreen(
                 // initialAddress: initialAddress
                 ),
             );
