@@ -74,17 +74,24 @@ jobs:
     name: Patrol Android E2E
     needs: android_test
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     strategy:
       fail-fast: false
       matrix:
-        api-level:
-          - 35
+        include:
+          - device_model: "shiba"
+            api_level: "35"
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -112,32 +119,38 @@ jobs:
         run: |
           dart pub global activate patrol_cli 4.7.0
 
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_JSON }}'
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}
+
       - name: Build Patrol Android
         run: |
           patrol build android --emit-test-manifest
 
-      - name: Install ew-cli
+      - name: Run Patrol on Firebase Test Lab
         run: |
-          mkdir -p "$HOME/bin"
-          curl "https://maven.emulator.wtf/releases/ew-cli" \
-            -o "$HOME/bin/ew-cli"
-          chmod +x "$HOME/bin/ew-cli"
-          echo "$HOME/bin" >> "$GITHUB_PATH"
-
-      - name: Run Patrol on emulator.wtf
-        env:
-          EW_API_TOKEN: ${{ secrets.EMULATOR_WTF_API_KEY }}
-        run: |
-          ew-cli \
+          gcloud firebase test android run \
+            --type instrumentation \
+            --use-orchestrator \
             --app build/app/outputs/apk/debug/app-debug.apk \
             --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-            --device model=Pixel7,version=${{ matrix.api-level }}
+            --device model=${{ matrix.device_model }},version=${{ matrix.api_level }},locale=en,orientation=portrait \
+            --timeout 15m \
+            --record-video \
+            --environment-variables clearPackageData=true \
+            --directories-to-pull=/sdcard/Download/screenshots
 
       - name: Upload Patrol Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: patrol-android-api-${{ matrix.api-level }}
+          name: patrol-android-api-${{ matrix.api_level }}
           path: |
             patrol_output/
             build/test-results/
@@ -234,10 +247,8 @@ jobs:
   
   release_build:
     name: Release Build
-    needs: 
-    # [
-      patrol_android
-    # , patrol_ios]
+    needs: patrol_android
+    # [patrol_android, patrol_ios]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
