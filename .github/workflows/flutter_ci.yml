@@ -144,7 +144,8 @@ jobs:
             --timeout 15m \
             --record-video \
             --environment-variables clearPackageData=true \
-            --directories-to-pull=/sdcard/Download/screenshots
+            --directories-to-pull=/sdcard/Download/screenshots \
+            --results-bucket=e-commerce-test-lab-results
 
       - name: Upload Patrol Results
         if: always()
