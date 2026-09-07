@@ -157,99 +157,123 @@ jobs:
             build/test-results/
           retention-days: 7
 
-  # patrol_ios:
-  #   name: Patrol iOS E2E
-  #   needs: android_test
-  #   runs-on: macos-latest
-  #   timeout-minutes: 30
+  patrol_ios:
+    name: Patrol iOS E2E - Firebase Test Lab
+    needs: android_test
+    runs-on: macos-latest
+    timeout-minutes: 60
 
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - device_model: "YOUR_IOS_DEVICE_MODEL"
+            ios_version: "YOUR_IOS_VERSION"
 
-  #     - name: Select Xcode
-  #       uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90
-  #       with:
-  #         xcode-version: '26.2'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - name: Setup Flutter
-  #       uses: subosito/flutter-action@v2
-  #       with:
-  #         flutter-version: '3.38.9'
-  #         channel: stable
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.2'
 
-  #     - name: Preload Flutter artifacts
-  #       run: flutter precache --ios
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
 
-  #     - name: Create .env
-  #       run: |
-  #         echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
-  #         echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.38.9
+          channel: stable
 
-  #     - name: Create GoogleService-Info.plist
-  #       run: |
-  #         echo "${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}" | base64 --decode > ios/Runner/GoogleService-Info.plist
+      - name: Precache iOS
+        run: flutter precache --ios
 
-  #     - name: Install Dependencies
-  #       run: flutter pub get
+      - name: Create .env
+        run: |
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
+          echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
 
-  #     - name: Install CocoaPods Dependencies
-  #       working-directory: ios
-  #       run: |
-  #         pod deintegrate
-  #         pod install --repo-update
+      - name: Create GoogleService-Info.plist
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}" \
+            | base64 --decode > ios/Runner/GoogleService-Info.plist
 
-  #     - name: Debug iOS Build Environment
-  #       run: |
-  #         echo "=== Architecture ==="
-  #         uname -m
+      - name: Install Dependencies
+        run: flutter pub get
 
-  #         echo "=== Xcode ==="
-  #         xcodebuild -version
+      - name: Install CocoaPods Dependencies
+        working-directory: ios
+        run: |
+          pod install --repo-update
 
-  #         echo "=== Swift ==="
-  #         swift --version
+      - name: Install Patrol CLI
+        run: |
+          dart pub global activate patrol_cli 4.7.0
 
-  #         echo "=== Flutter ==="
-  #         flutter --version
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_JSON }}'
 
-  #         echo "=== Simulator Runtimes ==="
-  #         xcrun simctl list runtimes
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}
 
-  #     - name: Install Patrol CLI
-  #       run: |
-  #         dart pub global activate patrol_cli 4.6.1
+      - name: Build Patrol iOS
+        run: |
+          patrol build ios \
+            --target patrol_test \
+            --release
 
-  #     - name: Start iOS Simulator
-  #       uses: futureware-tech/simulator-action@v2
-  #       with:
-  #         model: iPhone 17
-  #         os: iOS
-  #         os_version: '26.2'
-  #         erase_before_boot: true
-  #         shutdown_after_job: true
+      - name: Find Patrol iOS Build Files
+        run: |
+          echo "=== Build Products ==="
+          find build/ios_integ/Build/Products -maxdepth 2 -type f -o -type d
 
-  #     - name: Verify Simulator
-  #       run: |
-  #         xcrun simctl list devices
-  #         flutter devices
+      - name: Package iOS XCTest
+        run: |
+          cd build/ios_integ/Build/Products
 
-  #     - name: Run Patrol iOS Tests
-  #       run: |
-  #         patrol test --target patrol_test --verbose --ios 26.2
+          XCTESTRUN=$(find . -maxdepth 1 -name "*.xctestrun" | head -1)
 
-  #     - name: Upload Patrol results
-  #       if: always()
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: patrol-ios-results
-  #         path: patrol_output/
-  #         retention-days: 7
+          echo "Using XCTestRun: $XCTESTRUN"
+
+          zip -r ios_tests.zip \
+            Release-iphoneos \
+            "$XCTESTRUN"
+
+      - name: Show Firebase iOS Devices
+        run: |
+          gcloud firebase test ios models list
+
+      - name: Run Patrol on Firebase Test Lab
+        run: |
+          gcloud firebase test ios run \
+            --test build/ios_integ/Build/Products/ios_tests.zip \
+            --device model=${{ matrix.device_model }},version=${{ matrix.ios_version }},locale=en_US,orientation=portrait \
+            --timeout 15m \
+            --results-bucket=e-commerce-test-lab-results
+
+      - name: Upload Patrol iOS Build
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: patrol-ios-firebase-${{ matrix.ios_version }}
+          path: |
+            build/ios_integ/Build/Products/ios_tests.zip
+            patrol_output/
+          retention-days: 7
   
   release_build:
     name: Release Build
-    needs: patrol_android
-    # [patrol_android, patrol_ios]
+    needs: [patrol_android, patrol_ios]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
