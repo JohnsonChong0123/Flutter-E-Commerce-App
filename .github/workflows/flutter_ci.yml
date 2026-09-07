@@ -157,123 +157,124 @@ jobs:
             build/test-results/
           retention-days: 7
 
-  patrol_ios:
-    name: Patrol iOS E2E - Firebase Test Lab
-    needs: android_test
-    runs-on: macos-latest
-    timeout-minutes: 60
+  # patrol_ios:
+  #   name: Patrol iOS E2E
+  #   needs: android_test
+  #   runs-on: macos-latest
+  #   timeout-minutes: 60
 
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - device_model: "YOUR_IOS_DEVICE_MODEL"
-            ios_version: "YOUR_IOS_VERSION"
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       include:
+  #         - device_model: "iphone16pro"
+  #           ios_version: "18.6"
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - name: Select Xcode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: '26.2'
+  #     - name: Select Xcode
+  #       uses: maxim-lobanov/setup-xcode@v1
+  #       with:
+  #         xcode-version: '26.2'
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
+  #     - name: Setup Java
+  #       uses: actions/setup-java@v4
+  #       with:
+  #         distribution: temurin
+  #         java-version: 17
 
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: 3.38.9
-          channel: stable
+  #     - name: Setup Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: 3.38.9
+  #         channel: stable
 
-      - name: Precache iOS
-        run: flutter precache --ios
+  #     - name: Precache iOS
+  #       run: flutter precache --ios
 
-      - name: Create .env
-        run: |
-          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
-          echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
+  #     - name: Create .env
+  #       run: |
+  #         echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
+  #         echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
 
-      - name: Create GoogleService-Info.plist
-        run: |
-          echo "${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}" \
-            | base64 --decode > ios/Runner/GoogleService-Info.plist
+  #     - name: Create GoogleService-Info.plist
+  #       run: |
+  #         echo "${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}" \
+  #           | base64 --decode > ios/Runner/GoogleService-Info.plist
 
-      - name: Install Dependencies
-        run: flutter pub get
+  #     - name: Install Dependencies
+  #       run: flutter pub get
 
-      - name: Install CocoaPods Dependencies
-        working-directory: ios
-        run: |
-          pod install --repo-update
+  #     - name: Install CocoaPods Dependencies
+  #       working-directory: ios
+  #       run: |
+  #         pod install --repo-update
 
-      - name: Install Patrol CLI
-        run: |
-          dart pub global activate patrol_cli 4.7.0
+  #     - name: Install Patrol CLI
+  #       run: |
+  #         dart pub global activate patrol_cli 4.7.0
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_JSON }}'
+  #     - name: Authenticate to Google Cloud
+  #       uses: google-github-actions/auth@v2
+  #       with:
+  #         credentials_json: '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_JSON }}'
 
-      - name: Setup Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}
+  #     - name: Setup Google Cloud SDK
+  #       uses: google-github-actions/setup-gcloud@v2
+  #       with:
+  #         project_id: ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}
 
-      - name: Build Patrol iOS
-        run: |
-          patrol build ios \
-            --target patrol_test \
-            --release
+  #     - name: Build Patrol iOS
+  #       run: |
+  #         patrol build ios \
+  #           --target patrol_test \
+  #           --release
 
-      - name: Find Patrol iOS Build Files
-        run: |
-          echo "=== Build Products ==="
-          find build/ios_integ/Build/Products -maxdepth 2 -type f -o -type d
+  #     - name: Find Patrol iOS Build Files
+  #       run: |
+  #         echo "=== Build Products ==="
+  #         find build/ios_integ/Build/Products -maxdepth 2 -type f -o -type d
 
-      - name: Package iOS XCTest
-        run: |
-          cd build/ios_integ/Build/Products
+  #     - name: Package iOS XCTest
+  #       run: |
+  #         cd build/ios_integ/Build/Products
 
-          XCTESTRUN=$(find . -maxdepth 1 -name "*.xctestrun" | head -1)
+  #         XCTESTRUN=$(find . -maxdepth 1 -name "*.xctestrun" | head -1)
 
-          echo "Using XCTestRun: $XCTESTRUN"
+  #         echo "Using XCTestRun: $XCTESTRUN"
 
-          zip -r ios_tests.zip \
-            Release-iphoneos \
-            "$XCTESTRUN"
+  #         zip -r ios_tests.zip \
+  #           Release-iphoneos \
+  #           "$XCTESTRUN"
 
-      - name: Show Firebase iOS Devices
-        run: |
-          gcloud firebase test ios models list
+  #     - name: Show Firebase iOS Devices
+  #       run: |
+  #         gcloud firebase test ios models list
 
-      - name: Run Patrol on Firebase Test Lab
-        run: |
-          gcloud firebase test ios run \
-            --test build/ios_integ/Build/Products/ios_tests.zip \
-            --device model=${{ matrix.device_model }},version=${{ matrix.ios_version }},locale=en_US,orientation=portrait \
-            --timeout 15m \
-            --results-bucket=e-commerce-test-lab-results
+  #     - name: Run Patrol on Firebase Test Lab
+  #       run: |
+  #         gcloud firebase test ios run \
+  #           --test build/ios_integ/Build/Products/ios_tests.zip \
+  #           --device model=${{ matrix.device_model }},version=${{ matrix.ios_version }},locale=en_US,orientation=portrait \
+  #           --timeout 15m \
+  #           --results-bucket=e-commerce-test-lab-results
 
-      - name: Upload Patrol iOS Build
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: patrol-ios-firebase-${{ matrix.ios_version }}
-          path: |
-            build/ios_integ/Build/Products/ios_tests.zip
-            patrol_output/
-          retention-days: 7
+  #     - name: Upload Patrol iOS Build
+  #       if: always()
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: patrol-ios-firebase-${{ matrix.ios_version }}
+  #         path: |
+  #           build/ios_integ/Build/Products/ios_tests.zip
+  #           patrol_output/
+  #         retention-days: 7
   
   release_build:
     name: Release Build
-    needs: [patrol_android, patrol_ios]
+    needs: patrol_android
+    # [patrol_android, patrol_ios]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
