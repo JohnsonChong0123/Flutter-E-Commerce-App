@@ -7,10 +7,12 @@ import '../../core/errors/failure.dart';
 import '../models/map/address_model.dart';
 import '../sources/remote/geocoding_remote_data.dart';
 import '../sources/remote/map_remote_data.dart';
+import '../sources/remote/user_remote_data.dart';
 
 class MapRepositoryImpl implements MapRepository {
   final MapRemoteData mapRemoteData;
   final GeocodingRemoteData geocodingRemoteData;
+  final UserRemoteData userRemoteData;
 
   static const AddressEntity _fallbackAddress = AddressEntity(
     latitude: 3.1579,
@@ -22,6 +24,7 @@ class MapRepositoryImpl implements MapRepository {
   MapRepositoryImpl({
     required this.mapRemoteData,
     required this.geocodingRemoteData,
+    required this.userRemoteData,
   });
 
   @override
@@ -30,6 +33,12 @@ class MapRepositoryImpl implements MapRepository {
       final permission = await geocodingRemoteData.checkAndRequestPermission();
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
+        // Permission denied - try to get saved location from server as fallback
+        final fallbackSavedLocation = await _getSavedUserLocation();
+        if (fallbackSavedLocation.isRight()) {
+          return fallbackSavedLocation;
+        }
+        // If saved location also fails, use hardcoded fallback
         return right(_fallbackAddress);
       }
 
@@ -38,7 +47,7 @@ class MapRepositoryImpl implements MapRepository {
         position.latitude,
         position.longitude,
       );
-      
+
       final addressModel = AddressModel.fromPlacemarks(
         latitude: position.latitude,
         longitude: position.longitude,
@@ -48,7 +57,28 @@ class MapRepositoryImpl implements MapRepository {
 
       return right(addressModel.toEntity());
     } catch (_) {
+      // If geolocation fails, try to get saved location from server as fallback
+      final fallbackSavedLocation = await _getSavedUserLocation();
+      if (fallbackSavedLocation.isRight()) {
+        return fallbackSavedLocation;
+      }
+      // If saved location also fails, use hardcoded fallback
       return right(_fallbackAddress);
+    }
+  }
+
+  /// Fetches the user's saved location from the server and converts it to AddressEntity
+  Future<Either<Failure, AddressEntity>> _getSavedUserLocation() async {
+    try {
+      final locationModel = await userRemoteData.getUserLocation();
+
+      if (!locationModel.hasValidCoordinates) {
+        return left(Failure('No saved location found'));
+      }
+
+      return right(locationModel.toAddressEntity());
+    } catch (e) {
+      return left(Failure('Failed to fetch saved location: $e'));
     }
   }
 

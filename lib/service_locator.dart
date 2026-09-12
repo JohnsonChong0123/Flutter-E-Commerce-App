@@ -267,7 +267,11 @@ void _initMap() {
       () => GeocodingRemoteDataImpl(),
     )
     ..registerLazySingleton<MapRepository>(
-      () => MapRepositoryImpl(mapRemoteData: sl(), geocodingRemoteData: sl()),
+      () => MapRepositoryImpl(
+        mapRemoteData: sl(),
+        geocodingRemoteData: sl(),
+        userRemoteData: sl(),
+      ),
     )
     ..registerLazySingleton(() => ReverseGeocodeUseCase(sl()))
     ..registerFactory(
