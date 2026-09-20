@@ -28,6 +28,7 @@ import 'package:e_commerce_client/presentation/blocs/product/product_bloc.dart';
 import 'package:e_commerce_client/service_locator.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../mocks/mock_auth_remote_data.dart';
+import '../mocks/mock_cart_remote_data.dart';
 import '../mocks/mock_local_user_data.dart';
 import '../mocks/mock_product_local_data.dart';
 import '../mocks/mock_product_remote_data.dart';
@@ -35,6 +36,7 @@ import '../mocks/mock_product_remote_data.dart';
 Future<void> initTestServiceLocator({
   AuthRemoteData? authRemoteData,
   ProductRemoteData? productRemoteData,
+  CartRemoteData? cartRemoteData,
   ProductLocalData? productLocalData,
 }) async {
   sl.allowReassignment = true;
@@ -91,7 +93,9 @@ Future<void> initTestServiceLocator({
 
   // Cart
   sl
-    ..registerLazySingleton<CartRemoteData>(() => CartRemoteDataImpl(dio: sl()))
+    ..registerLazySingleton<CartRemoteData>(
+      () => cartRemoteData ?? MockCartRemoteData(),
+    )
     ..registerLazySingleton<CartRepository>(
       () => CartRepositoryImpl(cartRemoteData: sl()),
     )
