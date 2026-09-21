@@ -120,18 +120,16 @@ class AppRouter {
           name: pickAddressName,
           parentNavigatorKey: _rootNavigatorKey,
           builder: (context, state) {
-            // final initialAddress = state.extra is AddressEntity
-            //     ? state.extra as AddressEntity
-            //     : null;
+            final checkoutData = state.extra is CheckoutData
+                ? state.extra as CheckoutData
+                : null;
 
             return MultiBlocProvider(
               providers: [
                 BlocProvider(create: (_) => sl<AddressPickerBloc>()),
                 BlocProvider(create: (_) => sl<UserCubit>()),
               ],
-              child: AddressPickerScreen(
-                // initialAddress: initialAddress
-                ),
+              child: AddressPickerScreen(checkoutData: checkoutData),
             );
           },
         ),

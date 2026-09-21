@@ -12,9 +12,12 @@ import '../../../data/sources/remote/map_remote_data.dart';
 import '../../../domain/entity/address/address_entity.dart';
 import '../../blocs/address/address_bloc.dart';
 import '../../cubits/user/user_cubit.dart';
+import '../../models/checkout_data.dart';
 
 class AddressPickerScreen extends StatefulWidget {
-  const AddressPickerScreen({super.key});
+  final CheckoutData? checkoutData;
+
+  const AddressPickerScreen({super.key, this.checkoutData});
 
   @override
   State<AddressPickerScreen> createState() => _AddressPickerScreenState();
@@ -60,7 +63,7 @@ class _AddressPickerScreenState extends State<AddressPickerScreen> {
 
   PreferredSizeWidget _buildAppBar(AddressState state) {
     return AppBar(
-      title: Text('Select Delivery Address'),
+      title: Text('Select Address'),
       actions: [
         IconButton(
           icon: const Icon(Icons.my_location),
@@ -282,7 +285,7 @@ class _AddressPickerScreenState extends State<AddressPickerScreen> {
     return BlocConsumer<UserCubit, UserState>(
       listener: (context, userState) {
         if (userState is UserSuccess) {
-          context.pushNamed(AppRouter.checkoutName);
+          context.pushNamed(AppRouter.checkoutName, extra: widget.checkoutData);
         }
       },
       builder: (context, userState) {

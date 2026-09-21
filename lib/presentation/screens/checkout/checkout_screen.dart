@@ -430,7 +430,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ? 'Select on Map'
                 : 'Edit on Map';
           } else {
-            addressText = 'No address selected yet. Tap below to select on map.';
+            addressText =
+                'No address selected yet. Tap below to select on map.';
             buttonLabel = 'Select on Map';
           }
 
@@ -476,8 +477,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () =>
-                      context.pushNamed(AppRouter.pickAddressName),
+                  onPressed: () => context.pushNamed(
+                    AppRouter.pickAddressName,
+                    extra: widget.checkoutData,
+                  ),
                   icon: const Icon(Icons.map_outlined),
                   label: Text(buttonLabel),
                 ),
