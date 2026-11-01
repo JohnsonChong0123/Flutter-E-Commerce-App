@@ -20,6 +20,14 @@ This project is a hands-on practice of production-level Flutter engineering:
 
 ---
 
+## 🎬 Demo
+
+[![Watch the demo](https://img.youtube.com/vi/3SxZ0yvA8Es/0.jpg)](https://youtube.com/shorts/3SxZ0yvA8Es)
+
+> Short demo of the app in action.
+
+---
+
 ## ✨ Features
 
 | Feature | Status |
