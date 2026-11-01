@@ -57,6 +57,16 @@ import 'presentation/blocs/cart/cart_bloc.dart';
 import 'presentation/blocs/product/product_bloc.dart';
 import 'domain/usecases/product/get_product_by_id.dart';
 import 'presentation/blocs/checkout/checkout_bloc.dart';
+import 'presentation/blocs/payment/payment_bloc.dart';
+import 'data/repositories/payment_repository_impl.dart';
+import 'data/sources/remote/payment_remote_data.dart';
+import 'data/sources/remote/payment_remote_data_setup.dart';
+import 'data/sources/remote/payment_methods_remote_data.dart';
+import 'domain/repositories/payment_repository.dart';
+import 'domain/usecases/payment/create_payment_intent.dart';
+import 'domain/usecases/payment/create_setup_intent.dart';
+import 'domain/usecases/payment/get_setup_intent.dart';
+import 'domain/usecases/payment/get_payment_methods.dart';
 
 final sl = GetIt.instance;
 
@@ -280,5 +290,33 @@ void _initMap() {
 }
 
 void _initCheckout() {
-  sl.registerFactory(() => CheckoutBloc());
+  sl
+    ..registerLazySingleton<PaymentRemoteData>(
+      () => PaymentRemoteDataImpl(dio: sl()),
+    )
+    ..registerLazySingleton<SetupIntentRemoteData>(
+      () => SetupIntentRemoteDataImpl(dio: sl()),
+    )
+    ..registerLazySingleton<PaymentMethodsRemoteData>(
+      () => PaymentMethodsRemoteDataImpl(dio: sl()),
+    )
+    ..registerLazySingleton<PaymentRepository>(
+      () => PaymentRepositoryImpl(
+        paymentRemoteData: sl(),
+        setupIntentRemoteData: sl(),
+        paymentMethodsRemoteData: sl(),
+      ),
+    )
+    ..registerLazySingleton(() => CreatePaymentIntent(sl()))
+    ..registerLazySingleton(() => CreateSetupIntent(sl()))
+    ..registerLazySingleton(() => GetSetupIntent(sl()))
+    ..registerLazySingleton(() => GetPaymentMethods(sl()))
+    ..registerFactory(() => CheckoutBloc(createPaymentIntent: sl()))
+    ..registerFactory(
+      () => PaymentBloc(
+        createSetupIntent: sl(),
+        getSetupIntent: sl(),
+        getPaymentMethods: sl(),
+      ),
+    );
 }

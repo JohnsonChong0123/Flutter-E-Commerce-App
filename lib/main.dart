@@ -6,6 +6,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:go_router/go_router.dart';
 
 import 'core/routes/app_router.dart';
@@ -35,6 +36,11 @@ void main() async {
 
   if (!isTestMode) {
     await dotenv.load();
+    final stripePublishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'];
+    if (stripePublishableKey != null && stripePublishableKey.isNotEmpty) {
+      Stripe.publishableKey = stripePublishableKey;
+      await Stripe.instance.applySettings();
+    }
     await initServiceLocator();
   }
   runApp(const MyApp());
