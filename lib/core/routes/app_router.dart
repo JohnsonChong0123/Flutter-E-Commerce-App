@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/blocs/address/address_bloc.dart';
 import '../../presentation/blocs/auth/auth_bloc.dart';
+import '../../presentation/blocs/checkout/checkout_bloc.dart';
+import '../../presentation/blocs/payment/payment_bloc.dart';
 import '../../presentation/cubits/user/user_cubit.dart';
 import '../../presentation/cubits/category/category_cubit.dart';
 import '../../presentation/blocs/product/product_bloc.dart';
@@ -14,6 +16,7 @@ import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/sign_up_screen.dart';
 import '../../presentation/screens/cart/cart_screen.dart';
 import '../../presentation/screens/checkout/checkout_screen.dart';
+import '../../presentation/screens/checkout/payments_screen.dart';
 import '../../presentation/screens/home_screen.dart';
 import '../../presentation/screens/product/product_search_screen.dart';
 import '../../presentation/screens/navbar_screen.dart';
@@ -36,6 +39,7 @@ class AppRouter {
   static const checkout = '/checkout';
   static const pickAddress = '/pickAddress';
   static const addressesList = '/addressesList';
+  static const paymentMethod = '/paymentMethod';
 
   // ---------------- Names ----------------
   static const splashName = 'splash';
@@ -50,6 +54,7 @@ class AppRouter {
   static const checkoutName = 'checkout';
   static const pickAddressName = 'pickAddress';
   static const addressesListName = 'addressesList';
+  static const paymentMethodName = 'paymentMethod';
 
   static final GlobalKey<NavigatorState> _rootNavigatorKey =
       GlobalKey<NavigatorState>();
@@ -109,8 +114,12 @@ class AppRouter {
           builder: (context, state) {
             final checkoutData = state.extra as CheckoutData?;
 
-            return BlocProvider(
-              create: (_) => sl<UserCubit>()..getUserLocation(),
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => sl<UserCubit>()..getUserLocation()),
+                BlocProvider(create: (_) => sl<CheckoutBloc>()),
+                BlocProvider(create: (_) => sl<PaymentBloc>()),
+              ],
               child: CheckoutScreen(checkoutData: checkoutData),
             );
           },
@@ -130,6 +139,24 @@ class AppRouter {
                 BlocProvider(create: (_) => sl<UserCubit>()),
               ],
               child: AddressPickerScreen(checkoutData: checkoutData),
+            );
+          },
+        ),
+        GoRoute(
+          path: paymentMethod,
+          name: paymentMethodName,
+          parentNavigatorKey: _rootNavigatorKey,
+          builder: (context, state) {
+            final checkoutData = state.extra is CheckoutData
+                ? state.extra as CheckoutData
+                : null;
+
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => sl<UserCubit>()..getUserLocation()),
+                BlocProvider(create: (_) => sl<PaymentBloc>()),
+              ],
+              child: PaymentMethodScreen(checkoutData: checkoutData),
             );
           },
         ),
