@@ -44,7 +44,8 @@ void main() {
       'should update selectedAddress when UpdateCheckoutAddressEvent is added with different address',
       build: () => checkoutBloc,
       seed: () => const CheckoutState(selectedAddress: tAddress),
-      act: (bloc) => bloc.add(const UpdateCheckoutAddressEvent(tAnotherAddress)),
+      act: (bloc) =>
+          bloc.add(const UpdateCheckoutAddressEvent(tAnotherAddress)),
       expect: () => [CheckoutState(selectedAddress: tAnotherAddress)],
     );
 
