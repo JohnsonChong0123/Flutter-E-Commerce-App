@@ -98,9 +98,7 @@ class AppRouter {
             return MultiBlocProvider(
               providers: [
                 BlocProvider(
-                  create: (context) =>
-                      ProductBloc(getProducts: sl(), getProductById: sl())
-                        ..loadProductById(id),
+                  create: (context) => sl<ProductBloc>()..loadProductById(id),
                 ),
               ],
               child: ProductDetailScreen(productId: id),
@@ -172,8 +170,7 @@ class AppRouter {
                   path: home,
                   name: homeName,
                   builder: (context, state) => BlocProvider(
-                    create: (context) =>
-                        ProductBloc(getProducts: sl(), getProductById: sl()),
+                    create: (context) => sl<ProductBloc>(),
                     child: const HomeScreen(),
                   ),
                 ),
@@ -187,12 +184,7 @@ class AppRouter {
                   builder: (context, state) {
                     return MultiBlocProvider(
                       providers: [
-                        BlocProvider(
-                          create: (context) => ProductBloc(
-                            getProducts: sl(),
-                            getProductById: sl(),
-                          ),
-                        ),
+                        BlocProvider(create: (context) => sl<ProductBloc>()),
                         BlocProvider(create: (context) => CategoryCubit()),
                       ],
                       child: const ProductSearchScreen(),
