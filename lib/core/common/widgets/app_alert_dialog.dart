@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../themes/app_colors.dart';
 
 class AppAlertDialog extends StatelessWidget {
   final VoidCallback onYesPressed;
@@ -21,16 +20,16 @@ class AppAlertDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: onNoPressed,
-          child: const Text(
+          child: Text(
             'No',
-            style: TextStyle(color: AppColor.green),
+            style: TextStyle(color: Theme.of(context).colorScheme.primary),
           ),
         ),
         TextButton(
           onPressed: onYesPressed,
-          child: const Text(
+          child: Text(
             'Yes',
-            style: TextStyle(color: AppColor.green),
+            style: TextStyle(color: Theme.of(context).colorScheme.primary),
           ),
         ),
       ],
