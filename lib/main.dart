@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (_) => sl<AuthBloc>()..add(const AuthCheckStatus()),
         ),
-        BlocProvider(create: (_) => sl<CartBloc>()..add(const GetCartEvent())),
+        BlocProvider(create: (_) => sl<CartBloc>()),
         BlocProvider(create: (_) => sl<WishlistCubit>()),
       ],
       child: const AppView(),

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../presentation/blocs/address/address_bloc.dart';
 import '../../presentation/blocs/auth/auth_bloc.dart';
+import '../../presentation/blocs/cart/cart_bloc.dart';
 import '../../presentation/blocs/checkout/checkout_bloc.dart';
 import '../../presentation/blocs/payment/payment_bloc.dart';
 import '../../presentation/cubits/user/user_cubit.dart';
@@ -198,7 +199,10 @@ class AppRouter {
                 GoRoute(
                   path: cart,
                   name: cartName,
-                  builder: (context, state) => const CartScreen(),
+                  builder: (context, state) => BlocProvider(
+                    create: (context) => sl<CartBloc>()..add(const GetCartEvent()),
+                    child: const CartScreen(),
+                  ),
                 ),
               ],
             ),
