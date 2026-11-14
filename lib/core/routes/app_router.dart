@@ -1,4 +1,5 @@
 import 'package:e_commerce_client/presentation/screens/splash_screen.dart';
+import 'package:e_commerce_client/presentation/screens/user_profile_screen.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,7 +11,6 @@ import '../../presentation/cubits/user/user_cubit.dart';
 import '../../presentation/cubits/category/category_cubit.dart';
 import '../../presentation/blocs/product/product_bloc.dart';
 import '../../presentation/models/checkout_data.dart';
-import '../../presentation/screens/account_screen.dart';
 import '../../presentation/screens/address/pick_address_screen.dart';
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/sign_up_screen.dart';
@@ -207,7 +207,7 @@ class AppRouter {
                 GoRoute(
                   path: account,
                   name: accountName,
-                  builder: (context, state) => const AccountScreen(),
+                  builder: (context, state) => const UserProfileScreen(),
                 ),
               ],
             ),
