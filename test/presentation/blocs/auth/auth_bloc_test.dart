@@ -6,6 +6,7 @@ import 'package:e_commerce_client/domain/usecases/auth/check_auth_status.dart';
 import 'package:e_commerce_client/domain/usecases/auth/facebook_login.dart';
 import 'package:e_commerce_client/domain/usecases/auth/google_login.dart';
 import 'package:e_commerce_client/domain/usecases/auth/login.dart';
+import 'package:e_commerce_client/domain/usecases/auth/logout.dart';
 import 'package:e_commerce_client/domain/usecases/auth/sign_up.dart';
 import 'package:e_commerce_client/presentation/blocs/auth/auth_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,12 +23,15 @@ class MockFacebookLogin extends Mock implements FacebookLogin {}
 
 class MockCheckStatus extends Mock implements CheckAuthStatus {}
 
+class MockLogout extends Mock implements Logout {}
+
 void main() {
   late MockSignUp mockSignUp;
   late MockLogin mockLogin;
   late MockGoogleLogin mockGoogleLogin;
   late MockFacebookLogin mockFacebookLogin;
   late MockCheckStatus mockCheckStatus;
+  late MockLogout mockLogout;
   late AuthBloc authBloc;
 
   const tFirstName = 'Test';
@@ -67,12 +71,14 @@ void main() {
     mockGoogleLogin = MockGoogleLogin();
     mockFacebookLogin = MockFacebookLogin();
     mockCheckStatus = MockCheckStatus();
+    mockLogout = MockLogout();
     authBloc = AuthBloc(
       signUp: mockSignUp,
       login: mockLogin,
       googleLogin: mockGoogleLogin,
       facebookLogin: mockFacebookLogin,
       checkAuthStatus: mockCheckStatus,
+      logout: mockLogout,
     );
   });
 
@@ -258,6 +264,38 @@ void main() {
       ],
       verify: (_) {
         verify(() => mockCheckStatus(NoParams())).called(1);
+      },
+    );
+  });
+
+  group('AuthBloc Logout', () {
+    blocTest<AuthBloc, AuthState>(
+      'should emit [AuthLoading, AuthUnauthenticated] when logout succeeds',
+      build: () {
+        when(
+          () => mockLogout(NoParams()),
+        ).thenAnswer((_) async => const Right(unit));
+        return authBloc;
+      },
+      act: (bloc) => bloc.add(const AuthLogout()),
+      expect: () => [AuthLoading(), const AuthUnauthenticated()],
+      verify: (_) {
+        verify(() => mockLogout(NoParams())).called(1);
+      },
+    );
+
+    blocTest<AuthBloc, AuthState>(
+      'should emit [AuthLoading, AuthFailure] when logout fails',
+      build: () {
+        when(
+          () => mockLogout(NoParams()),
+        ).thenAnswer((_) async => const Left(Failure('Logout failed')));
+        return authBloc;
+      },
+      act: (bloc) => bloc.add(const AuthLogout()),
+      expect: () => [AuthLoading(), const AuthFailure('Logout failed')],
+      verify: (_) {
+        verify(() => mockLogout(NoParams())).called(1);
       },
     );
   });

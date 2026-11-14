@@ -9,6 +9,7 @@ import '../../../domain/usecases/auth/check_auth_status.dart';
 import '../../../domain/usecases/auth/facebook_login.dart';
 import '../../../domain/usecases/auth/google_login.dart';
 import '../../../domain/usecases/auth/login.dart';
+import '../../../domain/usecases/auth/logout.dart';
 import '../../../domain/usecases/auth/sign_up.dart';
 
 part 'auth_event.dart';
@@ -21,6 +22,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final GoogleLogin _googleLogin;
   final FacebookLogin _facebookLogin;
   final CheckAuthStatus _checkAuthStatus;
+  final Logout _logout;
 
   AuthBloc({
     required SignUp signUp,
@@ -28,17 +30,31 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required GoogleLogin googleLogin,
     required FacebookLogin facebookLogin,
     required CheckAuthStatus checkAuthStatus,
+    required Logout logout,
   }) : _signUp = signUp,
        _login = login,
        _googleLogin = googleLogin,
        _facebookLogin = facebookLogin,
        _checkAuthStatus = checkAuthStatus,
+       _logout = logout,
        super(AuthInitial()) {
     on<AuthSignUp>(_onAuthSignUp);
     on<AuthLogin>(_onAuthLogin);
     on<AuthGoogleLogin>(_onAuthGoogleLogin);
     on<AuthFacebookLogin>(_onAuthFacebookLogin);
     on<AuthCheckStatus>(_onAuthCheckStatus);
+    on<AuthLogout>(_onAuthLogout);
+  }
+
+  Future<void> _onAuthLogout(AuthLogout event, Emitter<AuthState> emit) async {
+    emit(const AuthLoading());
+
+    final res = await _logout(NoParams());
+
+    res.fold(
+      (failure) => emit(AuthFailure(failure.message)),
+      (_) => emit(const AuthUnauthenticated()),
+    );
   }
 
   void _onAuthSignUp(AuthSignUp event, Emitter<AuthState> emit) async {

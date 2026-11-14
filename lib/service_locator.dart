@@ -42,6 +42,7 @@ import 'presentation/cubits/user/user_cubit.dart';
 import 'domain/usecases/auth/facebook_login.dart';
 import 'domain/usecases/auth/google_login.dart';
 import 'domain/usecases/auth/login.dart';
+import 'domain/usecases/auth/logout.dart';
 import 'domain/usecases/auth/sign_up.dart';
 import 'domain/usecases/cart/add_to_cart.dart';
 import 'domain/usecases/cart/clear_cart.dart';
@@ -153,7 +154,11 @@ void _initAuth() {
     )
     // Data layer: Repository implementation
     ..registerLazySingleton<AuthRepository>(
-      () => AuthRepositoryImpl(authRemoteData: sl(), userLocalData: sl()),
+      () => AuthRepositoryImpl(
+        authRemoteData: sl(),
+        userLocalData: sl(),
+        cartLocalData: sl(),
+      ),
     )
     // Domain layer: Use case
     ..registerLazySingleton(() => SignUp(sl()))
@@ -161,6 +166,7 @@ void _initAuth() {
     ..registerLazySingleton(() => GoogleLogin(sl()))
     ..registerLazySingleton(() => FacebookLogin(sl()))
     ..registerLazySingleton(() => CheckAuthStatus(sl()))
+    ..registerLazySingleton(() => Logout(sl()))
     // Presentation layer: BLoC
     ..registerFactory(
       () => AuthBloc(
@@ -169,6 +175,7 @@ void _initAuth() {
         googleLogin: sl(),
         facebookLogin: sl(),
         checkAuthStatus: sl(),
+        logout: sl(),
       ),
     );
 }

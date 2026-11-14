@@ -41,3 +41,7 @@ final class AuthFacebookLogin extends AuthEvent {
 final class AuthCheckStatus extends AuthEvent {
   const AuthCheckStatus();
 }
+
+final class AuthLogout extends AuthEvent {
+  const AuthLogout();
+}

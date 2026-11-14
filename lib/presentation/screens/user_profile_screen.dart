@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/common/widgets/app_alert_dialog.dart';
 import '../../core/common/utils/show_snackbar.dart';
 import '../../core/extensions/theme_extensions.dart';
 import '../blocs/auth/auth_bloc.dart';
@@ -159,7 +160,20 @@ class UserProfileScreen extends StatelessWidget {
 
             // Sign out button
             TextButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                showDialog<void>(
+                  context: context,
+                  builder: (dialogContext) => AppAlertDialog(
+                    title: 'Sign out',
+                    content: 'Are you sure you want to sign out?',
+                    onNoPressed: () => Navigator.pop(dialogContext),
+                    onYesPressed: () {
+                      Navigator.pop(dialogContext);
+                      context.read<AuthBloc>().add(const AuthLogout());
+                    },
+                  ),
+                );
+              },
               icon: Icon(
                 Icons.logout,
                 color: context.theme.colorScheme.tertiary,
