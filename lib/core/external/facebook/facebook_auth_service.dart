@@ -3,6 +3,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 abstract interface class FacebookAuthService {
   Future<String> getAccessToken();
+  Future<void> signOut();
 }
 
 class FacebookAuthServiceImpl implements FacebookAuthService {
@@ -36,4 +37,7 @@ class FacebookAuthServiceImpl implements FacebookAuthService {
       throw ServerException('Facebook login error: $e');
     }
   }
+
+  @override
+  Future<void> signOut() => facebookAuth.logOut();
 }

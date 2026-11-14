@@ -5,15 +5,18 @@ import '../../core/errors/exception.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../models/auth_response.dart';
 import '../sources/local/auth_local_data.dart';
+import '../sources/local/cart_local_data.dart';
 import '../sources/remote/auth_remote_data.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteData authRemoteData;
   final AuthLocalData userLocalData;
+  final CartLocalData cartLocalData;
 
   AuthRepositoryImpl({
     required this.authRemoteData,
     required this.userLocalData,
+    required this.cartLocalData,
   });
 
   @override
@@ -84,6 +87,19 @@ class AuthRepositoryImpl implements AuthRepository {
       return right(user.toEntity());
     } on ServerException catch (e) {
       return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> logout() async {
+    try {
+      final provider = await userLocalData.getLoginProvider();
+      await authRemoteData.signOut(provider);
+      await cartLocalData.clearCartCache();
+      await userLocalData.clearAuth();
+      return right(unit);
+    } catch (e) {
+      return _handleError(e);
     }
   }
 

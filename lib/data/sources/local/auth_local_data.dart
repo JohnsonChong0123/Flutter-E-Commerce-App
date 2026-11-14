@@ -14,6 +14,10 @@ abstract interface class AuthLocalData {
   Future<String?> getRefreshToken();
 
   Future<void> setAccessToken(String accessToken);
+
+  Future<String?> getLoginProvider();
+
+  Future<void> clearAuth();
 }
 
 class AuthLocalDataImpl implements AuthLocalData {
@@ -64,6 +68,26 @@ class AuthLocalDataImpl implements AuthLocalData {
   Future<void> setAccessToken(String accessToken) async {
     try {
       await flutterSecureStorage.write(key: 'access_token', value: accessToken);
+    } catch (e) {
+      throw CacheException(e.toString());
+    }
+  }
+
+  @override
+  Future<String?> getLoginProvider() async {
+    try {
+      return await flutterSecureStorage.read(key: 'login_provider');
+    } catch (e) {
+      throw CacheException(e.toString());
+    }
+  }
+
+  @override
+  Future<void> clearAuth() async {
+    try {
+      await flutterSecureStorage.delete(key: 'access_token');
+      await flutterSecureStorage.delete(key: 'refresh_token');
+      await flutterSecureStorage.delete(key: 'login_provider');
     } catch (e) {
       throw CacheException(e.toString());
     }

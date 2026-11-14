@@ -213,4 +213,52 @@ void main() {
       expect(result, throwsA(isA<CacheException>()));
     });
   });
+
+  group('getLoginProvider', () {
+    test('should return login provider from secure storage', () async {
+      when(
+        () => mockFlutterSecureStorage.read(key: 'login_provider'),
+      ).thenAnswer((_) async => tProvider);
+
+      final result = await userLocalData.getLoginProvider();
+
+      expect(result, tProvider);
+      verify(
+        () => mockFlutterSecureStorage.read(key: 'login_provider'),
+      ).called(1);
+    });
+
+    test('should throw CacheException when reading provider fails', () async {
+      when(
+        () => mockFlutterSecureStorage.read(key: 'login_provider'),
+      ).thenThrow(Exception('Storage error'));
+
+      expect(
+        userLocalData.getLoginProvider(),
+        throwsA(isA<CacheException>()),
+      );
+    });
+  });
+
+  group('clearAuth', () {
+    test('should delete all stored auth values', () async {
+      when(
+        () => mockFlutterSecureStorage.delete(key: any(named: 'key')),
+      ).thenAnswer((_) async {});
+
+      await userLocalData.clearAuth();
+
+      verify(() => mockFlutterSecureStorage.delete(key: 'access_token')).called(1);
+      verify(() => mockFlutterSecureStorage.delete(key: 'refresh_token')).called(1);
+      verify(() => mockFlutterSecureStorage.delete(key: 'login_provider')).called(1);
+    });
+
+    test('should throw CacheException when deleting auth fails', () async {
+      when(
+        () => mockFlutterSecureStorage.delete(key: 'access_token'),
+      ).thenThrow(Exception('Storage error'));
+
+      expect(userLocalData.clearAuth(), throwsA(isA<CacheException>()));
+    });
+  });
 }

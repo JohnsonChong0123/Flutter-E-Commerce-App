@@ -26,6 +26,8 @@ abstract interface class AuthRemoteData {
   Future<UserModel> getCurrentUser();
 
   Future<String?> refreshToken(String? refreshToken);
+
+  Future<void> signOut(String? provider);
 }
 
 class AuthRemoteDataImpl implements AuthRemoteData {
@@ -151,6 +153,20 @@ class AuthRemoteDataImpl implements AuthRemoteData {
       final newToken = response.data['access_token'] as String?;
 
       return newToken;
+    } catch (e) {
+      _handleError(e);
+    }
+  }
+
+  @override
+  Future<void> signOut(String? provider) async {
+    try {
+      switch (provider?.toLowerCase()) {
+        case 'google':
+          await googleAuthService.signOut();
+        case 'facebook':
+          await facebookAuthService.signOut();
+      }
     } catch (e) {
       _handleError(e);
     }

@@ -5,6 +5,7 @@ import 'package:e_commerce_client/data/models/auth_response.dart';
 import 'package:e_commerce_client/data/models/user_model.dart';
 import 'package:e_commerce_client/data/repositories/auth_repository_impl.dart';
 import 'package:e_commerce_client/data/sources/local/auth_local_data.dart';
+import 'package:e_commerce_client/data/sources/local/cart_local_data.dart';
 import 'package:e_commerce_client/data/sources/remote/auth_remote_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
@@ -14,9 +15,12 @@ class MockAuthRemoteData extends Mock implements AuthRemoteData {}
 
 class MockAuthLocalData extends Mock implements AuthLocalData {}
 
+class MockCartLocalData extends Mock implements CartLocalData {}
+
 void main() {
   late MockAuthRemoteData mockAuthRemoteData;
   late MockAuthLocalData mockAuthLocalData;
+  late MockCartLocalData mockCartLocalData;
   late AuthRepositoryImpl repository;
 
   const tFirstName = 'Test';
@@ -74,9 +78,11 @@ void main() {
   setUp(() {
     mockAuthRemoteData = MockAuthRemoteData();
     mockAuthLocalData = MockAuthLocalData();
+    mockCartLocalData = MockCartLocalData();
     repository = AuthRepositoryImpl(
       authRemoteData: mockAuthRemoteData,
       userLocalData: mockAuthLocalData,
+      cartLocalData: mockCartLocalData,
     );
   });
 
@@ -506,5 +512,69 @@ void main() {
         verifyNoMoreInteractions(mockAuthRemoteData);
       },
     );
+  });
+
+  group('logout', () {
+    test('should sign out provider and clear local auth data', () async {
+      when(
+        () => mockAuthLocalData.getLoginProvider(),
+      ).thenAnswer((_) async => 'google');
+      when(
+        () => mockAuthRemoteData.signOut('google'),
+      ).thenAnswer((_) async {});
+      when(
+        () => mockCartLocalData.clearCartCache(),
+      ).thenAnswer((_) async {});
+      when(
+        () => mockAuthLocalData.clearAuth(),
+      ).thenAnswer((_) async {});
+
+      final result = await repository.logout();
+
+      expect(result, equals(right(unit)));
+      verifyInOrder([
+        () => mockAuthLocalData.getLoginProvider(),
+        () => mockAuthRemoteData.signOut('google'),
+        () => mockCartLocalData.clearCartCache(),
+        () => mockAuthLocalData.clearAuth(),
+      ]);
+    });
+
+    test('should clear local auth when no provider is stored', () async {
+      when(
+        () => mockAuthLocalData.getLoginProvider(),
+      ).thenAnswer((_) async => null);
+      when(
+        () => mockAuthRemoteData.signOut(null),
+      ).thenAnswer((_) async {});
+      when(
+        () => mockCartLocalData.clearCartCache(),
+      ).thenAnswer((_) async {});
+      when(
+        () => mockAuthLocalData.clearAuth(),
+      ).thenAnswer((_) async {});
+
+      final result = await repository.logout();
+
+      expect(result, equals(right(unit)));
+      verify(() => mockAuthRemoteData.signOut(null)).called(1);
+      verify(() => mockCartLocalData.clearCartCache()).called(1);
+      verify(() => mockAuthLocalData.clearAuth()).called(1);
+    });
+
+    test('should return failure and keep local auth when sign out fails', () async {
+      when(
+        () => mockAuthLocalData.getLoginProvider(),
+      ).thenAnswer((_) async => 'facebook');
+      when(
+        () => mockAuthRemoteData.signOut('facebook'),
+      ).thenThrow(const ServerException('Sign out failed'));
+
+      final result = await repository.logout();
+
+      expect(result, equals(left(const Failure('Sign out failed'))));
+      verifyNever(() => mockCartLocalData.clearCartCache());
+      verifyNever(() => mockAuthLocalData.clearAuth());
+    });
   });
 }

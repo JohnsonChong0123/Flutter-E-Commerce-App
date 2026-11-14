@@ -502,4 +502,47 @@ void main() {
       expect(result, throwsA(isA<ServerException>()));
     });
   });
+
+  group('signOut', () {
+    test('should sign out Google provider', () async {
+      when(
+        () => mockGoogleAuthService.signOut(),
+      ).thenAnswer((_) async {});
+
+      await authRemoteData.signOut('google');
+
+      verify(() => mockGoogleAuthService.signOut()).called(1);
+      verifyNever(() => mockFacebookAuthService.signOut());
+    });
+
+    test('should sign out Facebook provider', () async {
+      when(
+        () => mockFacebookAuthService.signOut(),
+      ).thenAnswer((_) async {});
+
+      await authRemoteData.signOut('facebook');
+
+      verify(() => mockFacebookAuthService.signOut()).called(1);
+      verifyNever(() => mockGoogleAuthService.signOut());
+    });
+
+    test('should do nothing for email or missing provider', () async {
+      await authRemoteData.signOut('email');
+      await authRemoteData.signOut(null);
+
+      verifyNever(() => mockGoogleAuthService.signOut());
+      verifyNever(() => mockFacebookAuthService.signOut());
+    });
+
+    test('should convert provider sign out errors to ServerException', () async {
+      when(
+        () => mockGoogleAuthService.signOut(),
+      ).thenThrow(Exception('Sign out failed'));
+
+      expect(
+        authRemoteData.signOut('google'),
+        throwsA(isA<ServerException>()),
+      );
+    });
+  });
 }
