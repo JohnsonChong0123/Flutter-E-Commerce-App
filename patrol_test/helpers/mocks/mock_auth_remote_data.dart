@@ -33,6 +33,9 @@ abstract class MockAuthRemoteDataBase implements AuthRemoteData {
 
   @override
   Future<String?> refreshToken(String? refreshToken) async => null;
+
+  @override
+  Future<void> signOut(String? provider) async => throw UnimplementedError();
 }
 
 // ── Unauthenticated ──────────────────────────────────────────────────────────

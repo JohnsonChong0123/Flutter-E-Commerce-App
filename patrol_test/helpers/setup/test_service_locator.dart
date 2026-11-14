@@ -14,6 +14,7 @@ import 'package:e_commerce_client/domain/usecases/auth/check_auth_status.dart';
 import 'package:e_commerce_client/domain/usecases/auth/facebook_login.dart';
 import 'package:e_commerce_client/domain/usecases/auth/google_login.dart';
 import 'package:e_commerce_client/domain/usecases/auth/login.dart';
+import 'package:e_commerce_client/domain/usecases/auth/logout.dart';
 import 'package:e_commerce_client/domain/usecases/auth/sign_up.dart';
 import 'package:e_commerce_client/domain/usecases/cart/add_to_cart.dart';
 import 'package:e_commerce_client/domain/usecases/cart/clear_cart.dart';
@@ -52,12 +53,17 @@ Future<void> initTestServiceLocator({
       () => authRemoteData ?? MockAuthRemoteDataUnauthenticated(),
     )
     ..registerLazySingleton<AuthRepository>(
-      () => AuthRepositoryImpl(authRemoteData: sl(), userLocalData: sl()),
+      () => AuthRepositoryImpl(
+        authRemoteData: sl(),
+        userLocalData: sl(),
+        cartLocalData: sl(),
+      ),
     )
     ..registerLazySingleton(() => SignUp(sl()))
     ..registerLazySingleton(() => Login(sl()))
     ..registerLazySingleton(() => GoogleLogin(sl()))
     ..registerLazySingleton(() => FacebookLogin(sl()))
+    ..registerLazySingleton(() => Logout(sl()))
     ..registerLazySingleton(() => CheckAuthStatus(sl()))
     ..registerFactory(
       () => AuthBloc(
@@ -65,6 +71,7 @@ Future<void> initTestServiceLocator({
         login: sl(),
         googleLogin: sl(),
         facebookLogin: sl(),
+        logout: sl(),
         checkAuthStatus: sl(),
       ),
     );
@@ -97,7 +104,7 @@ Future<void> initTestServiceLocator({
       () => cartRemoteData ?? MockCartRemoteData(),
     )
     ..registerLazySingleton<CartRepository>(
-      () => CartRepositoryImpl(cartRemoteData: sl()),
+      () => CartRepositoryImpl(cartRemoteData: sl(), cartLocalData: sl()),
     )
     ..registerLazySingleton(() => AddToCart(sl()))
     ..registerLazySingleton(() => GetCart(sl()))

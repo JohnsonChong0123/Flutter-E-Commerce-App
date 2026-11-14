@@ -31,7 +31,17 @@ class MockAuthLocalData implements AuthLocalData {
   Future<String?> getRefreshToken() async => _refreshToken;
 
   @override
+  Future<String?> getLoginProvider() async => _provider;
+
+  @override
   Future<void> setAccessToken(String accessToken) async {
     _accessToken = accessToken;
+  }
+
+  @override
+  Future<void> clearAuth() async {
+    _accessToken = null;
+    _refreshToken = null;
+    _provider = null;
   }
 }
