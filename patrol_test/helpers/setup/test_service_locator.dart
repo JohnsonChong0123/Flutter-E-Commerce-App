@@ -2,14 +2,18 @@ import 'package:e_commerce_client/core/network/dio_client.dart';
 import 'package:e_commerce_client/data/repositories/auth_repository_impl.dart';
 import 'package:e_commerce_client/data/repositories/cart_repository_impl.dart';
 import 'package:e_commerce_client/data/repositories/product_repository_impl.dart';
+import 'package:e_commerce_client/data/repositories/wishlist_repository_impl.dart';
 import 'package:e_commerce_client/data/sources/local/product_local_data.dart';
 import 'package:e_commerce_client/data/sources/local/auth_local_data.dart';
+import 'package:e_commerce_client/data/sources/local/cart_local_data.dart';
 import 'package:e_commerce_client/data/sources/remote/auth_remote_data.dart';
 import 'package:e_commerce_client/data/sources/remote/cart_remote_data.dart';
 import 'package:e_commerce_client/data/sources/remote/product_remote_data.dart';
+import 'package:e_commerce_client/data/sources/remote/wishlist_remote_data.dart';
 import 'package:e_commerce_client/domain/repositories/auth_repository.dart';
 import 'package:e_commerce_client/domain/repositories/cart_repository.dart';
 import 'package:e_commerce_client/domain/repositories/product_repository.dart';
+import 'package:e_commerce_client/domain/repositories/wishlist_repository.dart';
 import 'package:e_commerce_client/domain/usecases/auth/check_auth_status.dart';
 import 'package:e_commerce_client/domain/usecases/auth/facebook_login.dart';
 import 'package:e_commerce_client/domain/usecases/auth/google_login.dart';
@@ -23,22 +27,31 @@ import 'package:e_commerce_client/domain/usecases/cart/remove_cart_item.dart';
 import 'package:e_commerce_client/domain/usecases/cart/update_cart.dart';
 import 'package:e_commerce_client/domain/usecases/product/get_product_by_id.dart';
 import 'package:e_commerce_client/domain/usecases/product/get_products.dart';
+import 'package:e_commerce_client/domain/usecases/wishlist/add_wishlist.dart';
+import 'package:e_commerce_client/domain/usecases/wishlist/clear_wishlist.dart';
+import 'package:e_commerce_client/domain/usecases/wishlist/get_wishlist.dart';
+import 'package:e_commerce_client/domain/usecases/wishlist/remove_wishlist.dart';
 import 'package:e_commerce_client/presentation/blocs/auth/auth_bloc.dart';
 import 'package:e_commerce_client/presentation/blocs/cart/cart_bloc.dart';
 import 'package:e_commerce_client/presentation/blocs/product/product_bloc.dart';
+import 'package:e_commerce_client/presentation/cubits/wishlist/wishlist_cubit.dart';
 import 'package:e_commerce_client/service_locator.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../mocks/mock_auth_remote_data.dart';
 import '../mocks/mock_cart_remote_data.dart';
+import '../mocks/mock_cart_local_data.dart';
 import '../mocks/mock_local_user_data.dart';
 import '../mocks/mock_product_local_data.dart';
 import '../mocks/mock_product_remote_data.dart';
+import '../mocks/mock_wishlist_remote_data.dart';
 
 Future<void> initTestServiceLocator({
   AuthRemoteData? authRemoteData,
   ProductRemoteData? productRemoteData,
   CartRemoteData? cartRemoteData,
   ProductLocalData? productLocalData,
+  CartLocalData? cartLocalData,
+  WishlistRemoteData? wishlistRemoteData,
 }) async {
   sl.allowReassignment = true;
   await sl.reset();
@@ -51,6 +64,9 @@ Future<void> initTestServiceLocator({
   sl
     ..registerLazySingleton<AuthRemoteData>(
       () => authRemoteData ?? MockAuthRemoteDataUnauthenticated(),
+    )
+    ..registerLazySingleton<CartLocalData>(
+      () => cartLocalData ?? MockCartLocalData(),
     )
     ..registerLazySingleton<AuthRepository>(
       () => AuthRepositoryImpl(
@@ -118,6 +134,27 @@ Future<void> initTestServiceLocator({
         removeCartItem: sl(),
         clearCart: sl(),
         updateCart: sl(),
+      ),
+    );
+
+  // Wishlist
+  sl
+    ..registerLazySingleton<WishlistRemoteData>(
+      () => wishlistRemoteData ?? MockWishlistRemoteData(),
+    )
+    ..registerLazySingleton<WishlistRepository>(
+      () => WishlistRepositoryImpl(wishlistRemoteData: sl()),
+    )
+    ..registerLazySingleton(() => AddWishlist(sl()))
+    ..registerLazySingleton(() => GetWishlist(sl()))
+    ..registerLazySingleton(() => RemoveWishlist(sl()))
+    ..registerLazySingleton(() => ClearWishlist(sl()))
+    ..registerFactory(
+      () => WishlistCubit(
+        addWishlist: sl(),
+        getWishlist: sl(),
+        removeWishlist: sl(),
+        clearWishlist: sl(),
       ),
     );
 
