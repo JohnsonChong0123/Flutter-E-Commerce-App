@@ -4,10 +4,12 @@ import 'package:e_commerce_client/core/extensions/currency_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/common/utils/show_snackbar.dart';
 import '../../core/common/widgets/loader.dart';
 import '../../core/extensions/theme_extensions.dart';
 import '../../core/routes/app_router.dart';
 import '../blocs/product/product_bloc.dart';
+import '../cubits/wishlist/wishlist_cubit.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     context.read<ProductBloc>().loadProducts();
+    context.read<WishlistCubit>().getWishlist();
   }
 
   @override
@@ -322,15 +325,75 @@ class _HomeScreenState extends State<HomeScreen> {
                                               Positioned(
                                                 top: 12,
                                                 right: 12,
-                                                child: CircleAvatar(
-                                                  backgroundColor: Colors.white
-                                                      .withOpacity(0.8),
-                                                  radius: 18,
-                                                  child: const Icon(
-                                                    Icons.favorite_border,
-                                                    size: 18,
-                                                    color: Colors.black,
-                                                  ),
+                                                child: BlocBuilder<WishlistCubit, WishlistState>(
+                                                  builder: (context, wishlistState) {
+                                                    final isWishlisted =
+                                                        wishlistState
+                                                            is WishlistLoaded &&
+                                                        wishlistState
+                                                            .favoriteIds
+                                                            .contains(item.id);
+                                                    return CircleAvatar(
+                                                      backgroundColor: Colors
+                                                          .white
+                                                          .withValues(
+                                                            alpha: 0.8,
+                                                          ),
+                                                      radius: 18,
+                                                      child: IconButton(
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        onPressed: () async {
+                                                          final wishlistCubit =
+                                                              context
+                                                                  .read<
+                                                                    WishlistCubit
+                                                                  >();
+                                                          if (isWishlisted) {
+                                                            final removed =
+                                                                await wishlistCubit
+                                                                    .removeWishlist(
+                                                                      item.id,
+                                                                    );
+                                                            if (context
+                                                                .mounted) {
+                                                              showSnackBar(
+                                                                context,
+                                                                removed
+                                                                    ? 'Removed from wishlist'
+                                                                    : 'Failed to remove from wishlist',
+                                                              );
+                                                            }
+                                                          } else {
+                                                            final added =
+                                                                await wishlistCubit
+                                                                    .addWishlist(
+                                                                      item.id,
+                                                                    );
+                                                            if (context
+                                                                .mounted) {
+                                                              showSnackBar(
+                                                                context,
+                                                                added
+                                                                    ? 'Added to wishlist'
+                                                                    : 'Failed to add to wishlist',
+                                                              );
+                                                            }
+                                                          }
+                                                        },
+                                                        icon: Icon(
+                                                          isWishlisted
+                                                              ? Icons.favorite
+                                                              : Icons
+                                                                    .favorite_border,
+                                                          size: 18,
+                                                          color: isWishlisted
+                                                              ? Colors.red
+                                                              : Colors.black,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
                                                 ),
                                               ),
                                             ],

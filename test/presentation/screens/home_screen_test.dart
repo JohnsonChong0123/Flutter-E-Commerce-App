@@ -10,15 +10,20 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:e_commerce_client/presentation/blocs/product/product_bloc.dart';
 import 'package:e_commerce_client/core/common/widgets/loader.dart';
+import 'package:e_commerce_client/presentation/cubits/wishlist/wishlist_cubit.dart';
 import '../../fixtures/product/product_fixtures.dart';
 
 class MockProductBloc extends MockBloc<ProductEvent, ProductState>
     implements ProductBloc {}
 
+class MockWishlistCubit extends MockCubit<WishlistState>
+    implements WishlistCubit {}
+
 class MockGoRouter extends Mock implements GoRouter {}
 
 void main() {
   late MockProductBloc mockProductBloc;
+  late MockWishlistCubit mockWishlistCubit;
   late MockGoRouter mockRouter;
 
   setUpAll(() {
@@ -29,14 +34,20 @@ void main() {
 
   setUp(() {
     mockProductBloc = MockProductBloc();
+    mockWishlistCubit = MockWishlistCubit();
     mockRouter = MockGoRouter();
     // Default behavior for loadProducts: do nothing (since we're only verifying if it was called, not its internal logic)
     when(() => mockProductBloc.loadProducts()).thenAnswer((_) async {});
+    when(() => mockWishlistCubit.state).thenReturn(const WishlistInitial());
+    when(() => mockWishlistCubit.getWishlist()).thenAnswer((_) async {});
   });
 
   Widget makeTestableWidget(Widget body, {RouterConfig<Object>? routerConfig}) {
-    return BlocProvider<ProductBloc>.value(
-      value: mockProductBloc,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ProductBloc>.value(value: mockProductBloc),
+        BlocProvider<WishlistCubit>.value(value: mockWishlistCubit),
+      ],
       child: routerConfig != null
           ? MaterialApp.router(routerConfig: routerConfig)
           : MaterialApp(home: body),
@@ -269,8 +280,6 @@ void main() {
       verify(() => mockRouter.goNamed(AppRouter.productSearchName)).called(1);
     },
   );
-
-  
 }
 
 /// Helper class: Used to mock and mock-block real network HTTP requests globally during tests (prevents Image.network or CachedNetworkImage crashes).

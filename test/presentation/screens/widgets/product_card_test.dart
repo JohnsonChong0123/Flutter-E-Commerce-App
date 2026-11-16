@@ -3,13 +3,22 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce_client/core/routes/app_router.dart';
 import 'package:e_commerce_client/domain/entity/money/money_entity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:go_router/go_router.dart';
 import 'package:e_commerce_client/domain/entity/product/product_summary_entity.dart';
+import 'package:e_commerce_client/domain/repositories/wishlist_repository.dart';
+import 'package:e_commerce_client/domain/usecases/wishlist/add_wishlist.dart';
+import 'package:e_commerce_client/domain/usecases/wishlist/clear_wishlist.dart';
+import 'package:e_commerce_client/domain/usecases/wishlist/get_wishlist.dart';
+import 'package:e_commerce_client/domain/usecases/wishlist/remove_wishlist.dart';
+import 'package:e_commerce_client/presentation/cubits/wishlist/wishlist_cubit.dart';
 import 'package:e_commerce_client/presentation/widgets/product_card.dart';
 
 class MockGoRouter extends Mock implements GoRouter {}
+
+class MockWishlistRepository extends Mock implements WishlistRepository {}
 
 void main() {
   late MockGoRouter mockRouter;
@@ -26,10 +35,20 @@ void main() {
   // Helper method: Since context.pushNamed is used inside the widget,
   // we need to wrap it with InheritedGoRouter to inject the mock router into the context.
   Widget makeTestableWidget(Widget body) {
+    final wishlistRepository = MockWishlistRepository();
+
     return MaterialApp(
       home: InheritedGoRouter(
         goRouter: mockRouter,
-        child: Scaffold(body: SizedBox(width: 280, height: 300, child: body)),
+        child: BlocProvider(
+          create: (_) => WishlistCubit(
+            addWishlist: AddWishlist(wishlistRepository),
+            getWishlist: GetWishlist(wishlistRepository),
+            removeWishlist: RemoveWishlist(wishlistRepository),
+            clearWishlist: ClearWishlist(wishlistRepository),
+          ),
+          child: Scaffold(body: SizedBox(width: 280, height: 300, child: body)),
+        ),
       ),
     );
   }
@@ -86,7 +105,7 @@ void main() {
         final emptyImageProduct = ProductSummaryEntity(
           id: 'prod_789',
           name: 'Socks',
-          imageUrl: '', 
+          imageUrl: '',
           initialPrice: MoneyEntity(value: 9.99, currency: 'USD'),
           finalPrice: MoneyEntity(value: 9.99, currency: 'USD'),
         );
@@ -96,7 +115,7 @@ void main() {
         );
 
         expect(find.byType(CachedNetworkImage), findsNothing);
-        
+
         expect(find.byIcon(Icons.image_not_supported), findsOneWidget);
       },
     );
@@ -112,7 +131,6 @@ void main() {
           finalPrice: MoneyEntity(value: 19.99, currency: 'USD'),
         );
 
-      
         when(
           () => mockRouter.pushNamed(
             any(),
@@ -126,11 +144,9 @@ void main() {
           makeTestableWidget(ProductCard(product: testProduct)),
         );
 
-        
         await tester.tap(find.byType(ProductCard));
         await tester.pump();
 
-        
         verify(
           () => mockRouter.pushNamed(
             AppRouter.productDetailsName,
@@ -144,7 +160,6 @@ void main() {
   testWidgets(
     'ProductCard Core Visual Defense: Locks core physical styles and prevents accidental tampering with the core UI contract',
     (WidgetTester tester) async {
-      
       final testProduct = ProductSummaryEntity(
         id: 'target_id_007',
         name: 'Caps Collection Edition',
@@ -153,59 +168,36 @@ void main() {
         finalPrice: MoneyEntity(value: 19.99, currency: 'USD'),
       );
 
-      
       await tester.pumpWidget(
         makeTestableWidget(ProductCard(product: testProduct)),
       );
 
-      
       final Card cardWidget = tester.widget(find.byType(Card));
-      
+
       expect(cardWidget.elevation, 2.0);
 
-      
       final roundedShape = cardWidget.shape as RoundedRectangleBorder?;
       final BorderRadius cardRadius =
           roundedShape?.borderRadius as BorderRadius;
-      expect(cardRadius.bottomLeft.x, 8.0); 
+      expect(cardRadius.bottomLeft.x, 8.0);
 
-      
-      
       final ClipRRect clipRRectWidget = tester.widget(
         find.byType(ClipRRect).first,
       );
       final BorderRadius imageRadius =
           clipRRectWidget.borderRadius as BorderRadius;
-      expect(
-        imageRadius.bottomLeft.x,
-        8.0,
-      ); 
+      expect(imageRadius.bottomLeft.x, 8.0);
 
-      
       final Text nameText = tester.widget(find.text('Caps Collection Edition'));
-      
-      expect(nameText.maxLines, 2); 
-      expect(
-        nameText.overflow,
-        TextOverflow.ellipsis,
-      ); 
-      expect(
-        nameText.style?.fontSize,
-        14.0,
-      ); 
 
-      
-      
+      expect(nameText.maxLines, 2);
+      expect(nameText.overflow, TextOverflow.ellipsis);
+      expect(nameText.style?.fontSize, 14.0);
+
       final Text initialPriceText = tester.widget(find.text('\$29.99'));
-      
-      expect(
-        initialPriceText.style?.decoration,
-        TextDecoration.lineThrough,
-      ); 
-      expect(
-        initialPriceText.style?.fontSize,
-        14.0,
-      ); 
+
+      expect(initialPriceText.style?.decoration, TextDecoration.lineThrough);
+      expect(initialPriceText.style?.fontSize, 14.0);
     },
   );
 }
