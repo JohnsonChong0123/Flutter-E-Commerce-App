@@ -13,11 +13,23 @@ import '../../blocs/product/product_bloc.dart';
 import '../../blocs/cart/cart_bloc.dart';
 import '../../models/product_display_aspect.dart';
 import '../../notifiers/product_details_notifier.dart';
+import '../../cubits/wishlist/wishlist_cubit.dart';
 
-class ProductDetailScreen extends StatelessWidget {
+class ProductDetailScreen extends StatefulWidget {
   final String productId;
 
   const ProductDetailScreen({super.key, required this.productId});
+
+  @override
+  State<ProductDetailScreen> createState() => _ProductDetailScreenState();
+}
+
+class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<WishlistCubit>().getWishlist();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -211,7 +223,7 @@ class _ProductHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 16),
-              _FavoriteButton(),
+              _FavoriteButton(product: product),
             ],
           ),
           const SizedBox(height: 16),
@@ -591,18 +603,58 @@ class CartDialog extends StatelessWidget {
 }
 
 class _FavoriteButton extends StatelessWidget {
+  final ProductDetailsEntity product;
+
+  const _FavoriteButton({required this.product});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: context.colorScheme.surfaceContainerLow,
-        shape: BoxShape.circle,
-      ),
-      child: Icon(
-        Icons.favorite_border,
-        color: context.colorScheme.onSurfaceVariant,
-      ),
+    return BlocBuilder<WishlistCubit, WishlistState>(
+      builder: (context, state) {
+        final isWishlisted =
+            state is WishlistLoaded && state.favoriteIds.contains(product.id);
+
+        // return Container(
+        //   padding: const EdgeInsets.all(8),
+        //   decoration: BoxDecoration(
+        //     color: context.colorScheme.surfaceContainerLow,
+        //     shape: BoxShape.circle,
+        //   ),
+        //   child:
+        return IconButton(
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(),
+          onPressed: () async {
+            final wishlistCubit = context.read<WishlistCubit>();
+            if (isWishlisted) {
+              final removed = await wishlistCubit.removeWishlist(product.id);
+              if (context.mounted) {
+                showSnackBar(
+                  context,
+                  removed
+                      ? 'Removed from wishlist'
+                      : 'Failed to remove from wishlist',
+                );
+              }
+            } else {
+              final added = await wishlistCubit.addWishlist(product.id);
+              if (context.mounted) {
+                showSnackBar(
+                  context,
+                  added ? 'Added to wishlist' : 'Failed to add to wishlist',
+                );
+              }
+            }
+          },
+          icon: Icon(
+            isWishlisted ? Icons.favorite : Icons.favorite_border,
+            color: isWishlisted
+                ? Colors.red
+                : context.colorScheme.onSurfaceVariant,
+          ),
+          // ),
+        );
+      },
     );
   }
 }

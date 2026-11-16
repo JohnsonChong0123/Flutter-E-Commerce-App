@@ -1,9 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/common/widgets/loader.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../core/common/widgets/loader.dart';
+import '../../../core/extensions/theme_extensions.dart';
 import '../../../core/routes/app_router.dart';
 import '../../cubits/wishlist/wishlist_cubit.dart';
 
@@ -26,114 +27,215 @@ class _WishlistScreenState extends State<WishlistScreen> {
     return BlocBuilder<WishlistCubit, WishlistState>(
       builder: (context, state) {
         if (state is WishlistLoading) {
-          return Scaffold(body: const Loader());
-        } else if (state is WishlistLoaded) {
-          final wishlist = state.wishlist;
+          return const Scaffold(body: Loader());
+        }
+
+        if (state is WishlistFailure) {
           return Scaffold(
-            appBar: AppBar(
-              automaticallyImplyLeading: false,
-              title: Text(
-                'Wishlist',
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () {
-                    context.read<WishlistCubit>().clearWishlist();
-                  },
+            body: Center(
+              child: Text(
+                state.message,
+                style: GoogleFonts.plusJakartaSans(
+                  color: context.colorScheme.error,
                 ),
-              ],
+              ),
             ),
-            body: wishlist.isEmpty
-                ? const Center(child: Text('Wishlist is empty'))
-                : SlidableAutoCloseBehavior(
-                    child: ListView.builder(
-                      itemCount: wishlist.length,
+          );
+        }
+
+        if (state is! WishlistLoaded) {
+          return const Scaffold(body: Loader());
+        }
+
+        return Scaffold(
+          appBar: _buildAppBar(context, state.wishlist.isNotEmpty),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'FAVORITES',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 2,
+                      color: context.colorScheme.secondary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Wishlist',
+                    style: GoogleFonts.manrope(
+                      fontSize: 48,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -1.5,
+                      color: context.colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  if (state.wishlist.isEmpty)
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 60),
+                        child: Text(
+                          'Your wishlist is empty.',
+                          style: GoogleFonts.plusJakartaSans(
+                            color: context.colorScheme.outline,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: state.wishlist.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 16),
                       itemBuilder: (context, index) {
-                        final item = wishlist[index];
-                        return Slidable(
-                          key: Key(item.productId.toString()),
-                          endActionPane: ActionPane(
-                            motion: const ScrollMotion(),
-                            children: [
-                              SlidableAction(
-                                onPressed: (context) {
-                                  context.read<WishlistCubit>().removeWishlist(
-                                    item.productId,
-                                  );
-                                },
-                                backgroundColor: Colors.red,
-                                foregroundColor: Colors.white,
-                                icon: Icons.delete,
-                              ),
-                            ],
+                        final item = state.wishlist[index];
+                        return _WishlistItem(
+                          imageUrl: item.imageUrl,
+                          name: item.name,
+                          price: item.finalPrice,
+                          onTap: () => context.pushNamed(
+                            AppRouter.productDetailsName,
+                            pathParameters: {'id': item.productId},
                           ),
-                          child: GestureDetector(
-                            onTap: () {
-                              context.pushNamed(
-                                AppRouter.productDetailsName,
-                                pathParameters: {'id': item.productId},
-                              );
-                            },
-                            child: ListTile(
-                              leading: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: SizedBox(
-                                  width: 60,
-                                  height: 60,
-                                  child: CachedNetworkImage(
-                                    imageUrl: item.imageUrl,
-                                    fit: BoxFit.fill,
-                                    width: double.infinity,
-                                    placeholder: (context, url) => Container(
-                                      width: double.infinity,
-                                      color: Colors.grey[200],
-                                      child: const Center(
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                        ),
-                                      ),
-                                    ),
-                                    errorWidget: (context, error, stackTrace) {
-                                      return Container(
-                                        width: double.infinity,
-                                        color: Colors.grey[300],
-                                        child: const Icon(
-                                          Icons.image_not_supported,
-                                          size: 100,
-                                          color: Colors.grey,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                              title: Text(
-                                item.name,
-                                style: const TextStyle(fontSize: 15),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '\$${item.finalPrice.toStringAsFixed(2)}',
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                          onRemove: () => context
+                              .read<WishlistCubit>()
+                              .removeWishlist(item.productId),
                         );
                       },
                     ),
-                  ),
-          );
-        } else if (state is WishlistFailure) {
-          return Scaffold(body: Center(child: Text(state.message)));
-        } else {
-          return const SizedBox();
-        }
+                ],
+              ),
+            ),
+          ),
+        );
       },
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar(BuildContext context, bool hasItems) {
+    return AppBar(
+      automaticallyImplyLeading: false,
+      title: Text(
+        'ATELIER',
+        style: GoogleFonts.manrope(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 4,
+        ),
+      ),
+      actions: [
+        if (hasItems)
+          IconButton(
+            tooltip: 'Clear wishlist',
+            icon: const Icon(Icons.delete_outline),
+            onPressed: () => context.read<WishlistCubit>().clearWishlist(),
+          ),
+        const SizedBox(width: 8),
+      ],
+    );
+  }
+}
+
+class _WishlistItem extends StatelessWidget {
+  final String imageUrl;
+  final String name;
+  final double price;
+  final VoidCallback onTap;
+  final VoidCallback onRemove;
+
+  const _WishlistItem({
+    required this.imageUrl,
+    required this.name,
+    required this.price,
+    required this.onTap,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: context.colorScheme.surfaceContainerLow,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
+                  placeholder: (_, _) => Container(
+                    width: 80,
+                    height: 80,
+                    color: context.colorScheme.surfaceContainerHighest,
+                    child: const Center(
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                  errorWidget: (_, _, _) => Container(
+                    width: 80,
+                    height: 80,
+                    color: context.colorScheme.surfaceContainerHighest,
+                    child: Icon(
+                      Icons.image_not_supported_outlined,
+                      color: context.colorScheme.outline,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontWeight: FontWeight.bold,
+                        color: context.colorScheme.onSurface,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '\$${price.toStringAsFixed(2)}',
+                      style: GoogleFonts.plusJakartaSans(
+                        color: context.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                tooltip: 'Remove from wishlist',
+                icon: Icon(
+                  Icons.delete_outline,
+                  color: context.colorScheme.tertiary,
+                ),
+                onPressed: onRemove,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
