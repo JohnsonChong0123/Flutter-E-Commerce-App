@@ -26,20 +26,38 @@ class WishlistCubit extends Cubit<WishlistState> {
        _clearWishlist = clearWishlist,
        super(WishlistInitial());
 
-  Future<void> addWishlist(String productId) async {
+  Future<bool> addWishlist(String productId) async {
+    final previousState = state;
     emit(WishlistLoading());
     final result = await _addWishlist(AddWishlistParam(productId));
-    result.fold((failure) => emit(WishlistFailure(message: failure.message)), (
-      _,
-    ) async {
-      final wishlistResult = await _getWishlist(NoParams());
-      wishlistResult.fold(
-        (failure) => emit(WishlistFailure(message: failure.message)),
-        (wishlist) => emit(
-          WishlistLoaded(wishlist: wishlist, message: "Added to wishlist"),
-        ),
-      );
-    });
+    return result.fold(
+      (failure) {
+        emit(WishlistFailure(message: failure.message));
+        return false;
+      },
+      (_) async {
+        final wishlistResult = await _getWishlist(NoParams());
+        return wishlistResult.fold(
+          (failure) {
+            if (previousState is WishlistLoaded) {
+              emit(
+                WishlistLoaded(
+                  wishlist: previousState.wishlist,
+                  favoriteIds: {...previousState.favoriteIds, productId},
+                ),
+              );
+            }
+            return true;
+          },
+          (wishlist) {
+            emit(
+              WishlistLoaded(wishlist: wishlist, message: 'Added to wishlist'),
+            );
+            return true;
+          },
+        );
+      },
+    );
   }
 
   Future<void> getWishlist() async {
@@ -51,20 +69,42 @@ class WishlistCubit extends Cubit<WishlistState> {
     );
   }
 
-  Future<void> removeWishlist(String productId) async {
+  Future<bool> removeWishlist(String productId) async {
+    final previousState = state;
     emit(WishlistLoading());
     final result = await _removeWishlist(RemoveWishlistParams(productId));
-    result.fold((failure) => emit(WishlistFailure(message: failure.message)), (
-      _,
-    ) async {
-      final wishlistResult = await _getWishlist(NoParams());
-      wishlistResult.fold(
-        (failure) => emit(WishlistFailure(message: failure.message)),
-        (wishlist) => emit(
-          WishlistLoaded(wishlist: wishlist, message: "Removed from wishlist"),
-        ),
-      );
-    });
+    return result.fold(
+      (failure) {
+        emit(WishlistFailure(message: failure.message));
+        return false;
+      },
+      (_) async {
+        final wishlistResult = await _getWishlist(NoParams());
+        return wishlistResult.fold(
+          (failure) {
+            if (previousState is WishlistLoaded) {
+              emit(
+                WishlistLoaded(
+                  wishlist: previousState.wishlist,
+                  favoriteIds: {...previousState.favoriteIds}
+                    ..remove(productId),
+                ),
+              );
+            }
+            return true;
+          },
+          (wishlist) {
+            emit(
+              WishlistLoaded(
+                wishlist: wishlist,
+                message: 'Removed from wishlist',
+              ),
+            );
+            return true;
+          },
+        );
+      },
+    );
   }
 
   Future<void> clearWishlist() async {

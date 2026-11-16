@@ -36,7 +36,8 @@ class WishlistLoaded extends WishlistState {
   WishlistLoaded({
     required this.wishlist,
     this.message,
-  }) : favoriteIds = wishlist.map((e) => e.productId).toSet();
+    Set<String>? favoriteIds,
+  }) : favoriteIds = favoriteIds ?? wishlist.map((e) => e.productId).toSet();
 
   @override
   List<Object?> get props => [wishlist, favoriteIds, message];
