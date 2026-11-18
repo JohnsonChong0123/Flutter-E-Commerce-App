@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
 import '../../helpers/mocks/mock_auth_remote_data.dart';
+import '../../helpers/mocks/mock_cart_remote_data.dart';
 import '../../helpers/mocks/mock_product_remote_data.dart';
 import '../../helpers/setup/test_service_locator.dart';
 
@@ -15,6 +16,7 @@ void main() {
     await initTestServiceLocator(
       authRemoteData: MockAuthRemoteDataAuthenticated(),
       productRemoteData: MockProductRemoteData(),
+      cartRemoteData: MockCartRemoteData()
     );
 
     app.isTestMode = true;
