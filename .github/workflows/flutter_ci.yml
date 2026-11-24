@@ -373,6 +373,41 @@ jobs:
         run: |
           echo "${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}" | base64 --decode > ios/Runner/GoogleService-Info.plist
 
+      - name: Inject Facebook config (iOS)
+        env:
+          FB_APP_ID: ${{ secrets.FACEBOOK_APP_ID }}
+          FB_CLIENT_TOKEN: ${{ secrets.FACEBOOK_CLIENT_TOKEN }}
+        run: |
+          set -euo pipefail
+          PLIST=ios/Runner/Info.plist
+          PB=/usr/libexec/PlistBuddy
+
+          [ -n "$FB_APP_ID" ] || { echo "FACEBOOK_APP_ID is empty"; exit 1; }
+          [ -n "$FB_CLIENT_TOKEN" ] || { echo "FACEBOOK_CLIENT_TOKEN is empty"; exit 1; }
+
+          set_str() {
+            $PB -c "Set :$1 $2" "$PLIST" 2>/dev/null || $PB -c "Add :$1 string $2" "$PLIST"
+          }
+          set_str FacebookAppID "$FB_APP_ID"
+          set_str FacebookClientToken "$FB_CLIENT_TOKEN"
+
+          if ! $PB -c "Print :CFBundleURLTypes" "$PLIST" 2>/dev/null | grep -q "fb$FB_APP_ID"; then
+            $PB -c "Print :CFBundleURLTypes" "$PLIST" >/dev/null 2>&1 || $PB -c "Add :CFBundleURLTypes array" "$PLIST"
+            N=$($PB -c "Print :CFBundleURLTypes" "$PLIST" | grep -c "Dict {" || true)
+            $PB -c "Add :CFBundleURLTypes:$N dict" "$PLIST"
+            $PB -c "Add :CFBundleURLTypes:$N:CFBundleURLSchemes array" "$PLIST"
+            $PB -c "Add :CFBundleURLTypes:$N:CFBundleURLSchemes:0 string fb$FB_APP_ID" "$PLIST"
+          fi
+
+          $PB -c "Print :LSApplicationQueriesSchemes" "$PLIST" >/dev/null 2>&1 || $PB -c "Add :LSApplicationQueriesSchemes array" "$PLIST"
+          for s in fbapi fb-messenger-share-api; do
+            $PB -c "Print :LSApplicationQueriesSchemes" "$PLIST" | grep -q "$s" || $PB -c "Add :LSApplicationQueriesSchemes: string $s" "$PLIST"
+          done
+
+          for k in FacebookAppID FacebookClientToken; do
+            $PB -c "Print :$k" "$PLIST" >/dev/null && echo "$k OK"
+          done
+
       - name: Install CocoaPods
         working-directory: ios
         run: pod install
