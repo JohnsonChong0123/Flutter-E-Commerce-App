@@ -413,7 +413,7 @@ jobs:
         run: pod install
 
       - name: Build iOS Simulator App
-        run: flutter build ios --simulator --debug --no-codesign
+        run: flutter build ios --simulator --debug
 
       - name: Package into Zip
         run: |
