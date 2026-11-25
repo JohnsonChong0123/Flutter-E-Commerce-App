@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-
+import 'package:flutter/foundation.dart';  
 import '../../../data/sources/local/auth_local_data.dart';
 import '../../../data/sources/remote/auth_remote_data.dart';
 
@@ -19,12 +19,16 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    // get token from local data
-    final token = await userLocalData.getAccessToken();
+    try {
+      // get token from local data
+      final token = await userLocalData.getAccessToken();
 
-    // if token exists, add it to the header
-    if (token != null) {
-      options.headers['Authorization'] = 'Bearer $token';
+      // if token exists, add it to the header
+      if (token != null) {
+        options.headers['Authorization'] = 'Bearer $token';
+      }
+    } catch (e) {
+      debugPrint('[AUTH] read token failed: $e');
     }
 
     // continue with the request
